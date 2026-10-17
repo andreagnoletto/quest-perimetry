@@ -1,5 +1,5 @@
 {
-  "_doc": "Threshold strategy parameters. dB values are DEVICE dB (0 dB = brightest increment the device can show) unless the key ends in Hfa (HFA-equivalent dB). 'zest' = ZEST padrão (parada DP < 1,5 dB, aprovado). 'zestFast' = ZEST rápido (DP < 2,0 dB, prior normal mais estreito) - PENDENTE de decisão clínica sobre qual é o default.",
+  "_doc": "Threshold strategy parameters. dB values are DEVICE dB (0 dB = brightest increment the device can show) unless the key ends in Hfa (HFA-equivalent dB). 'zest' = ZEST padrão (parada DP < 1,5 dB, aprovado). 'zestFast' = ZEST rápido (DP < 2,0 dB, prior normal mais estreito), opcional. Default = 'zest' (aprovado 2026-10-17).",
   "minStimulusDb": 0,
   "maxStimulusDb": 30,
   "zest": {

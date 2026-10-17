@@ -66,5 +66,6 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 | Normative | PROVISIONAL synthetic, HFA-eq dB, −0.7 dB/decade |
 
 ## Open decisions (waiting for the product owner)
-Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: default ZEST vs ZEST rápido; GHT sector
-membership; grayscale band edges; catch-trial frequencies; anticipated-response handling; FN in screening.
+Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,
+status TO_BE_VALIDATED). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
+grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening.

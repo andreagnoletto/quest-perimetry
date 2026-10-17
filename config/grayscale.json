@@ -1,5 +1,5 @@
 {
-  "_doc": "HFA-like grayscale. 10 bands; band i covers [edges[i-1], edges[i]) in HFA-equivalent dB. Band 0 (< first edge, includes <0 dB) is black, last band (>= 36 dB) is white. TO BE VALIDATED by the clinical owner against HFA printouts.",
+  "_doc": "HFA-like grayscale. 10 bands; band i covers [edges[i-1], edges[i]) in HFA-equivalent dB. Band 0 (< first edge, includes <0 dB) is black, last band (>= 36 dB) is white. Approved by the clinical owner on 2026-10-17.",
   "scale": "hfaEquivalent",
   "edgesDb": [4, 8, 12, 16, 20, 24, 28, 32, 36]
 }

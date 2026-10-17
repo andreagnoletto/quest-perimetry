@@ -6,7 +6,7 @@
 > diretório é gravado em cada exame (`ExamRecord.ConfigHash`).
 
 Estado: Fase 1 (biblioteca `/core`, simulação). Itens marcados **[DECISÃO PENDENTE]** aguardam o
-product owner clínico.
+product owner clínico; **[APROVADO 2026-10-17]** indica default confirmado por ele.
 
 ## 1. Sistema de coordenadas
 
@@ -63,7 +63,7 @@ com dithering.
 | Duração | 200 ms | `stimulus.json` |
 | Janela de resposta | 1.000 ms a partir do início do estímulo | `timing.json` |
 | Intervalo entre estímulos | aleatório uniforme 600–1.200 ms, contado a partir da resposta ou do fim da janela | `timing.json` |
-| Resposta antecipada | latência < 100 ms → descartada e a apresentação é refeita **[DECISÃO PENDENTE]** | `timing.json` |
+| Resposta antecipada | latência < 100 ms → descartada e a apresentação é refeita **[APROVADO 2026-10-17]** | `timing.json` |
 | Resposta tardia | após a janela → "não visto" | — |
 
 O tamanho angular é verificado automaticamente em teste (erro < 5% em qualquer posição do campo,
@@ -119,7 +119,7 @@ Porte linha a linha de `OPI::ZEST` (Turpin, Apache-2.0), com os mesmos nomes de 
 - Estímulo seguinte = valor do domínio mais próximo da média da posterior; estimativa final = média.
 - Parada: DP da posterior < 1,5 dB **(aprovado)**, ou 2 "não visto" a 0 dB, ou 2 "visto" a 30 dB,
   ou 100 apresentações.
-- **ZEST rápido** (`zestFast`): DP < 2,0 dB e prior normal com DP 2,5 dB. **[DECISÃO PENDENTE: qual é o default]**
+- **ZEST rápido** (`zestFast`): DP < 2,0 dB e prior normal com DP 2,5 dB, disponível como opção. O padrão é o ZEST com DP < 1,5 dB **[APROVADO 2026-10-17]**.
 
 **Diferença em relação ao SITA (proprietário, não copiado):** o SITA usa modelos de campo visual
 normais e glaucomatosos com correlação espacial entre pontos, estimativa de falsos positivos pelo
@@ -138,7 +138,7 @@ disponível `fourTwo` (média das duas últimas apresentações), só para pesqu
 
 Estímulo 6 dB mais brilhante que o esperado para a idade (arredondado); "não visto" é retestado uma
 vez. Resultado por ponto: visto / visto no reteste / não visto. Não há tentativas de falso negativo
-no rastreio (não há limiar medido para referenciar o +9 dB) **[DECISÃO PENDENTE]**.
+no rastreio (não há limiar medido para referenciar o +9 dB) **[APROVADO 2026-10-17]**.
 
 ### 6.4 Escolha forçada
 
@@ -152,7 +152,7 @@ Não implementada na Fase 1 (Fase 5, conforme SPEC §9).
 | Falsos positivos | tentativa sem estímulo; resposta = FP | 1 a cada 30 ± 6 | > 15% |
 | Falsos negativos | ponto já terminado, limiar − 9 dB (9 dB mais brilhante); sem resposta = FN. Só pontos com limiar ≥ 9 dB | 1 a cada 40 ± 8 | > 33% |
 
-As frequências são **[DECISÃO PENDENTE]**: foram reduzidas de 1/15–1/20 para caber no critério de
+As frequências foram **[APROVADO 2026-10-17]** reduzidas de 1/15–1/20 para caber no critério de
 tempo. Também são reportados: duração, número de apresentações, rejeições por olhar, respostas
 antecipadas, posição da mancha cega, modo de fixação, calibração e normativo usados.
 Flutuação de curto prazo: não implementada (opcional na SPEC).
@@ -195,7 +195,7 @@ dados medidos. Todo exame e relatório leva o aviso vermelho **"NORMATIVO PROVIS
   GH > P99,5. **A composição dos setores é uma reconstrução e precisa ser validada contra a figura
   original [DECISÃO PENDENTE]** (`config/ght.json`, status `TO_BE_VALIDATED`).
 - **Escala de cinza:** 10 faixas sobre o valor HFA-eq: < 4 dB preto … ≥ 36 dB branco (limites a cada
-  4 dB) **[DECISÃO PENDENTE: conferir com impressões do HFA]**.
+  4 dB) **[APROVADO 2026-10-17]**.
 
 ## 9. Simulador de paciente
 
