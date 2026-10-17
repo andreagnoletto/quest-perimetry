@@ -1,0 +1,18 @@
+bin/
+obj/
+TestResults/
+coverage/
+out/
+*.user
+.vs/
+__pycache__/
+# Unity (phase 2)
+headset/[Ll]ibrary/
+headset/[Tt]emp/
+headset/[Oo]bj/
+headset/[Bb]uild*/
+headset/[Ll]ogs/
+headset/[Uu]ser[Ss]ettings/
+# Portal (phase 3)
+portal/node_modules/
+portal/.next/

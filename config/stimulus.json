@@ -1,0 +1,8 @@
+{
+  "_doc": "Goldmann stimulus sizes defined by area (mm^2) at 300 mm (Goldmann bowl radius). Angular diameter = 2*atan(sqrt(area/pi)/300).",
+  "goldmannReferenceDistanceMm": 300.0,
+  "goldmannAreasMm2": { "I": 0.25, "II": 1.0, "III": 4.0, "IV": 16.0, "V": 64.0 },
+  "defaultSize": "III",
+  "durationMs": 200,
+  "color": "white"
+}

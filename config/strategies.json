@@ -1,0 +1,68 @@
+{
+  "_doc": "Threshold strategy parameters. dB values are DEVICE dB (0 dB = brightest increment the device can show) unless the key ends in Hfa (HFA-equivalent dB). 'zest' = ZEST padrão (parada DP < 1,5 dB, aprovado). 'zestFast' = ZEST rápido (DP < 2,0 dB, prior normal mais estreito) - PENDENTE de decisão clínica sobre qual é o default.",
+  "minStimulusDb": 0,
+  "maxStimulusDb": 30,
+  "zest": {
+    "domainMinDb": -5,
+    "domainMaxDb": 35,
+    "domainStepDb": 1,
+    "stopType": "S",
+    "stopValue": 1.5,
+    "maxSeenLimit": 2,
+    "minNotSeenLimit": 2,
+    "maxPresentations": 100,
+    "stimChoice": "mean",
+    "falsePositiveRate": 0.03,
+    "falseNegativeRate": 0.03,
+    "likelihoodSd": {
+      "type": "fixed",
+      "sd": 1.0
+    },
+    "prior": {
+      "normalWeight": 4.0,
+      "normalSdDb": 3.0,
+      "abnormalWeight": 1.0,
+      "abnormalMeanHfa": 8.0,
+      "abnormalSdDb": 6.0,
+      "floor": 0.001
+    }
+  },
+  "fullThreshold": {
+    "_doc": "OPI FT: 4-2 staircase, second staircase if the first result differs from the start estimate by more than retestIfDiffersByDb.",
+    "retestIfDiffersByDb": 4,
+    "useSecondStaircase": true
+  },
+  "screening": {
+    "brighterThanExpectedByDb": 6.0,
+    "retestNotSeen": true
+  },
+  "growth": {
+    "_doc": "Start values / priors of non-anchor points are shifted by the mean total deviation of already finished neighbours (within the grid's neighbourRadiusDeg).",
+    "useNeighbourSeeding": true
+  },
+  "zestFast": {
+    "domainMinDb": -5,
+    "domainMaxDb": 35,
+    "domainStepDb": 1,
+    "stopType": "S",
+    "stopValue": 2.0,
+    "maxSeenLimit": 2,
+    "minNotSeenLimit": 2,
+    "maxPresentations": 100,
+    "stimChoice": "mean",
+    "falsePositiveRate": 0.03,
+    "falseNegativeRate": 0.03,
+    "likelihoodSd": {
+      "type": "fixed",
+      "sd": 1.0
+    },
+    "prior": {
+      "normalWeight": 4.0,
+      "normalSdDb": 2.5,
+      "abnormalWeight": 1.0,
+      "abnormalMeanHfa": 8.0,
+      "abnormalSdDb": 6.0,
+      "floor": 0.001
+    }
+  }
+}

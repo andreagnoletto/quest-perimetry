@@ -1,0 +1,25 @@
+{
+  "_doc": "PROVISIONAL SYNTHETIC normative model in HFA-equivalent dB. NOT derived from measured data on this device. A synthetic normal population is generated from this model (seeded) and the normative database is then built from it exactly as it will be built from a real cohort (pointwise age regression + empirical percentiles, as in visualFields::nvgenerate). Synthetic subjects = model + global shift + between-subject local variation (localSd) + test-retest measurement noise (measurementSd), so percentiles reflect MEASURED normal fields as in a real normative database.",
+  "status": "PROVISIONAL",
+  "scale": "hfaEquivalent",
+  "referenceAge": 45,
+  "peakDb": 33.0,
+  "eccentricitySlopeDbPerDeg": -0.17,
+  "superiorExtraSlopeDbPerDeg": -0.03,
+  "ageSlopeDbPerDecade": -0.7,
+  "localSd": {
+    "interceptDb": 1.2,
+    "perDegDb": 0.05
+  },
+  "globalShiftSdDb": 0.9,
+  "population": {
+    "size": 3000,
+    "minAge": 20,
+    "maxAge": 85,
+    "seed": 20261017
+  },
+  "measurementSd": {
+    "interceptDb": 1.3,
+    "perDegDb": 0.02
+  }
+}

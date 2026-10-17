@@ -1,0 +1,16 @@
+{
+  "_doc": "Glaucoma Hemifield Test (Asman & Heijl 1992). Five upper sectors in OD field coordinates; lower sectors are the mirror image (y -> -y). SECTOR MEMBERSHIP IS A RECONSTRUCTION AND MUST BE VALIDATED by the clinical owner against the original figure. Point scores are assigned from the pattern deviation probability.",
+  "status": "TO_BE_VALIDATED",
+  "pointScores": [ { "p": 0.005, "score": 20 }, { "p": 0.01, "score": 10 }, { "p": 0.02, "score": 5 }, { "p": 0.05, "score": 2 } ],
+  "outsideNormalLimitsPercentile": 0.99,
+  "borderlinePercentile": 0.97,
+  "generalReductionPercentile": 0.005,
+  "abnormallyHighPercentile": 0.995,
+  "sectors": [
+    { "name": "central",     "points": [[-3,3],[3,3],[-3,9],[3,9]] },
+    { "name": "paracentral", "points": [[-9,3],[-9,9],[9,9],[-3,15],[3,15]] },
+    { "name": "nasalStep",   "points": [[-27,3],[-21,3],[-15,3],[-21,9]] },
+    { "name": "arcuate1",    "points": [[-15,9],[-15,15],[-9,15],[9,15],[15,9]] },
+    { "name": "arcuate2",    "points": [[-9,21],[-3,21],[3,21],[9,21]] }
+  ]
+}

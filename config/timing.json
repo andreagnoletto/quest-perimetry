@@ -1,0 +1,7 @@
+{
+  "_doc": "Presentation timing. Response window counted from stimulus onset. Inter-stimulus interval (ISI) is drawn uniformly and counted from the end of the response window or from the response, whichever comes first.",
+  "responseWindowMs": 1000,
+  "isiMinMs": 600,
+  "isiMaxMs": 1200,
+  "minValidLatencyMs": 100
+}

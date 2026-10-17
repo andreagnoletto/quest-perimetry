@@ -1,0 +1,10 @@
+{
+  "_doc": "Display / photometric constants. See docs/CLINICAL_SPEC.md §2. Values are NOMINAL until a photometric calibration file is loaded.",
+  "backgroundCdm2": 10.0,
+  "nominalMaxLuminanceCdm2": 100.0,
+  "hfaMaxStimulusAsb": 10000.0,
+  "hfaBackgroundAsb": 31.5,
+  "virtualStimulusDistanceM": 1.0,
+  "usableHalfFieldDeg": 50.0,
+  "nominalGamma": "sRGB"
+}

@@ -1,0 +1,21 @@
+name: core
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - run: dotnet build Perimetry.sln -c Release
+      - run: dotnet test core/Perimetry.Core.Tests -c Release --collect:"XPlat Code Coverage"
+  opi-crosscheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - run: sudo apt-get update && sudo apt-get install -y r-base-core r-cran-jsonlite
+      - run: bash tools/opi-crosscheck/run.sh

@@ -1,0 +1,7 @@
+{
+  "_doc": "Global index definitions. See docs/CLINICAL_SPEC.md §7.",
+  "generalHeightPercentile": 0.85,
+  "mdWeighting": "inverseVariance",
+  "probabilityLevels": [0.005, 0.01, 0.02, 0.05],
+  "vfi": { "usePdWhenMdAtLeastDb": -20.0, "significanceLevel": 0.05, "weightA": 0.08, "weightB": 0.8 }
+}

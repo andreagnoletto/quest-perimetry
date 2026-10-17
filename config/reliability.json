@@ -1,0 +1,79 @@
+{
+  "_doc": "Reliability catch trials and alert limits (HFA naming). Rates are 'one catch trial every N threshold presentations', jittered uniformly by +/- jitter.",
+  "falsePositive": {
+    "everyN": 30,
+    "jitter": 6,
+    "alertLimit": 0.15
+  },
+  "falseNegative": {
+    "everyN": 40,
+    "jitter": 8,
+    "brighterByDb": 9.0,
+    "alertLimit": 0.33
+  },
+  "fixationLoss": {
+    "everyN": 30,
+    "jitter": 6,
+    "alertLimit": 0.2
+  },
+  "blindSpot": {
+    "nominalX": 15.0,
+    "nominalY": -1.5,
+    "searchOffsetsDeg": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        -1.5
+      ],
+      [
+        0,
+        1.5
+      ],
+      [
+        -1.5,
+        0
+      ],
+      [
+        1.5,
+        0
+      ],
+      [
+        -1.5,
+        -1.5
+      ],
+      [
+        1.5,
+        -1.5
+      ],
+      [
+        -1.5,
+        1.5
+      ],
+      [
+        1.5,
+        1.5
+      ],
+      [
+        0,
+        -3
+      ],
+      [
+        0,
+        3
+      ],
+      [
+        -3,
+        0
+      ],
+      [
+        3,
+        0
+      ]
+    ],
+    "presentationsPerCandidate": 2,
+    "stimulusDb": 0.0
+  }
+}

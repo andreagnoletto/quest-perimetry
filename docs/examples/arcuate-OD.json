@@ -1,0 +1,5868 @@
+{
+  "SchemaVersion": "1.0",
+  "SoftwareVersion": "0.1.0-phase1",
+  "ConfigHash": "a3cab887f907faa6d75c1bf93bf9eed63090b2ea3207ba2956483839b845711c",
+  "ExamId": "OD-24-2-ZestFast-4",
+  "StartedUtc": "2026-10-17T23:34:55.4490647Z",
+  "Settings": {
+    "GridId": "24-2",
+    "Eye": "OD",
+    "Strategy": "ZestFast",
+    "FixationMode": "CentralHeijlKrakau",
+    "StimulusSize": "III",
+    "AgeYears": 62.0,
+    "Seed": 4,
+    "FalsePositiveCatchTrials": true,
+    "FalseNegativeCatchTrials": true,
+    "PatientRef": null,
+    "RefractiveCorrection": null
+  },
+  "Calibrated": false,
+  "CalibrationRef": "nominal-sRGB",
+  "BackgroundCdm2": 10.0,
+  "MaxLuminanceCdm2": 100.0,
+  "HfaOffsetDb": 15.486076178665414,
+  "NormativeId": "provisional-synthetic/24-2",
+  "NormativeProvisional": true,
+  "Locations": [
+    {
+      "Index": 0,
+      "X": -9.0,
+      "Y": 21.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 0.9540236317365121,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": -4.508376568015834,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 1,
+      "X": -3.0,
+      "Y": 21.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": -3.029214666959789,
+      "CensoredLow": true,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 8.020763129911398,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 2,
+      "X": 3.0,
+      "Y": 21.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": -3.0365626230250697,
+      "CensoredLow": true,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 8.141059078657175,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 3,
+      "X": 9.0,
+      "Y": 21.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 3.5272651925952947,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 3,
+      "StartValueDb": 7.804275291430066,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 4,
+      "X": -15.0,
+      "Y": 15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": -1.8650276836619604,
+      "CensoredLow": true,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 1,
+      "StartValueDb": -0.28187705965191157,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 5,
+      "X": -9.0,
+      "Y": 15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 1.6314672193510733,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 3,
+      "StartValueDb": -3.5131925749290502,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 6,
+      "X": -3.0,
+      "Y": 15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": -3.0699911553282764,
+      "CensoredLow": true,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 9.299307117669372,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 7,
+      "X": 3.0,
+      "Y": 15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 9.233810060717573,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 11.265570219764184,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 8,
+      "X": 9.0,
+      "Y": 15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": -3.0114956766359686,
+      "CensoredLow": true,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 10.942955433135628,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 9,
+      "X": 15.0,
+      "Y": 15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 14.175310778711017,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 5,
+      "StartValueDb": 10.342170642423559,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 10,
+      "X": -21.0,
+      "Y": 9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": -2.452337050361686,
+      "CensoredLow": true,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 1,
+      "StartValueDb": -1.915996159931474,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 11,
+      "X": -15.0,
+      "Y": 9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 3.107909834788377,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 3,
+      "StartValueDb": 0.5295825236938612,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 12,
+      "X": -9.0,
+      "Y": 9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 1.3367408776788752,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 6,
+      "StartValueDb": 13.886343705659929,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 13,
+      "X": -3.0,
+      "Y": 9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 1.1235141279793752,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 6,
+      "StartValueDb": 10.449802899181734,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 14,
+      "X": 3.0,
+      "Y": 9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": -1.2436745476575184,
+      "CensoredLow": true,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 5,
+      "StartValueDb": 12.435457695228843,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 15,
+      "X": 9.0,
+      "Y": 9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 11.850766754232742,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 13.807638079938172,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 16,
+      "X": 15.0,
+      "Y": 9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 14.03615671734482,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 11.087249309333815,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 17,
+      "X": 21.0,
+      "Y": 9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 13.891177856231593,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 14.107921104805778,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 18,
+      "X": -27.0,
+      "Y": 3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 13.733372980275794,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 16.31623284277961,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 19,
+      "X": -21.0,
+      "Y": 3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": -3.0823481327782853,
+      "CensoredLow": true,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 17.40668324372944,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 20,
+      "X": -15.0,
+      "Y": 3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 2.4766078344183846,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 7,
+      "StartValueDb": 16.011316754310226,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 21,
+      "X": -9.0,
+      "Y": 3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": -3.0814474647142065,
+      "CensoredLow": true,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 17.11948007746165,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 22,
+      "X": -3.0,
+      "Y": 3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 15.75574412783943,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 16.143833013106423,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 23,
+      "X": 3.0,
+      "Y": 3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 16.252069202401042,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 13.576279546818794,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 24,
+      "X": 9.0,
+      "Y": 3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 6.6133792440716945,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 5,
+      "StartValueDb": 12.723106058093991,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 25,
+      "X": 15.0,
+      "Y": 3.0,
+      "IsBlindSpot": true,
+      "ThresholdDb": 15.271404008751135,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 5,
+      "StartValueDb": 11.657526168665614,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 26,
+      "X": 21.0,
+      "Y": 3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 13.08402259873295,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 3,
+      "StartValueDb": 14.370931683789857,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 27,
+      "X": -27.0,
+      "Y": -3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 16.390457030929102,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 16.521810270046043,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 28,
+      "X": -21.0,
+      "Y": -3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 17.32333676448442,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 14.787733962152824,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 29,
+      "X": -15.0,
+      "Y": -3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 12.130125420426102,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 3,
+      "StartValueDb": 13.498271025606616,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 30,
+      "X": -9.0,
+      "Y": -3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 17.197186832300336,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 14.454342188250472,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 31,
+      "X": -3.0,
+      "Y": -3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 16.726883530685207,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 3,
+      "StartValueDb": 16.272540328790868,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 32,
+      "X": 3.0,
+      "Y": -3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 15.070001982963843,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 3,
+      "StartValueDb": 16.335595102590776,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 33,
+      "X": 9.0,
+      "Y": -3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 17.642741492931158,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 15.41823715779972,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 34,
+      "X": 15.0,
+      "Y": -3.0,
+      "IsBlindSpot": true,
+      "ThresholdDb": -3.014189312473741,
+      "CensoredLow": true,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 11.23623050695191,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 35,
+      "X": 21.0,
+      "Y": -3.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 14.499492984598325,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 11.96999082298967,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 36,
+      "X": -21.0,
+      "Y": -9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 11.75738427743849,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 14.47977485750084,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 37,
+      "X": -15.0,
+      "Y": -9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 15.50299640825078,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 13.00579693568536,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 38,
+      "X": -9.0,
+      "Y": -9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 13.905865981650617,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 14.166642386418012,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 39,
+      "X": -3.0,
+      "Y": -9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 17.267236832810514,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 14.64167467159432,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 40,
+      "X": 3.0,
+      "Y": -9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 11.95842609029231,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 12.301944446494987,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 41,
+      "X": 9.0,
+      "Y": -9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 11.70922746172821,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 14.131945320107658,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 42,
+      "X": 15.0,
+      "Y": -9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 12.67245431115913,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 3,
+      "StartValueDb": 11.016893727664764,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 43,
+      "X": 21.0,
+      "Y": -9.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 11.417502339677561,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 11.49753544022693,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 44,
+      "X": -15.0,
+      "Y": -15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 15.301125571314307,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 4,
+      "StartValueDb": 12.492478013851073,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 45,
+      "X": -9.0,
+      "Y": -15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 12.915708752998196,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 13.168285848846946,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 46,
+      "X": -3.0,
+      "Y": -15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 16.265799667645304,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 13.61283294358342,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 47,
+      "X": 3.0,
+      "Y": -15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 13.65191021390553,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 11.362012150003652,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 48,
+      "X": 9.0,
+      "Y": -15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 16.31664864972845,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 6,
+      "StartValueDb": 10.95622069770541,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 49,
+      "X": 15.0,
+      "Y": -15.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 11.704656408690429,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 3,
+      "StartValueDb": 10.175542293705321,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 50,
+      "X": -9.0,
+      "Y": -21.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 10.180524978842316,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 12.126925681147382,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 51,
+      "X": -3.0,
+      "Y": -21.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 12.450834288523138,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 12.643019209508878,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 52,
+      "X": 3.0,
+      "Y": -21.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 14.152505668071989,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 3,
+      "StartValueDb": 12.581519903232088,
+      "ScreeningOutcome": null
+    },
+    {
+      "Index": 53,
+      "X": 9.0,
+      "Y": -21.0,
+      "IsBlindSpot": false,
+      "ThresholdDb": 11.9307012046425,
+      "CensoredLow": false,
+      "CensoredHigh": false,
+      "StopReason": "Stop",
+      "Presentations": 2,
+      "StartValueDb": 12.190750851480143,
+      "ScreeningOutcome": null
+    }
+  ],
+  "Reliability": {
+    "FixationLosses": {
+      "Trials": 5,
+      "Errors": 0,
+      "Rate": 0.0,
+      "AlertLimit": 0.2,
+      "Alert": false
+    },
+    "FalsePositives": {
+      "Trials": 5,
+      "Errors": 0,
+      "Rate": 0.0,
+      "AlertLimit": 0.15,
+      "Alert": false
+    },
+    "FalseNegatives": {
+      "Trials": 4,
+      "Errors": 1,
+      "Rate": 0.25,
+      "AlertLimit": 0.33,
+      "Alert": false
+    },
+    "GazeRejectedPresentations": 0,
+    "AnticipatedResponses": 0,
+    "BlindSpotFound": true,
+    "BlindSpotX": 15.0,
+    "BlindSpotY": -1.5,
+    "TotalPresentations": 189,
+    "DurationMs": 311211.440315303,
+    "LowReliability": false
+  },
+  "Presentations": [
+    {
+      "Request": {
+        "Sequence": 1,
+        "Kind": "BlindSpotMapping",
+        "LocationIndex": -1,
+        "FieldX": 15.0,
+        "FieldY": -1.5,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 891
+      },
+      "Result": {
+        "Sequence": 1,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 891.0
+      },
+      "Disposition": "mapping"
+    },
+    {
+      "Request": {
+        "Sequence": 2,
+        "Kind": "BlindSpotMapping",
+        "LocationIndex": -1,
+        "FieldX": 15.0,
+        "FieldY": -1.5,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 883
+      },
+      "Result": {
+        "Sequence": 2,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 2774.0
+      },
+      "Disposition": "mapping"
+    },
+    {
+      "Request": {
+        "Sequence": 3,
+        "Kind": "Threshold",
+        "LocationIndex": 38,
+        "FieldX": -9.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1028
+      },
+      "Result": {
+        "Sequence": 3,
+        "Responded": true,
+        "LatencyMs": 520.6500287505951,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 4802.0
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 4,
+        "Kind": "Threshold",
+        "LocationIndex": 15,
+        "FieldX": 9.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1024
+      },
+      "Result": {
+        "Sequence": 4,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 6346.650028750595
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 5,
+        "Kind": "Threshold",
+        "LocationIndex": 41,
+        "FieldX": 9.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 935
+      },
+      "Result": {
+        "Sequence": 5,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 8281.650028750595
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 6,
+        "Kind": "Threshold",
+        "LocationIndex": 12,
+        "FieldX": -9.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1102
+      },
+      "Result": {
+        "Sequence": 6,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 10383.650028750595
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 7,
+        "Kind": "Threshold",
+        "LocationIndex": 15,
+        "FieldX": 9.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 9.0,
+        "IncrementCdm2": 11.330328706147505,
+        "LuminanceCdm2": 21.330328706147505,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 951
+      },
+      "Result": {
+        "Sequence": 7,
+        "Responded": true,
+        "LatencyMs": 294.48793324059073,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 12334.650028750595
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 8,
+        "Kind": "Threshold",
+        "LocationIndex": 25,
+        "FieldX": 15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 957
+      },
+      "Result": {
+        "Sequence": 8,
+        "Responded": true,
+        "LatencyMs": 385.07057592820433,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 13586.137961991186
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 9,
+        "Kind": "Threshold",
+        "LocationIndex": 14,
+        "FieldX": 3.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 970
+      },
+      "Result": {
+        "Sequence": 9,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 14941.20853791939
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 10,
+        "Kind": "Threshold",
+        "LocationIndex": 41,
+        "FieldX": 9.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 9.0,
+        "IncrementCdm2": 11.330328706147505,
+        "LuminanceCdm2": 21.330328706147505,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1178
+      },
+      "Result": {
+        "Sequence": 10,
+        "Responded": true,
+        "LatencyMs": 500.5225261749039,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 17119.20853791939
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 11,
+        "Kind": "Threshold",
+        "LocationIndex": 7,
+        "FieldX": 3.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 10.0,
+        "IncrementCdm2": 9.0,
+        "LuminanceCdm2": 19.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 703
+      },
+      "Result": {
+        "Sequence": 11,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 18322.731064094292
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 12,
+        "Kind": "Threshold",
+        "LocationIndex": 8,
+        "FieldX": 9.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 10.0,
+        "IncrementCdm2": 9.0,
+        "LuminanceCdm2": 19.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 796
+      },
+      "Result": {
+        "Sequence": 12,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 20118.731064094292
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 13,
+        "Kind": "Threshold",
+        "LocationIndex": 16,
+        "FieldX": 15.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 10.0,
+        "IncrementCdm2": 9.0,
+        "LuminanceCdm2": 19.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 962
+      },
+      "Result": {
+        "Sequence": 13,
+        "Responded": true,
+        "LatencyMs": 376.42640646168815,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 22080.731064094292
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 14,
+        "Kind": "Threshold",
+        "LocationIndex": 24,
+        "FieldX": 9.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 739
+      },
+      "Result": {
+        "Sequence": 14,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 23196.15747055598
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 15,
+        "Kind": "Threshold",
+        "LocationIndex": 7,
+        "FieldX": 3.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 7.0,
+        "IncrementCdm2": 17.957360834719918,
+        "LuminanceCdm2": 27.957360834719918,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 908
+      },
+      "Result": {
+        "Sequence": 15,
+        "Responded": true,
+        "LatencyMs": 391.5910247464848,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 25104.15747055598
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 16,
+        "Kind": "Threshold",
+        "LocationIndex": 8,
+        "FieldX": 9.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 7.0,
+        "IncrementCdm2": 17.957360834719918,
+        "LuminanceCdm2": 27.957360834719918,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 667
+      },
+      "Result": {
+        "Sequence": 16,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 26162.748495302465
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 17,
+        "Kind": "Threshold",
+        "LocationIndex": 23,
+        "FieldX": 3.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 641
+      },
+      "Result": {
+        "Sequence": 17,
+        "Responded": true,
+        "LatencyMs": 486.4201358470636,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 27803.748495302465
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 18,
+        "Kind": "Threshold",
+        "LocationIndex": 3,
+        "FieldX": 9.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 7.0,
+        "IncrementCdm2": 17.957360834719918,
+        "LuminanceCdm2": 27.957360834719918,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 899
+      },
+      "Result": {
+        "Sequence": 18,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 29189.16863114953
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 19,
+        "Kind": "Threshold",
+        "LocationIndex": 6,
+        "FieldX": -3.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 8.0,
+        "IncrementCdm2": 14.264038732150022,
+        "LuminanceCdm2": 24.26403873215002,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 678
+      },
+      "Result": {
+        "Sequence": 19,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 30867.16863114953
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 20,
+        "Kind": "Threshold",
+        "LocationIndex": 16,
+        "FieldX": 15.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 618
+      },
+      "Result": {
+        "Sequence": 20,
+        "Responded": true,
+        "LatencyMs": 413.5746884840425,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 32485.16863114953
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 21,
+        "Kind": "Threshold",
+        "LocationIndex": 2,
+        "FieldX": 3.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 7.0,
+        "IncrementCdm2": 17.957360834719918,
+        "LuminanceCdm2": 27.957360834719918,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 722
+      },
+      "Result": {
+        "Sequence": 21,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 33620.74331963357
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 22,
+        "Kind": "Threshold",
+        "LocationIndex": 13,
+        "FieldX": -3.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 9.0,
+        "IncrementCdm2": 11.330328706147505,
+        "LuminanceCdm2": 21.330328706147505,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1006
+      },
+      "Result": {
+        "Sequence": 22,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 35626.74331963357
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 23,
+        "Kind": "Threshold",
+        "LocationIndex": 8,
+        "FieldX": 9.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 2.0,
+        "IncrementCdm2": 56.786161003217394,
+        "LuminanceCdm2": 66.78616100321739,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 655
+      },
+      "Result": {
+        "Sequence": 23,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 37281.74331963357
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 24,
+        "Kind": "Threshold",
+        "LocationIndex": 12,
+        "FieldX": -9.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 9.0,
+        "IncrementCdm2": 11.330328706147505,
+        "LuminanceCdm2": 21.330328706147505,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 988
+      },
+      "Result": {
+        "Sequence": 24,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 39269.74331963357
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 25,
+        "Kind": "Threshold",
+        "LocationIndex": 1,
+        "FieldX": -3.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 7.0,
+        "IncrementCdm2": 17.957360834719918,
+        "LuminanceCdm2": 27.957360834719918,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1032
+      },
+      "Result": {
+        "Sequence": 25,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 41301.74331963357
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 26,
+        "Kind": "Threshold",
+        "LocationIndex": 9,
+        "FieldX": 15.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 9.0,
+        "IncrementCdm2": 11.330328706147505,
+        "LuminanceCdm2": 21.330328706147505,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 894
+      },
+      "Result": {
+        "Sequence": 26,
+        "Responded": true,
+        "LatencyMs": 363.0624604850801,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 43195.74331963357
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 27,
+        "Kind": "BlindSpotCatch",
+        "LocationIndex": -1,
+        "FieldX": 15.0,
+        "FieldY": -1.5,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 720
+      },
+      "Result": {
+        "Sequence": 27,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 44278.80578011865
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 28,
+        "Kind": "Threshold",
+        "LocationIndex": 3,
+        "FieldX": 9.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 4.0,
+        "IncrementCdm2": 35.82964534981475,
+        "LuminanceCdm2": 45.82964534981475,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1180
+      },
+      "Result": {
+        "Sequence": 28,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 46458.80578011865
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 29,
+        "Kind": "Threshold",
+        "LocationIndex": 6,
+        "FieldX": -3.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 5.0,
+        "IncrementCdm2": 28.460498941515414,
+        "LuminanceCdm2": 38.46049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 904
+      },
+      "Result": {
+        "Sequence": 29,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 48362.80578011865
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 30,
+        "Kind": "Threshold",
+        "LocationIndex": 9,
+        "FieldX": 15.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 911
+      },
+      "Result": {
+        "Sequence": 30,
+        "Responded": true,
+        "LatencyMs": 390.83002011055044,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 50273.80578011865
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 31,
+        "Kind": "Threshold",
+        "LocationIndex": 2,
+        "FieldX": 3.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 4.0,
+        "IncrementCdm2": 35.82964534981475,
+        "LuminanceCdm2": 45.82964534981475,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1030
+      },
+      "Result": {
+        "Sequence": 31,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 51694.6358002292
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 32,
+        "Kind": "Threshold",
+        "LocationIndex": 24,
+        "FieldX": 9.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 8.0,
+        "IncrementCdm2": 14.264038732150022,
+        "LuminanceCdm2": 24.26403873215002,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 786
+      },
+      "Result": {
+        "Sequence": 32,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 53480.6358002292
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 33,
+        "Kind": "FalsePositiveCatch",
+        "LocationIndex": -1,
+        "FieldX": 0.0,
+        "FieldY": 0.0,
+        "StimulusShown": false,
+        "Db": NaN,
+        "IncrementCdm2": 0.0,
+        "LuminanceCdm2": 10.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 933
+      },
+      "Result": {
+        "Sequence": 33,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 55413.6358002292
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 34,
+        "Kind": "Threshold",
+        "LocationIndex": 23,
+        "FieldX": 3.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1197
+      },
+      "Result": {
+        "Sequence": 34,
+        "Responded": true,
+        "LatencyMs": 338.58978361413665,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 57610.6358002292
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 35,
+        "Kind": "Threshold",
+        "LocationIndex": 41,
+        "FieldX": 9.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 877
+      },
+      "Result": {
+        "Sequence": 35,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 58826.22558384334
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 36,
+        "Kind": "Threshold",
+        "LocationIndex": 25,
+        "FieldX": 15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 864
+      },
+      "Result": {
+        "Sequence": 36,
+        "Responded": true,
+        "LatencyMs": 479.8041857335448,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 60690.22558384334
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 37,
+        "Kind": "Threshold",
+        "LocationIndex": 41,
+        "FieldX": 9.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 889
+      },
+      "Result": {
+        "Sequence": 37,
+        "Responded": true,
+        "LatencyMs": 540.3886602742544,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 62059.02976957689
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 38,
+        "Kind": "Threshold",
+        "LocationIndex": 47,
+        "FieldX": 3.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 10.0,
+        "IncrementCdm2": 9.0,
+        "LuminanceCdm2": 19.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 764
+      },
+      "Result": {
+        "Sequence": 38,
+        "Responded": true,
+        "LatencyMs": 511.9142364603024,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 63363.418429851146
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 39,
+        "Kind": "Threshold",
+        "LocationIndex": 31,
+        "FieldX": -3.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1063
+      },
+      "Result": {
+        "Sequence": 39,
+        "Responded": true,
+        "LatencyMs": 518.9287822338767,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 64938.33266631145
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 40,
+        "Kind": "Threshold",
+        "LocationIndex": 47,
+        "FieldX": 3.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 702
+      },
+      "Result": {
+        "Sequence": 40,
+        "Responded": true,
+        "LatencyMs": 380.9712763523055,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 66159.26144854532
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 41,
+        "Kind": "Threshold",
+        "LocationIndex": 9,
+        "FieldX": 15.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1138
+      },
+      "Result": {
+        "Sequence": 41,
+        "Responded": true,
+        "LatencyMs": 453.79141776698935,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 67678.23272489762
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 42,
+        "Kind": "Threshold",
+        "LocationIndex": 38,
+        "FieldX": -9.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 654
+      },
+      "Result": {
+        "Sequence": 42,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 68786.02414266461
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 43,
+        "Kind": "Threshold",
+        "LocationIndex": 53,
+        "FieldX": 9.0,
+        "FieldY": -21.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 675
+      },
+      "Result": {
+        "Sequence": 43,
+        "Responded": true,
+        "LatencyMs": 432.0275177463245,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 70461.02414266461
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 44,
+        "Kind": "Threshold",
+        "LocationIndex": 51,
+        "FieldX": -3.0,
+        "FieldY": -21.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1059
+      },
+      "Result": {
+        "Sequence": 44,
+        "Responded": true,
+        "LatencyMs": 496.76716412939703,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 71952.05166041093
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 45,
+        "Kind": "Threshold",
+        "LocationIndex": 53,
+        "FieldX": 9.0,
+        "FieldY": -21.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 846
+      },
+      "Result": {
+        "Sequence": 45,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 73294.81882454033
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 46,
+        "Kind": "Threshold",
+        "LocationIndex": 49,
+        "FieldX": 15.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 9.0,
+        "IncrementCdm2": 11.330328706147505,
+        "LuminanceCdm2": 21.330328706147505,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1006
+      },
+      "Result": {
+        "Sequence": 46,
+        "Responded": true,
+        "LatencyMs": 556.9316244649706,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 75300.81882454033
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 47,
+        "Kind": "Threshold",
+        "LocationIndex": 29,
+        "FieldX": -15.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1055
+      },
+      "Result": {
+        "Sequence": 47,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 76912.7504490053
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 48,
+        "Kind": "FalseNegativeCatch",
+        "LocationIndex": 38,
+        "FieldX": -9.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 5.0,
+        "IncrementCdm2": 28.460498941515414,
+        "LuminanceCdm2": 38.46049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 793
+      },
+      "Result": {
+        "Sequence": 48,
+        "Responded": true,
+        "LatencyMs": 592.6833685558804,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 78705.7504490053
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 49,
+        "Kind": "Threshold",
+        "LocationIndex": 31,
+        "FieldX": -3.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 17.0,
+        "IncrementCdm2": 1.795736083471992,
+        "LuminanceCdm2": 11.795736083471992,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 775
+      },
+      "Result": {
+        "Sequence": 49,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 80073.43381756118
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 50,
+        "Kind": "Threshold",
+        "LocationIndex": 52,
+        "FieldX": 3.0,
+        "FieldY": -21.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1110
+      },
+      "Result": {
+        "Sequence": 50,
+        "Responded": true,
+        "LatencyMs": 382.87600264210107,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 82183.43381756118
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 51,
+        "Kind": "Threshold",
+        "LocationIndex": 51,
+        "FieldX": -3.0,
+        "FieldY": -21.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 844
+      },
+      "Result": {
+        "Sequence": 51,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 83410.30982020329
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 52,
+        "Kind": "Threshold",
+        "LocationIndex": 44,
+        "FieldX": -15.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 979
+      },
+      "Result": {
+        "Sequence": 52,
+        "Responded": true,
+        "LatencyMs": 521.110019746034,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 85389.30982020329
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 53,
+        "Kind": "Threshold",
+        "LocationIndex": 2,
+        "FieldX": 3.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 841
+      },
+      "Result": {
+        "Sequence": 53,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 86751.41983994932
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 54,
+        "Kind": "Threshold",
+        "LocationIndex": 34,
+        "FieldX": 15.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 10.0,
+        "IncrementCdm2": 9.0,
+        "LuminanceCdm2": 19.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 713
+      },
+      "Result": {
+        "Sequence": 54,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 88464.41983994932
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 55,
+        "Kind": "Threshold",
+        "LocationIndex": 33,
+        "FieldX": 9.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 944
+      },
+      "Result": {
+        "Sequence": 55,
+        "Responded": true,
+        "LatencyMs": 517.3294303345514,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 90408.41983994932
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 56,
+        "Kind": "Threshold",
+        "LocationIndex": 25,
+        "FieldX": 15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 906
+      },
+      "Result": {
+        "Sequence": 56,
+        "Responded": true,
+        "LatencyMs": 543.9501434396956,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 91831.74927028386
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 57,
+        "Kind": "Threshold",
+        "LocationIndex": 48,
+        "FieldX": 9.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 10.0,
+        "IncrementCdm2": 9.0,
+        "LuminanceCdm2": 19.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 930
+      },
+      "Result": {
+        "Sequence": 57,
+        "Responded": true,
+        "LatencyMs": 457.63057198060295,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 93305.69941372356
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 58,
+        "Kind": "Threshold",
+        "LocationIndex": 33,
+        "FieldX": 9.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 16.0,
+        "IncrementCdm2": 2.2606977883586215,
+        "LuminanceCdm2": 12.260697788358621,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1125
+      },
+      "Result": {
+        "Sequence": 58,
+        "Responded": true,
+        "LatencyMs": 476.44687439319927,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 94888.32998570416
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 59,
+        "Kind": "Threshold",
+        "LocationIndex": 2,
+        "FieldX": 3.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 723
+      },
+      "Result": {
+        "Sequence": 59,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 96087.77686009735
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 60,
+        "Kind": "Threshold",
+        "LocationIndex": 14,
+        "FieldX": 3.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 7.0,
+        "IncrementCdm2": 17.957360834719918,
+        "LuminanceCdm2": 27.957360834719918,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1034
+      },
+      "Result": {
+        "Sequence": 60,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 98121.77686009735
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 61,
+        "Kind": "Threshold",
+        "LocationIndex": 40,
+        "FieldX": 3.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 715
+      },
+      "Result": {
+        "Sequence": 61,
+        "Responded": true,
+        "LatencyMs": 478.6667187931612,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 99836.77686009735
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 62,
+        "Kind": "BlindSpotCatch",
+        "LocationIndex": -1,
+        "FieldX": 15.0,
+        "FieldY": -1.5,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1121
+      },
+      "Result": {
+        "Sequence": 62,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 101436.44357889051
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 63,
+        "Kind": "Threshold",
+        "LocationIndex": 52,
+        "FieldX": 3.0,
+        "FieldY": -21.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 859
+      },
+      "Result": {
+        "Sequence": 63,
+        "Responded": true,
+        "LatencyMs": 468.98712654003145,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 103295.44357889051
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 64,
+        "Kind": "Threshold",
+        "LocationIndex": 50,
+        "FieldX": -9.0,
+        "FieldY": -21.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1194
+      },
+      "Result": {
+        "Sequence": 64,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 104958.43070543054
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 65,
+        "Kind": "Threshold",
+        "LocationIndex": 32,
+        "FieldX": 3.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 798
+      },
+      "Result": {
+        "Sequence": 65,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 106756.43070543054
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 66,
+        "Kind": "FalsePositiveCatch",
+        "LocationIndex": -1,
+        "FieldX": 0.0,
+        "FieldY": 0.0,
+        "StimulusShown": false,
+        "Db": NaN,
+        "IncrementCdm2": 0.0,
+        "LuminanceCdm2": 10.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 807
+      },
+      "Result": {
+        "Sequence": 66,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 108563.43070543054
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 67,
+        "Kind": "Threshold",
+        "LocationIndex": 48,
+        "FieldX": 9.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 995
+      },
+      "Result": {
+        "Sequence": 67,
+        "Responded": true,
+        "LatencyMs": 454.1225641608877,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 110558.43070543054
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 68,
+        "Kind": "Threshold",
+        "LocationIndex": 8,
+        "FieldX": 9.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1089
+      },
+      "Result": {
+        "Sequence": 68,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 112101.55326959143
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 69,
+        "Kind": "Threshold",
+        "LocationIndex": 45,
+        "FieldX": -9.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1126
+      },
+      "Result": {
+        "Sequence": 69,
+        "Responded": true,
+        "LatencyMs": 348.0304599015931,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 114227.55326959143
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 70,
+        "Kind": "Threshold",
+        "LocationIndex": 1,
+        "FieldX": -3.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 4.0,
+        "IncrementCdm2": 35.82964534981475,
+        "LuminanceCdm2": 45.82964534981475,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1056
+      },
+      "Result": {
+        "Sequence": 70,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 115631.58372949302
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 71,
+        "Kind": "Threshold",
+        "LocationIndex": 40,
+        "FieldX": 3.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 761
+      },
+      "Result": {
+        "Sequence": 71,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 117392.58372949302
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 72,
+        "Kind": "Threshold",
+        "LocationIndex": 44,
+        "FieldX": -15.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 643
+      },
+      "Result": {
+        "Sequence": 72,
+        "Responded": true,
+        "LatencyMs": 541.2689304463464,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 119035.58372949302
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 73,
+        "Kind": "Threshold",
+        "LocationIndex": 46,
+        "FieldX": -3.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1130
+      },
+      "Result": {
+        "Sequence": 73,
+        "Responded": true,
+        "LatencyMs": 482.9775618827133,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 120706.85265993937
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 74,
+        "Kind": "Threshold",
+        "LocationIndex": 1,
+        "FieldX": -3.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1132
+      },
+      "Result": {
+        "Sequence": 74,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 122321.83022182208
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 75,
+        "Kind": "Threshold",
+        "LocationIndex": 12,
+        "FieldX": -9.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 2.0,
+        "IncrementCdm2": 56.786161003217394,
+        "LuminanceCdm2": 66.78616100321739,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 609
+      },
+      "Result": {
+        "Sequence": 75,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 123930.83022182208
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 76,
+        "Kind": "Threshold",
+        "LocationIndex": 49,
+        "FieldX": 15.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 673
+      },
+      "Result": {
+        "Sequence": 76,
+        "Responded": true,
+        "LatencyMs": 385.1315686579043,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 125603.83022182208
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 77,
+        "Kind": "Threshold",
+        "LocationIndex": 34,
+        "FieldX": 15.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 7.0,
+        "IncrementCdm2": 17.957360834719918,
+        "LuminanceCdm2": 27.957360834719918,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 922
+      },
+      "Result": {
+        "Sequence": 77,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 126910.96179047998
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 78,
+        "Kind": "Threshold",
+        "LocationIndex": 39,
+        "FieldX": -3.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1174
+      },
+      "Result": {
+        "Sequence": 78,
+        "Responded": true,
+        "LatencyMs": 402.73399993944184,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 129084.96179047998
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 79,
+        "Kind": "Threshold",
+        "LocationIndex": 6,
+        "FieldX": -3.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1192
+      },
+      "Result": {
+        "Sequence": 79,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 130679.69579041943
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 80,
+        "Kind": "Threshold",
+        "LocationIndex": 13,
+        "FieldX": -3.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 6.0,
+        "IncrementCdm2": 22.60697788358622,
+        "LuminanceCdm2": 32.606977883586225,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1147
+      },
+      "Result": {
+        "Sequence": 80,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 132826.6957904194
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 81,
+        "Kind": "Threshold",
+        "LocationIndex": 44,
+        "FieldX": -15.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 635
+      },
+      "Result": {
+        "Sequence": 81,
+        "Responded": true,
+        "LatencyMs": 454.6113166186999,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 134461.6957904194
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 82,
+        "Kind": "Threshold",
+        "LocationIndex": 14,
+        "FieldX": 3.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 986
+      },
+      "Result": {
+        "Sequence": 82,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 135902.30710703813
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 83,
+        "Kind": "Threshold",
+        "LocationIndex": 16,
+        "FieldX": 15.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 682
+      },
+      "Result": {
+        "Sequence": 83,
+        "Responded": true,
+        "LatencyMs": 415.1741647799008,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 137584.30710703813
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 84,
+        "Kind": "Threshold",
+        "LocationIndex": 39,
+        "FieldX": -3.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 16.0,
+        "IncrementCdm2": 2.2606977883586215,
+        "LuminanceCdm2": 12.260697788358621,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1035
+      },
+      "Result": {
+        "Sequence": 84,
+        "Responded": true,
+        "LatencyMs": 284.9349140179155,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 139034.48127181802
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 85,
+        "Kind": "Threshold",
+        "LocationIndex": 42,
+        "FieldX": 15.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 10.0,
+        "IncrementCdm2": 9.0,
+        "LuminanceCdm2": 19.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1031
+      },
+      "Result": {
+        "Sequence": 85,
+        "Responded": true,
+        "LatencyMs": 466.0140429867685,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 140350.41618583593
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 86,
+        "Kind": "Threshold",
+        "LocationIndex": 46,
+        "FieldX": -3.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 948
+      },
+      "Result": {
+        "Sequence": 86,
+        "Responded": true,
+        "LatencyMs": 382.9771829309827,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 141764.4302288227
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 87,
+        "Kind": "Threshold",
+        "LocationIndex": 34,
+        "FieldX": 15.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 2.0,
+        "IncrementCdm2": 56.786161003217394,
+        "LuminanceCdm2": 66.78616100321739,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 783
+      },
+      "Result": {
+        "Sequence": 87,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 142930.40741175367
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 88,
+        "Kind": "Threshold",
+        "LocationIndex": 13,
+        "FieldX": -3.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 968
+      },
+      "Result": {
+        "Sequence": 88,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 144898.40741175367
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 89,
+        "Kind": "Threshold",
+        "LocationIndex": 45,
+        "FieldX": -9.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 855
+      },
+      "Result": {
+        "Sequence": 89,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 146753.40741175367
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 90,
+        "Kind": "Threshold",
+        "LocationIndex": 30,
+        "FieldX": -9.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 847
+      },
+      "Result": {
+        "Sequence": 90,
+        "Responded": true,
+        "LatencyMs": 392.4427321933139,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 148600.40741175367
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 91,
+        "Kind": "Threshold",
+        "LocationIndex": 14,
+        "FieldX": 3.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1066
+      },
+      "Result": {
+        "Sequence": 91,
+        "Responded": true,
+        "LatencyMs": 403.35003201547505,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 150058.85014394697
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 92,
+        "Kind": "FalsePositiveCatch",
+        "LocationIndex": -1,
+        "FieldX": 0.0,
+        "FieldY": 0.0,
+        "StimulusShown": false,
+        "Db": NaN,
+        "IncrementCdm2": 0.0,
+        "LuminanceCdm2": 10.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1127
+      },
+      "Result": {
+        "Sequence": 92,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 151589.20017596244
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 93,
+        "Kind": "Threshold",
+        "LocationIndex": 3,
+        "FieldX": 9.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 961
+      },
+      "Result": {
+        "Sequence": 93,
+        "Responded": true,
+        "LatencyMs": 287.9165888990716,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 153550.20017596244
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 94,
+        "Kind": "Threshold",
+        "LocationIndex": 42,
+        "FieldX": 15.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1138
+      },
+      "Result": {
+        "Sequence": 94,
+        "Responded": true,
+        "LatencyMs": 546.7496726927088,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 154976.1167648615
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 95,
+        "Kind": "Threshold",
+        "LocationIndex": 49,
+        "FieldX": 15.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 772
+      },
+      "Result": {
+        "Sequence": 95,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 156294.8664375542
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 96,
+        "Kind": "Threshold",
+        "LocationIndex": 12,
+        "FieldX": -9.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 710
+      },
+      "Result": {
+        "Sequence": 96,
+        "Responded": true,
+        "LatencyMs": 322.5114501762198,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 158004.8664375542
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 97,
+        "Kind": "Threshold",
+        "LocationIndex": 37,
+        "FieldX": -15.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 765
+      },
+      "Result": {
+        "Sequence": 97,
+        "Responded": true,
+        "LatencyMs": 365.03282621947733,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 159092.37788773043
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 98,
+        "Kind": "BlindSpotCatch",
+        "LocationIndex": -1,
+        "FieldX": 15.0,
+        "FieldY": -1.5,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 926
+      },
+      "Result": {
+        "Sequence": 98,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 160383.4107139499
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 99,
+        "Kind": "FalseNegativeCatch",
+        "LocationIndex": 7,
+        "FieldX": 3.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1134
+      },
+      "Result": {
+        "Sequence": 99,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 162517.4107139499
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 100,
+        "Kind": "Threshold",
+        "LocationIndex": 30,
+        "FieldX": -9.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 16.0,
+        "IncrementCdm2": 2.2606977883586215,
+        "LuminanceCdm2": 12.260697788358621,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 906
+      },
+      "Result": {
+        "Sequence": 100,
+        "Responded": true,
+        "LatencyMs": 409.35689330915153,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 164423.4107139499
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 101,
+        "Kind": "Threshold",
+        "LocationIndex": 9,
+        "FieldX": 15.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1089
+      },
+      "Result": {
+        "Sequence": 101,
+        "Responded": true,
+        "LatencyMs": 554.6497903724504,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 165921.76760725907
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 102,
+        "Kind": "Threshold",
+        "LocationIndex": 37,
+        "FieldX": -15.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 970
+      },
+      "Result": {
+        "Sequence": 102,
+        "Responded": true,
+        "LatencyMs": 406.6171953920822,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 167446.4173976315
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 103,
+        "Kind": "Threshold",
+        "LocationIndex": 14,
+        "FieldX": 3.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 716
+      },
+      "Result": {
+        "Sequence": 103,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 168569.0345930236
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 104,
+        "Kind": "Threshold",
+        "LocationIndex": 29,
+        "FieldX": -15.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 8.0,
+        "IncrementCdm2": 14.264038732150022,
+        "LuminanceCdm2": 24.26403873215002,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 759
+      },
+      "Result": {
+        "Sequence": 104,
+        "Responded": true,
+        "LatencyMs": 344.89129088183915,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 170328.0345930236
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 105,
+        "Kind": "Threshold",
+        "LocationIndex": 28,
+        "FieldX": -21.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 791
+      },
+      "Result": {
+        "Sequence": 105,
+        "Responded": true,
+        "LatencyMs": 465.8129270002336,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 171463.92588390544
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 106,
+        "Kind": "Threshold",
+        "LocationIndex": 20,
+        "FieldX": -15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 939
+      },
+      "Result": {
+        "Sequence": 106,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 172868.73881090566
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 107,
+        "Kind": "Threshold",
+        "LocationIndex": 31,
+        "FieldX": -3.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 16.0,
+        "IncrementCdm2": 2.2606977883586215,
+        "LuminanceCdm2": 12.260697788358621,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1016
+      },
+      "Result": {
+        "Sequence": 107,
+        "Responded": true,
+        "LatencyMs": 456.24814803790815,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 174884.73881090566
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 108,
+        "Kind": "Threshold",
+        "LocationIndex": 52,
+        "FieldX": 3.0,
+        "FieldY": -21.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 800
+      },
+      "Result": {
+        "Sequence": 108,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 176140.98695894357
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 109,
+        "Kind": "Threshold",
+        "LocationIndex": 20,
+        "FieldX": -15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 819
+      },
+      "Result": {
+        "Sequence": 109,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 177959.98695894357
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 110,
+        "Kind": "Threshold",
+        "LocationIndex": 32,
+        "FieldX": 3.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 817
+      },
+      "Result": {
+        "Sequence": 110,
+        "Responded": true,
+        "LatencyMs": 480.9691270692688,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 179776.98695894357
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 111,
+        "Kind": "Threshold",
+        "LocationIndex": 6,
+        "FieldX": -3.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1017
+      },
+      "Result": {
+        "Sequence": 111,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 181274.95608601283
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 112,
+        "Kind": "Threshold",
+        "LocationIndex": 25,
+        "FieldX": 15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 623
+      },
+      "Result": {
+        "Sequence": 112,
+        "Responded": true,
+        "LatencyMs": 453.2840019585031,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 182897.95608601283
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 113,
+        "Kind": "Threshold",
+        "LocationIndex": 42,
+        "FieldX": 15.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1093
+      },
+      "Result": {
+        "Sequence": 113,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 184444.24008797132
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 114,
+        "Kind": "Threshold",
+        "LocationIndex": 32,
+        "FieldX": 3.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 667
+      },
+      "Result": {
+        "Sequence": 114,
+        "Responded": true,
+        "LatencyMs": 455.54634282253954,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 186111.24008797132
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 115,
+        "Kind": "Threshold",
+        "LocationIndex": 21,
+        "FieldX": -9.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 16.0,
+        "IncrementCdm2": 2.2606977883586215,
+        "LuminanceCdm2": 12.260697788358621,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1087
+      },
+      "Result": {
+        "Sequence": 115,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 187653.78643079387
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 116,
+        "Kind": "Threshold",
+        "LocationIndex": 5,
+        "FieldX": -9.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1152
+      },
+      "Result": {
+        "Sequence": 116,
+        "Responded": true,
+        "LatencyMs": 488.19019873790836,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 189805.78643079387
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 117,
+        "Kind": "Threshold",
+        "LocationIndex": 9,
+        "FieldX": 15.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 766
+      },
+      "Result": {
+        "Sequence": 117,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 191059.97662953177
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 118,
+        "Kind": "Threshold",
+        "LocationIndex": 35,
+        "FieldX": 21.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1132
+      },
+      "Result": {
+        "Sequence": 118,
+        "Responded": true,
+        "LatencyMs": 442.9245853556237,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 193191.97662953177
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 119,
+        "Kind": "Threshold",
+        "LocationIndex": 22,
+        "FieldX": -3.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 907
+      },
+      "Result": {
+        "Sequence": 119,
+        "Responded": true,
+        "LatencyMs": 409.819059269269,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 194541.9012148874
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 120,
+        "Kind": "Threshold",
+        "LocationIndex": 35,
+        "FieldX": 21.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 854
+      },
+      "Result": {
+        "Sequence": 120,
+        "Responded": true,
+        "LatencyMs": 454.9546343365179,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 195805.72027415666
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 121,
+        "Kind": "Threshold",
+        "LocationIndex": 43,
+        "FieldX": 21.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 10.0,
+        "IncrementCdm2": 9.0,
+        "LuminanceCdm2": 19.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1119
+      },
+      "Result": {
+        "Sequence": 121,
+        "Responded": true,
+        "LatencyMs": 407.9111584119007,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 197379.67490849318
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 122,
+        "Kind": "Threshold",
+        "LocationIndex": 28,
+        "FieldX": -21.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 16.0,
+        "IncrementCdm2": 2.2606977883586215,
+        "LuminanceCdm2": 12.260697788358621,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 703
+      },
+      "Result": {
+        "Sequence": 122,
+        "Responded": true,
+        "LatencyMs": 470.8847196243716,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 198490.5860669051
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 123,
+        "Kind": "Threshold",
+        "LocationIndex": 17,
+        "FieldX": 21.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 813
+      },
+      "Result": {
+        "Sequence": 123,
+        "Responded": true,
+        "LatencyMs": 419.55790424243065,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 199774.47078652945
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 124,
+        "Kind": "Threshold",
+        "LocationIndex": 24,
+        "FieldX": 9.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 2.0,
+        "IncrementCdm2": 56.786161003217394,
+        "LuminanceCdm2": 66.78616100321739,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1184
+      },
+      "Result": {
+        "Sequence": 124,
+        "Responded": true,
+        "LatencyMs": 447.9850956462508,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 201378.02869077187
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 125,
+        "Kind": "Threshold",
+        "LocationIndex": 19,
+        "FieldX": -21.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 16.0,
+        "IncrementCdm2": 2.2606977883586215,
+        "LuminanceCdm2": 12.260697788358621,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 796
+      },
+      "Result": {
+        "Sequence": 125,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 202622.01378641813
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 126,
+        "Kind": "Threshold",
+        "LocationIndex": 17,
+        "FieldX": 21.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 674
+      },
+      "Result": {
+        "Sequence": 126,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 204296.01378641813
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 127,
+        "Kind": "Threshold",
+        "LocationIndex": 12,
+        "FieldX": -9.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1184
+      },
+      "Result": {
+        "Sequence": 127,
+        "Responded": true,
+        "LatencyMs": 320.1550190475716,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 206480.01378641813
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 128,
+        "Kind": "Threshold",
+        "LocationIndex": 34,
+        "FieldX": 15.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 945
+      },
+      "Result": {
+        "Sequence": 128,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 207745.1688054657
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 129,
+        "Kind": "Threshold",
+        "LocationIndex": 29,
+        "FieldX": -15.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 615
+      },
+      "Result": {
+        "Sequence": 129,
+        "Responded": true,
+        "LatencyMs": 410.43448134889024,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 209360.1688054657
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 130,
+        "Kind": "Threshold",
+        "LocationIndex": 12,
+        "FieldX": -9.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 3.0,
+        "IncrementCdm2": 45.1068510264545,
+        "LuminanceCdm2": 55.1068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1092
+      },
+      "Result": {
+        "Sequence": 130,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 210862.6032868146
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 131,
+        "Kind": "FalsePositiveCatch",
+        "LocationIndex": -1,
+        "FieldX": 0.0,
+        "FieldY": 0.0,
+        "StimulusShown": false,
+        "Db": NaN,
+        "IncrementCdm2": 0.0,
+        "LuminanceCdm2": 10.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 950
+      },
+      "Result": {
+        "Sequence": 131,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 212812.6032868146
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 132,
+        "Kind": "Threshold",
+        "LocationIndex": 1,
+        "FieldX": -3.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 984
+      },
+      "Result": {
+        "Sequence": 132,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 214796.6032868146
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 133,
+        "Kind": "Threshold",
+        "LocationIndex": 21,
+        "FieldX": -9.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 896
+      },
+      "Result": {
+        "Sequence": 133,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 216692.6032868146
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 134,
+        "Kind": "Threshold",
+        "LocationIndex": 25,
+        "FieldX": 15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 16.0,
+        "IncrementCdm2": 2.2606977883586215,
+        "LuminanceCdm2": 12.260697788358621,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 668
+      },
+      "Result": {
+        "Sequence": 134,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 218360.6032868146
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 135,
+        "Kind": "Threshold",
+        "LocationIndex": 4,
+        "FieldX": -15.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1105
+      },
+      "Result": {
+        "Sequence": 135,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 220465.6032868146
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 136,
+        "Kind": "FalseNegativeCatch",
+        "LocationIndex": 53,
+        "FieldX": 9.0,
+        "FieldY": -21.0,
+        "StimulusShown": true,
+        "Db": 3.0,
+        "IncrementCdm2": 45.1068510264545,
+        "LuminanceCdm2": 55.1068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 675
+      },
+      "Result": {
+        "Sequence": 136,
+        "Responded": true,
+        "LatencyMs": 444.02580679832835,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 222140.6032868146
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 137,
+        "Kind": "Threshold",
+        "LocationIndex": 18,
+        "FieldX": -27.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 889
+      },
+      "Result": {
+        "Sequence": 137,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 223473.62909361295
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 138,
+        "Kind": "BlindSpotCatch",
+        "LocationIndex": -1,
+        "FieldX": 15.0,
+        "FieldY": -1.5,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 892
+      },
+      "Result": {
+        "Sequence": 138,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 225365.62909361295
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 139,
+        "Kind": "Threshold",
+        "LocationIndex": 16,
+        "FieldX": 15.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 729
+      },
+      "Result": {
+        "Sequence": 139,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 227094.62909361295
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 140,
+        "Kind": "Threshold",
+        "LocationIndex": 18,
+        "FieldX": -27.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 798
+      },
+      "Result": {
+        "Sequence": 140,
+        "Responded": true,
+        "LatencyMs": 477.4658585755129,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 228892.62909361295
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 141,
+        "Kind": "Threshold",
+        "LocationIndex": 0,
+        "FieldX": -9.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1028
+      },
+      "Result": {
+        "Sequence": 141,
+        "Responded": true,
+        "LatencyMs": 537.4919656120497,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 230398.09495218846
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 142,
+        "Kind": "Threshold",
+        "LocationIndex": 43,
+        "FieldX": 21.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 601
+      },
+      "Result": {
+        "Sequence": 142,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 231536.5869178005
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 143,
+        "Kind": "Threshold",
+        "LocationIndex": 26,
+        "FieldX": 21.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 684
+      },
+      "Result": {
+        "Sequence": 143,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 233220.5869178005
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 144,
+        "Kind": "Threshold",
+        "LocationIndex": 0,
+        "FieldX": -9.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 994
+      },
+      "Result": {
+        "Sequence": 144,
+        "Responded": true,
+        "LatencyMs": 390.4200064452726,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 235214.5869178005
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 145,
+        "Kind": "Threshold",
+        "LocationIndex": 10,
+        "FieldX": -21.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 762
+      },
+      "Result": {
+        "Sequence": 145,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 236367.00692424577
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 146,
+        "Kind": "Threshold",
+        "LocationIndex": 22,
+        "FieldX": -3.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 17.0,
+        "IncrementCdm2": 1.795736083471992,
+        "LuminanceCdm2": 11.795736083471992,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 979
+      },
+      "Result": {
+        "Sequence": 146,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 238346.00692424577
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 147,
+        "Kind": "Threshold",
+        "LocationIndex": 48,
+        "FieldX": 9.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1083
+      },
+      "Result": {
+        "Sequence": 147,
+        "Responded": true,
+        "LatencyMs": 419.4952896704686,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 240429.00692424577
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 148,
+        "Kind": "Threshold",
+        "LocationIndex": 44,
+        "FieldX": -15.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 16.0,
+        "IncrementCdm2": 2.2606977883586215,
+        "LuminanceCdm2": 12.260697788358621,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 768
+      },
+      "Result": {
+        "Sequence": 148,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 241616.50221391625
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 149,
+        "Kind": "Threshold",
+        "LocationIndex": 48,
+        "FieldX": 9.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 892
+      },
+      "Result": {
+        "Sequence": 149,
+        "Responded": true,
+        "LatencyMs": 370.1216551159382,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 243508.50221391625
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 150,
+        "Kind": "Threshold",
+        "LocationIndex": 26,
+        "FieldX": 21.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 9.0,
+        "IncrementCdm2": 11.330328706147505,
+        "LuminanceCdm2": 21.330328706147505,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 603
+      },
+      "Result": {
+        "Sequence": 150,
+        "Responded": true,
+        "LatencyMs": 372.1376604512851,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 244481.6238690322
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 151,
+        "Kind": "Threshold",
+        "LocationIndex": 36,
+        "FieldX": -21.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1026
+      },
+      "Result": {
+        "Sequence": 151,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 245879.76152948348
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 152,
+        "Kind": "Threshold",
+        "LocationIndex": 13,
+        "FieldX": -3.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1149
+      },
+      "Result": {
+        "Sequence": 152,
+        "Responded": true,
+        "LatencyMs": 468.21331143414045,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 248028.76152948348
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 153,
+        "Kind": "Threshold",
+        "LocationIndex": 26,
+        "FieldX": 21.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 608
+      },
+      "Result": {
+        "Sequence": 153,
+        "Responded": true,
+        "LatencyMs": 374.61854949218053,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 249104.97484091762
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 154,
+        "Kind": "Threshold",
+        "LocationIndex": 0,
+        "FieldX": -9.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 5.0,
+        "IncrementCdm2": 28.460498941515414,
+        "LuminanceCdm2": 38.46049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1083
+      },
+      "Result": {
+        "Sequence": 154,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 250562.5933904098
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 155,
+        "Kind": "Threshold",
+        "LocationIndex": 13,
+        "FieldX": -3.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1110
+      },
+      "Result": {
+        "Sequence": 155,
+        "Responded": true,
+        "LatencyMs": 401.73535681382197,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 252672.5933904098
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 156,
+        "Kind": "Threshold",
+        "LocationIndex": 36,
+        "FieldX": -21.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 9.0,
+        "IncrementCdm2": 11.330328706147505,
+        "LuminanceCdm2": 21.330328706147505,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 819
+      },
+      "Result": {
+        "Sequence": 156,
+        "Responded": true,
+        "LatencyMs": 479.1748747358803,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 253893.32874722363
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 157,
+        "Kind": "Threshold",
+        "LocationIndex": 21,
+        "FieldX": -9.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 621
+      },
+      "Result": {
+        "Sequence": 157,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 254993.5036219595
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 158,
+        "Kind": "FalsePositiveCatch",
+        "LocationIndex": -1,
+        "FieldX": 0.0,
+        "FieldY": 0.0,
+        "StimulusShown": false,
+        "Db": NaN,
+        "IncrementCdm2": 0.0,
+        "LuminanceCdm2": 10.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1057
+      },
+      "Result": {
+        "Sequence": 158,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 257050.5036219595
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 159,
+        "Kind": "Threshold",
+        "LocationIndex": 18,
+        "FieldX": -27.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 14.0,
+        "IncrementCdm2": 3.582964534981476,
+        "LuminanceCdm2": 13.582964534981476,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1091
+      },
+      "Result": {
+        "Sequence": 159,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 259141.5036219595
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 160,
+        "Kind": "Threshold",
+        "LocationIndex": 19,
+        "FieldX": -21.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 903
+      },
+      "Result": {
+        "Sequence": 160,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 261044.5036219595
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 161,
+        "Kind": "Threshold",
+        "LocationIndex": 24,
+        "FieldX": 9.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 7.0,
+        "IncrementCdm2": 17.957360834719918,
+        "LuminanceCdm2": 27.957360834719918,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 887
+      },
+      "Result": {
+        "Sequence": 161,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 262931.5036219595
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 162,
+        "Kind": "Threshold",
+        "LocationIndex": 13,
+        "FieldX": -3.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 3.0,
+        "IncrementCdm2": 45.1068510264545,
+        "LuminanceCdm2": 55.1068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 907
+      },
+      "Result": {
+        "Sequence": 162,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 264838.5036219595
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 163,
+        "Kind": "Threshold",
+        "LocationIndex": 18,
+        "FieldX": -27.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 13.0,
+        "IncrementCdm2": 4.51068510264545,
+        "LuminanceCdm2": 14.51068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 803
+      },
+      "Result": {
+        "Sequence": 163,
+        "Responded": true,
+        "LatencyMs": 456.72278408256585,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 266641.5036219595
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 164,
+        "Kind": "Threshold",
+        "LocationIndex": 27,
+        "FieldX": -27.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1173
+      },
+      "Result": {
+        "Sequence": 164,
+        "Responded": true,
+        "LatencyMs": 449.32936257112016,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 268271.22640604206
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 165,
+        "Kind": "Threshold",
+        "LocationIndex": 21,
+        "FieldX": -9.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1187
+      },
+      "Result": {
+        "Sequence": 165,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 269907.5557686132
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 166,
+        "Kind": "Threshold",
+        "LocationIndex": 0,
+        "FieldX": -9.0,
+        "FieldY": 21.0,
+        "StimulusShown": true,
+        "Db": 2.0,
+        "IncrementCdm2": 56.786161003217394,
+        "LuminanceCdm2": 66.78616100321739,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1059
+      },
+      "Result": {
+        "Sequence": 166,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 271966.5557686132
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 167,
+        "Kind": "Threshold",
+        "LocationIndex": 48,
+        "FieldX": 9.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 16.0,
+        "IncrementCdm2": 2.2606977883586215,
+        "LuminanceCdm2": 12.260697788358621,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 792
+      },
+      "Result": {
+        "Sequence": 167,
+        "Responded": true,
+        "LatencyMs": 495.42060492436315,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 273758.5557686132
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 168,
+        "Kind": "Threshold",
+        "LocationIndex": 22,
+        "FieldX": -3.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 16.0,
+        "IncrementCdm2": 2.2606977883586215,
+        "LuminanceCdm2": 12.260697788358621,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 794
+      },
+      "Result": {
+        "Sequence": 168,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 275047.97637353756
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 169,
+        "Kind": "BlindSpotCatch",
+        "LocationIndex": -1,
+        "FieldX": 15.0,
+        "FieldY": -1.5,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 920
+      },
+      "Result": {
+        "Sequence": 169,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 276967.97637353756
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 170,
+        "Kind": "Threshold",
+        "LocationIndex": 27,
+        "FieldX": -27.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 18.0,
+        "IncrementCdm2": 1.4264038732150022,
+        "LuminanceCdm2": 11.426403873215001,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 958
+      },
+      "Result": {
+        "Sequence": 170,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 278925.97637353756
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 171,
+        "Kind": "Threshold",
+        "LocationIndex": 11,
+        "FieldX": -15.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1020
+      },
+      "Result": {
+        "Sequence": 171,
+        "Responded": true,
+        "LatencyMs": 583.5207601028691,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 280945.97637353756
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 172,
+        "Kind": "Threshold",
+        "LocationIndex": 24,
+        "FieldX": 9.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 5.0,
+        "IncrementCdm2": 28.460498941515414,
+        "LuminanceCdm2": 38.46049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 962
+      },
+      "Result": {
+        "Sequence": 172,
+        "Responded": true,
+        "LatencyMs": 456.5825604169444,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 282491.49713364046
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 173,
+        "Kind": "Threshold",
+        "LocationIndex": 50,
+        "FieldX": -9.0,
+        "FieldY": -21.0,
+        "StimulusShown": true,
+        "Db": 8.0,
+        "IncrementCdm2": 14.264038732150022,
+        "LuminanceCdm2": 24.26403873215002,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1144
+      },
+      "Result": {
+        "Sequence": 173,
+        "Responded": true,
+        "LatencyMs": 308.7466508458822,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 284092.0796940574
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 174,
+        "Kind": "FalseNegativeCatch",
+        "LocationIndex": 29,
+        "FieldX": -15.0,
+        "FieldY": -3.0,
+        "StimulusShown": true,
+        "Db": 3.0,
+        "IncrementCdm2": 45.1068510264545,
+        "LuminanceCdm2": 55.1068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1101
+      },
+      "Result": {
+        "Sequence": 174,
+        "Responded": true,
+        "LatencyMs": 409.1956180210012,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 285501.82634490327
+      },
+      "Disposition": "catch"
+    },
+    {
+      "Request": {
+        "Sequence": 175,
+        "Kind": "Threshold",
+        "LocationIndex": 36,
+        "FieldX": -21.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 12.0,
+        "IncrementCdm2": 5.67861610032174,
+        "LuminanceCdm2": 15.67861610032174,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1014
+      },
+      "Result": {
+        "Sequence": 175,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 286925.0219629243
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 176,
+        "Kind": "Threshold",
+        "LocationIndex": 5,
+        "FieldX": -9.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1186
+      },
+      "Result": {
+        "Sequence": 176,
+        "Responded": true,
+        "LatencyMs": 462.32070545599026,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 289111.0219629243
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 177,
+        "Kind": "Threshold",
+        "LocationIndex": 22,
+        "FieldX": -3.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 15.0,
+        "IncrementCdm2": 2.846049894151541,
+        "LuminanceCdm2": 12.846049894151541,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 793
+      },
+      "Result": {
+        "Sequence": 177,
+        "Responded": true,
+        "LatencyMs": 464.9737848207067,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 290366.3426683803
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 178,
+        "Kind": "Threshold",
+        "LocationIndex": 36,
+        "FieldX": -21.0,
+        "FieldY": -9.0,
+        "StimulusShown": true,
+        "Db": 11.0,
+        "IncrementCdm2": 7.148954112518532,
+        "LuminanceCdm2": 17.14895411251853,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 651
+      },
+      "Result": {
+        "Sequence": 178,
+        "Responded": true,
+        "LatencyMs": 384.3194745670643,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 291482.316453201
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 179,
+        "Kind": "Threshold",
+        "LocationIndex": 11,
+        "FieldX": -15.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 3.0,
+        "IncrementCdm2": 45.1068510264545,
+        "LuminanceCdm2": 55.1068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 878
+      },
+      "Result": {
+        "Sequence": 179,
+        "Responded": true,
+        "LatencyMs": 512.0178814637618,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 292744.6359277681
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 180,
+        "Kind": "Threshold",
+        "LocationIndex": 5,
+        "FieldX": -9.0,
+        "FieldY": 15.0,
+        "StimulusShown": true,
+        "Db": 4.0,
+        "IncrementCdm2": 35.82964534981475,
+        "LuminanceCdm2": 45.82964534981475,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 630
+      },
+      "Result": {
+        "Sequence": 180,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 293886.6538092318
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 181,
+        "Kind": "Threshold",
+        "LocationIndex": 48,
+        "FieldX": 9.0,
+        "FieldY": -15.0,
+        "StimulusShown": true,
+        "Db": 18.0,
+        "IncrementCdm2": 1.4264038732150022,
+        "LuminanceCdm2": 11.426403873215001,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1184
+      },
+      "Result": {
+        "Sequence": 181,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 296070.6538092318
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 182,
+        "Kind": "Threshold",
+        "LocationIndex": 19,
+        "FieldX": -21.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 1.0,
+        "IncrementCdm2": 71.48954112518534,
+        "LuminanceCdm2": 81.48954112518534,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1127
+      },
+      "Result": {
+        "Sequence": 182,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 298197.6538092318
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 183,
+        "Kind": "Threshold",
+        "LocationIndex": 20,
+        "FieldX": -15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 3.0,
+        "IncrementCdm2": 45.1068510264545,
+        "LuminanceCdm2": 55.1068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1078
+      },
+      "Result": {
+        "Sequence": 183,
+        "Responded": true,
+        "LatencyMs": 312.4279834065103,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 300275.6538092318
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 184,
+        "Kind": "Threshold",
+        "LocationIndex": 11,
+        "FieldX": -15.0,
+        "FieldY": 9.0,
+        "StimulusShown": true,
+        "Db": 4.0,
+        "IncrementCdm2": 35.82964534981475,
+        "LuminanceCdm2": 45.82964534981475,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 727
+      },
+      "Result": {
+        "Sequence": 184,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 301315.08179263835
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 185,
+        "Kind": "Threshold",
+        "LocationIndex": 20,
+        "FieldX": -15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 10.0,
+        "IncrementCdm2": 9.0,
+        "LuminanceCdm2": 19.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 852
+      },
+      "Result": {
+        "Sequence": 185,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 303167.08179263835
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 186,
+        "Kind": "Threshold",
+        "LocationIndex": 19,
+        "FieldX": -21.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 943
+      },
+      "Result": {
+        "Sequence": 186,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 305110.08179263835
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 187,
+        "Kind": "Threshold",
+        "LocationIndex": 20,
+        "FieldX": -15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 6.0,
+        "IncrementCdm2": 22.60697788358622,
+        "LuminanceCdm2": 32.606977883586225,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 903
+      },
+      "Result": {
+        "Sequence": 187,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 307013.08179263835
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 188,
+        "Kind": "Threshold",
+        "LocationIndex": 20,
+        "FieldX": -15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 3.0,
+        "IncrementCdm2": 45.1068510264545,
+        "LuminanceCdm2": 55.1068510264545,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 690
+      },
+      "Result": {
+        "Sequence": 188,
+        "Responded": false,
+        "LatencyMs": null,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 308703.08179263835
+      },
+      "Disposition": "used"
+    },
+    {
+      "Request": {
+        "Sequence": 189,
+        "Kind": "Threshold",
+        "LocationIndex": 20,
+        "FieldX": -15.0,
+        "FieldY": 3.0,
+        "StimulusShown": true,
+        "Db": 0.0,
+        "IncrementCdm2": 90.0,
+        "LuminanceCdm2": 100.0,
+        "Size": "III",
+        "SizeDeg": 0.4310070606072022,
+        "DurationMs": 200,
+        "ResponseWindowMs": 1000,
+        "PreStimulusDelayMs": 1026
+      },
+      "Result": {
+        "Sequence": 189,
+        "Responded": true,
+        "LatencyMs": 482.3585226646216,
+        "FixationOk": true,
+        "GazeErrorDeg": null,
+        "OnsetMs": 310729.08179263835
+      },
+      "Disposition": "used"
+    }
+  ],
+  "Disclaimer": "Protótipo para pesquisa/uso sob supervisão médica — não registrado na ANVISA"
+}
