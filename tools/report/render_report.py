@@ -179,10 +179,13 @@ def main(analysis_path, out_png, exam_path=None):
     ]
     for i, l in enumerate(lines):
         fig.text(0.05, 0.94 - i * 0.017, l, fontsize=8)
-    for i, w in enumerate(a["Warnings"]):
-        fig.text(0.05, 0.885 - i * 0.015, "⚠ " + w, fontsize=8, color="red", weight="bold")
+    # Warnings go in a small footer note (product owner, 2026-10-18), not across the top of the page.
+    fig.add_artist(plt.Line2D([0.05, 0.95], [0.036, 0.036], color="0.6", linewidth=0.5))
+    notes = ["⚠ " + w for w in a["Warnings"]]
+    for i in range(0, len(notes), 2):
+        fig.text(0.05, 0.024 - (i // 2) * 0.012, "    ".join(notes[i:i + 2]), fontsize=6.5, color="#a00000")
     if gaze:
-        gaze_bar(fig.add_axes([0.08, 0.085, 0.87, 0.045]), rel)
+        gaze_bar(fig.add_axes([0.08, 0.045, 0.87, 0.035]), rel)  # just above the footer note
 
     screening = any(p.get("ScreeningOutcome") for p in pts)
     if screening:
@@ -191,11 +194,9 @@ def main(analysis_path, out_png, exam_path=None):
         for x, y, p in setup(ax, "Rastreio (o visto, r visto no reteste, ■ não visto)", pts, eye):
             ax.text(x, y, m.get(p.get("ScreeningOutcome"), "?"), ha="center", va="center", fontsize=9)
     else:
-        # Panels shrink so their titles stay below the last warning line (and above the gaze strip when present).
-        top, w = 0.58, 0.42
-        h = min(0.24, 0.885 - len(a["Warnings"]) * 0.015 - 0.015 - top)
-        if gaze:
-            h = min(h, 0.21)  # three rows of 0.22 above the strip at 0.085
+        # Three rows of panels; with the gaze strip they shrink so the legend and indices stay above it.
+        top, w = 0.62, 0.42
+        h = 0.21 if gaze else 0.24
         row = h + 0.01
         numeric(fig.add_axes([0.05, top, w, h]), "Limiares (dB dispositivo)", pts, eye, "DeviceDb", censored=True)
         grayscale(fig.add_axes([0.53, top, w, h]), pts, eye)
@@ -203,7 +204,7 @@ def main(analysis_path, out_png, exam_path=None):
         numeric(fig.add_axes([0.53, top - row, w, h]), "Desvio padrão / Pattern deviation (dB)", pts, eye, "Pd")
         prob(fig.add_axes([0.05, top - 2 * row, w, h]), "Probabilidade — desvio total", pts, eye, "TdP")
         prob(fig.add_axes([0.53, top - 2 * row, w, h]), "Probabilidade — desvio padrão", pts, eye, "PdP")
-        base = 0.005 if not gaze else 0.0
+        base = 0.095 if gaze else 0.045
         legend(fig.add_axes([0.05, base, 0.2, 0.07]))
         p = lambda v: "" if num(v) >= 1 else "  p < " + f"{100 * num(v):g}".replace(".", ",") + "%"
         ght = "Não se aplica" if a.get("GhtApplicable") is False else GHT_PT.get(a["Ght"], a["Ght"])
@@ -213,8 +214,6 @@ def main(analysis_path, out_png, exam_path=None):
                f"PSD: {num(a['Psd']):.2f} dB{p(a['PsdP'])}".replace(".", ",", 1)]
         for i, t in enumerate(idx):
             fig.text(0.40, base + 0.06 - i * 0.017, t, fontsize=9, weight="bold" if i == 0 else None)
-        if a.get("NormativeProvisional"):
-            fig.text(0.40, base - 0.003, "Índices e probabilidades com normativo PROVISÓRIO", fontsize=7, color="red")
     fig.savefig(out_png)
     print(f"wrote {out_png}")
 

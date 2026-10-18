@@ -19,6 +19,11 @@ export function deviceLine(d: ReportDevice | null | undefined): string {
   return ` · aparelho ${name} (S/N ${d.serial})`;
 }
 
+/** Warnings printed as footnotes (the disclaimer already heads the footer, so it is not repeated). */
+export function footnotes(warnings: string[] | undefined, disclaimer: string | undefined): string[] {
+  return (warnings ?? []).filter((w) => w && w !== disclaimer);
+}
+
 export function SingleFieldReport({ report, patient, device, integrity, footerNote }: {
   report: Report;
   patient?: ReportPatient | null;
@@ -80,10 +85,7 @@ export function SingleFieldReport({ report, patient, device, integrity, footerNo
         </dl>
       </section>
 
-      <section className="sfa-warnings" aria-label="Avisos">
-        {report.warnings.map((w) => <p key={w}>{w}</p>)}
-        {integrity === "failed" && <p>Assinatura do arquivo NÃO confere — o arquivo pode ter sido alterado</p>}
-      </section>
+      {integrity === "failed" && <p className="sfa-integrity-failed">Assinatura do arquivo NÃO confere — o arquivo pode ter sido alterado</p>}
 
       {!a ? (
         <p className="sfa-empty">Exame interrompido: sem análise.</p>
@@ -98,7 +100,8 @@ export function SingleFieldReport({ report, patient, device, integrity, footerNo
       {gaze && <GazeTraceBar g={gaze} id={`${id}-gaze`} />}
 
       <footer className="sfa-foot">
-        <span>{e.Disclaimer}</span>
+        <span className="sfa-disclaimer">{e.Disclaimer}</span>
+        {footnotes(report.warnings, e.Disclaimer).map((w) => <span key={w} className="sfa-note">{w}</span>)}
         <span>
           Exame {e.ExamId} · headset {e.SoftwareVersion}{deviceLine(device)} · análise {report.analyzedWith.software} · config {report.analyzedWith.configHash.slice(0, 12)}
           {integrity ? ` · integridade: ${integrity === "verified" ? "verificada" : integrity === "failed" ? "FALHOU" : "não verificada"}` : ""}
@@ -129,7 +132,7 @@ function Maps({ report, floor }: { report: Report; floor: number }) {
           <p><b>VFI</b> {fmt(a.Vfi, 1)}%</p>
           <p><b>MD</b> {fmt(a.Md, 2)} dB <span className="p">{pLabel(a.MdP)}</span></p>
           <p><b>PSD</b> {fmt(a.Psd, 2)} dB <span className="p">{pLabel(a.PsdP)}</span></p>
-          {a.NormativeProvisional && <p className="alert small">Índices e probabilidades com normativo PROVISÓRIO</p>}
+          {a.NormativeProvisional && <p className="muted small">normativo provisório</p>}
         </div>
         <ProbabilityMap g={g} id={`${id}-tdp`} title="" value={(p) => p.TdP} />
         <ProbabilityMap g={g} id={`${id}-pdp`} title="" value={(p) => p.PdP} />

@@ -58,7 +58,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .sfa dt { color: #333; }
 .sfa dd { margin: 0; }
 .sfa .alert { color: #c00; }
-.sfa-warnings p { margin: 2px 0; color: #c00; font-weight: 600; }
+.sfa-integrity-failed { margin: 4px 0; color: #c00; font-weight: 600; }
 .sfa-grid { display: grid; gap: 10px; margin-top: 8px; }
 .sfa-grid.two { grid-template-columns: 1fr 1fr; }
 .sfa-grid.three { grid-template-columns: 1fr 1fr 0.9fr; align-items: start; }
@@ -69,7 +69,9 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .sfa-indices .p { font-weight: 600; }
 .sfa-empty { font-size: 14px; padding: 20px 0; }
 .sfa-foot { margin-top: 10px; border-top: 1px solid #000; padding-top: 4px; display: flex; flex-direction: column; gap: 2px; font-size: 10px; }
-.sfa-foot span:first-child { font-weight: 700; color: #c00; }
+.sfa-foot .sfa-disclaimer { font-weight: 600; }
+.sfa-foot .sfa-note { color: #444; }
+.sfa-foot .sfa-note::before { content: "Nota: "; }
 .map { margin: 0; }
 .map figcaption { font-weight: 600; text-align: center; font-size: 12px; min-height: 1em; }
 .map svg { width: 100%; height: auto; display: block; }
@@ -107,7 +109,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   .sfa-head, .sfa-patient, .sfa-params { padding-bottom: 3px; }
   .sfa-patient, .sfa-params { padding-top: 3px; }
   .map figcaption { font-size: 10.5px; }
-  .sfa-warnings p { margin: 0; }
+  .sfa-integrity-failed { margin: 0; }
   .gaze svg { height: 11mm; }
   .gaze figcaption { font-size: 9px; }
 }
