@@ -300,7 +300,8 @@ Interrupção pelo operador grava o olho em andamento com `Aborted = true`, e a 
   (estímulo, fundo, estratégia, correção, calibração, escala), avisos em vermelho (protótipo/ANVISA, NÃO
   CALIBRADO, normativo PROVISÓRIO, confiabilidade), mapas numérico de limiares, escala de cinza, desvio total e
   desvio padrão (pattern) numéricos e de probabilidade, GHT, VFI, MD e PSD com p. Campo visto pelo paciente
-  (OS espelhado), x à direita, y para cima.
+  (OS espelhado), x à direita, y para cima. **VFI com uma casa decimal** (99,5%, não 100%), por decisão do
+  product owner em 2026-10-18; o HFA imprime inteiro.
 - **Limiares:** em dB equivalente HFA (dB do aparelho + `HfaOffsetDb`), a mesma escala do normativo e da escala de
   cinza. Abaixo do mínimo mensurável do aparelho o valor sai como "<NN". *(Escolha de apresentação; dB do
   aparelho continua no CSV e no JSON.)*

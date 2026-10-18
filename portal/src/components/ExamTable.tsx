@@ -17,7 +17,7 @@ export function ExamTable({ exams }: { exams: Row[] }) {
               <td>{eyeName(e.eye)}</td>
               <td>{e.gridId} {strategyName[e.strategy] ?? e.strategy}{e.aborted ? <span className="alert"> (interrompido)</span> : null}</td>
               <td className="num">{fmt(e.md, 2)}</td>
-              <td className="num">{e.vfi === null ? "—" : fmt(e.vfi) + "%"}</td>
+              <td className="num">{e.vfi === null ? "—" : fmt(e.vfi, 1) + "%"}</td>
               <td><IntegrityBadge value={e.integrity} /></td>
             </tr>
           ))}

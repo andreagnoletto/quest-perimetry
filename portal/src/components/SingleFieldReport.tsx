@@ -107,7 +107,7 @@ function Maps({ report, floor }: { report: Report; floor: number }) {
         <NumericMap g={g} id={`${id}-pd`} title="Desvio padrão (pattern)" value={(p) => (p.IsBlindSpot ? "" : fmt(p.Pd))} />
         <div className="sfa-indices">
           <p className="ght"><b>GHT</b><br />{report.text?.ght}</p>
-          <p><b>VFI</b> {fmt(a.Vfi)}%</p>
+          <p><b>VFI</b> {fmt(a.Vfi, 1)}%</p>
           <p><b>MD</b> {fmt(a.Md, 2)} dB <span className="p">{pLabel(a.MdP)}</span></p>
           <p><b>PSD</b> {fmt(a.Psd, 2)} dB <span className="p">{pLabel(a.PsdP)}</span></p>
           {a.NormativeProvisional && <p className="alert small">Índices e probabilidades com normativo PROVISÓRIO</p>}

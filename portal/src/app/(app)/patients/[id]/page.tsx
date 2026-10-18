@@ -93,7 +93,7 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
                         <td>{e.gridId} {strategyName[e.strategy] ?? e.strategy}{e.aborted ? <span className="alert"> (interrompido)</span> : null}{r.exam.Reliability.LowReliability ? <span className="alert"> baixa confiabilidade</span> : null}</td>
                         <td className="num">{fmt(e.md, 2)}</td>
                         <td className="num">{fmt(e.psd, 2)}</td>
-                        <td className="num">{e.vfi === null ? "—" : fmt(e.vfi) + "%"}</td>
+                        <td className="num">{e.vfi === null ? "—" : fmt(e.vfi, 1) + "%"}</td>
                         <td>{r.text?.ght ?? "—"}</td>
                         <td><IntegrityBadge value={e.integrity} /></td>
                       </tr>
