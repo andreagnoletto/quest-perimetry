@@ -51,7 +51,8 @@
     "maxRepeats": 1
   },
   "checks": {
-    "_doc": "Pre-exam verification (SPEC §8.2). Button: the welcome screen only advances on a press. Sharpness: the patient confirms the fixation target is sharp (IPD/focus reminder). Occlusion: the patient closes the tested eye for occlusionWindowMs while a bright disc is shown to the tested eye only; a press means light reaches the untested eye (stop, call the doctor).",
+    "_doc": "Pre-exam verification (SPEC §8.2). Button: the welcome screen only advances on a press. Sharpness: the patient confirms the fixation target is sharp (IPD/focus reminder). Occlusion (optional, off by default): during the exam the untested eye always receives black; this check makes the patient close the tested eye for occlusionWindowMs while a bright disc is shown to the tested eye only, and a press means light reaches the untested eye. Eye routing is a device property, so by default it is verified in device maintenance rather than with every patient.",
+    "occlusionCheckEnabled": false,
     "occlusionWindowMs": 5000,
     "occlusionDiscDeg": 10.0
   },

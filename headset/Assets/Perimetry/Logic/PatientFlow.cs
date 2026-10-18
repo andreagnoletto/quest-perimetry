@@ -300,7 +300,8 @@ namespace Perimetry.Headset.Logic
                     break;
                 case FlowState.SharpnessCheck:
                     Event("sharpnessCheck", "confirmed by patient");
-                    Go(FlowState.OcclusionIntro);
+                    if (_h.Checks.OcclusionCheckEnabled) Go(FlowState.OcclusionIntro);
+                    else Go(!_trained ? FlowState.TrainingIntro : FlowState.ExamReady);
                     break;
                 case FlowState.OcclusionIntro:
                     _stateUntil = t + _h.Checks.OcclusionWindowMs;
