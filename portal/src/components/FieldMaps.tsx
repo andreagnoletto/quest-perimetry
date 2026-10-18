@@ -58,12 +58,12 @@ export function Frame({ g, children, title, id }: { g: MapGeometry<MapPoint>; ch
     <figure className="map" aria-label={title} data-map={id}>
       <figcaption>{title}</figcaption>
       <svg viewBox={`${-L} ${-L} ${2 * L} ${2 * L}`} role="img">
-        <line x1={-L} y1={0} x2={L} y2={0} className="axis" />
-        <line x1={0} y1={-L} x2={0} y2={L} className="axis" />
+        <line x1={-L} y1={0} x2={L} y2={0} className="axis" strokeWidth={L / 200} />
+        <line x1={0} y1={-L} x2={0} y2={L} className="axis" strokeWidth={L / 200} />
         {ticks.map((t) => (
           <g key={t}>
-            <line x1={t} y1={-0.6} x2={t} y2={0.6} className="axis" />
-            <line x1={-0.6} y1={-t} x2={0.6} y2={-t} className="axis" />
+            <line x1={t} y1={-L / 50} x2={t} y2={L / 50} className="axis" strokeWidth={L / 200} />
+            <line x1={-L / 50} y1={-t} x2={L / 50} y2={-t} className="axis" strokeWidth={L / 200} />
           </g>
         ))}
         {children}
