@@ -8,16 +8,29 @@ using Perimetry.Headset.Logic;
 
 namespace Perimetry.Headset.Logic.Tests
 {
+    /// <summary>
+    /// Path-keyed dictionary that stores every key with '/' separators: <see cref="SyncPaths"/> joins with
+    /// Path.Combine, which uses '\' on Windows, while the headset (Android) and these tests use '/'.
+    /// </summary>
+    internal sealed class PathDictionary : Dictionary<string, string>
+    {
+        public PathDictionary() : base(StringComparer.Ordinal) { }
+        public static string Normalize(string path) => path.Replace('\\', '/');
+        public new string this[string path] { get => base[Normalize(path)]; set => base[Normalize(path)] = value; }
+        public new bool ContainsKey(string path) => base.ContainsKey(Normalize(path));
+        public new bool Remove(string path) => base.Remove(Normalize(path));
+    }
+
     /// <summary>In-memory file system for <see cref="PortalSync"/>.</summary>
     internal sealed class FakeFiles : ISyncFiles
     {
-        public readonly Dictionary<string, string> Files = new Dictionary<string, string>(StringComparer.Ordinal);
+        public readonly PathDictionary Files = new PathDictionary();
         public bool Exists(string path) => Files.ContainsKey(path);
         public string ReadText(string path) => Files[path];
         public void WriteText(string path, string text) => Files[path] = text;
         public IReadOnlyList<string> List(string directory)
         {
-            string prefix = directory.TrimEnd('/') + "/";
+            string prefix = PathDictionary.Normalize(directory).TrimEnd('/') + "/";
             return Files.Keys.Where(k => k.StartsWith(prefix) && !k.Substring(prefix.Length).Contains("/"))
                 .Select(k => k.Substring(prefix.Length)).OrderBy(n => n, StringComparer.Ordinal).ToList();
         }
