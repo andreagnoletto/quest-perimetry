@@ -27,8 +27,9 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 - `config/` — clinical constants and grids. `config/normative/` — provisional synthetic normative model.
 - `tools/opi-crosscheck/` — compares C# ports with OPI in R. `tools/report/` — PNG report (matplotlib).
 - `headset/` — Unity 6 project (phase 2). `Assets/Perimetry/Logic` is pure C# (`PatientFlow` state machine,
-  `PresentationTimeline`, `StimulusPlacement`, `Dither`, `ExamStorage`, `PatientMessages`), tested by
-  `headset/LogicTests`. `Runtime` (MonoBehaviours, head-locked rig), `Resources/Perimetry` (monocular dithering
+  `PresentationTimeline`, `StimulusPlacement`, `Dither`, `ExamStorage`, `PatientMessages`, `PortalSync` sans-IO sync
+  client + `LiveSnapshot`, see `docs/SYNC_API.md`), tested by `headset/LogicTests`. `Runtime` (MonoBehaviours,
+  head-locked rig, `PortalSyncBehaviour` HTTP), `Resources/Perimetry` (monocular dithering
   shaders), `Editor` (Configure Project, config sync), `Tests/EditMode`. `/core` is a local Unity package
   (`core/Perimetry.Core/package.json`); build output goes to `/artifacts` (Directory.Build.props) so no bin/
   lands inside the package. `headset/UnityCompileCheck` compiles the Unity scripts against UnityEngine reference DLLs.
@@ -41,7 +42,7 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 ```bash
 dotnet build Perimetry.sln
 dotnet test core/Perimetry.Core.Tests                                   # 122 tests, ~5 s
-dotnet test headset/LogicTests                                           # 26 tests: headset flow, timing, geometry, dithering
+dotnet test headset/LogicTests                                           # 37 tests: headset flow, timing, geometry, dithering, portal sync
 dotnet build headset/UnityCompileCheck                                   # Unity scripts vs UnityEngine API (no Unity needed)
 dotnet test core/Perimetry.Core.Tests --collect:"XPlat Code Coverage"   # coverage (cobertura xml)
 dotnet run --project core/Perimetry.Cli -c Release -- simulate --strategy ZestFast --defect SuperiorArcuate --seed 4 --out out/ex.json

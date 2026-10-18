@@ -266,6 +266,15 @@ nem nas contagens de confiabilidade) e o mesmo tipo de apresentação volta depo
 `resumeAfterPauseDelayMs` = 1500 ms. As pausas ficam em `Reliability.Pauses`; `DurationMs − PausedMs` é o tempo
 efetivo.
 
+**Painel ao vivo e comandos remotos (Fase 4).** O headset envia ao portal, a cada segundo, um instantâneo do que o
+`ExamSession` já contém (estado do fluxo, limiares das localizações concluídas em dB do aparelho e equivalente HFA,
+contagens de confiabilidade com o limite de alerta da config, última apresentação); nada é calculado no portal e
+nada muda na psicofísica. O médico pode pausar, retomar e encerrar pelo portal: a pausa remota é idêntica ao paciente
+segurar o botão (apresentação em curso descartada, pausa em `Reliability.Pauses` com motivo `operator`), a retomada
+respeita o mesmo `resumeAfterPauseDelayMs` e só vale com o headset na cabeça, e encerrar equivale à interrupção pelo
+operador. O exame nunca depende da rede: sem portal o fluxo é o mesmo, e os arquivos são enviados depois
+(`docs/SYNC_API.md`).
+
 **Fluxo do paciente (SPEC §8).** Boas-vindas (verifica o botão) → operador escolhe exame e idade, se não houver
 `exam-order.json` → instruções → por olho: apresentação do olho, nitidez do alvo (lembrete de IPD/foco),
 verificação de oclusão → treino (só no primeiro olho) → pronto → exame (mancha cega + grade) → descanso entre
