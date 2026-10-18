@@ -1,0 +1,117 @@
+{
+  "_doc": "Headset patient flow (Phase 2). Read by headset/Perimetry.Headset.Logic, part of the config hash. Training levels are device dB (0 = device maximum). Field positions in degrees, OD convention (mirrored for OS).",
+  "language": "pt-BR",
+  "eyeOrder": [
+    "OD",
+    "OS"
+  ],
+  "fixationTarget": {
+    "shape": "diamond",
+    "color": "yellow",
+    "_colorDoc": "HFA central fixation target is yellow; rendered at the luminance below, independent of the stimulus scale.",
+    "luminanceCdm2": 30.0,
+    "sizeDeg": 0.8
+  },
+  "training": {
+    "_doc": "3-5 practice presentations with feedback (SPEC §8). stimulusShown=false is a blank trial that teaches not to press without a light. Training responses are logged but never enter the exam.",
+    "trials": [
+      {
+        "x": 9,
+        "y": 9,
+        "db": 0,
+        "stimulusShown": true
+      },
+      {
+        "x": -9,
+        "y": -9,
+        "db": 0,
+        "stimulusShown": true
+      },
+      {
+        "x": 0,
+        "y": 0,
+        "db": 0,
+        "stimulusShown": false
+      },
+      {
+        "x": -9,
+        "y": 9,
+        "db": 6,
+        "stimulusShown": true
+      },
+      {
+        "x": 9,
+        "y": -9,
+        "db": 10,
+        "stimulusShown": true
+      }
+    ],
+    "feedbackMs": 2000,
+    "repeatIfMissedMoreThan": 2,
+    "maxRepeats": 1
+  },
+  "checks": {
+    "_doc": "Pre-exam verification (SPEC §8.2). Button: the welcome screen only advances on a press. Sharpness: the patient confirms the fixation target is sharp (IPD/focus reminder). Occlusion: the patient closes the tested eye for occlusionWindowMs while a bright disc is shown to the tested eye only; a press means light reaches the untested eye (stop, call the doctor).",
+    "occlusionWindowMs": 5000,
+    "occlusionDiscDeg": 10.0
+  },
+  "menuHoldMs": 1500,
+  "presets": [
+    {
+      "id": "24-2-zest",
+      "label": "24-2 ZEST (padrão)",
+      "gridId": "24-2",
+      "strategy": "Zest",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ]
+    },
+    {
+      "id": "24-2-zest-fast",
+      "label": "24-2 ZEST rápido",
+      "gridId": "24-2",
+      "strategy": "ZestFast",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ]
+    },
+    {
+      "id": "24-2-zest-od",
+      "label": "24-2 ZEST só OD",
+      "gridId": "24-2",
+      "strategy": "Zest",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD"
+      ]
+    },
+    {
+      "id": "24-2-zest-os",
+      "label": "24-2 ZEST só OS",
+      "gridId": "24-2",
+      "strategy": "Zest",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OS"
+      ]
+    }
+  ],
+  "defaultAgeYears": 50,
+  "_ageDoc": "Used only when no exam order file provides the age; the operator adjusts it on the setup screen. Age drives the ZEST prior and the normative comparison.",
+  "presentation": {
+    "_doc": "Rendering details outside the psychophysics. fallbackIpdMm is used only when the runtime gives no eye positions (desktop preview); it is logged. Text is dark grey on the background, below the fixation target.",
+    "fallbackIpdMm": 63.0,
+    "textLuminanceCdm2": 2.0,
+    "messageDistanceM": 1.5,
+    "messageOffsetDeg": -6.0,
+    "backgroundShellRadiusM": 10.0
+  }
+}

@@ -16,3 +16,9 @@ headset/[Uu]ser[Ss]ettings/
 # Portal (phase 3)
 portal/node_modules/
 portal/.next/
+artifacts/
+# Unity generates .meta files inside the local core package and project files for the headset
+core/**/*.meta
+headset/*.csproj
+headset/*.sln
+headset/Assets/Resources/PerimetryConfig*

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Perimetry.Core.Geometry;
@@ -68,6 +69,11 @@ namespace Perimetry.Core.Exam
         public double? GazeErrorDeg { get; set; }
         /// <summary>Stimulus onset, ms since exam start (monotonic clock of the presenter).</summary>
         public double OnsetMs { get; set; }
+        /// <summary>
+        /// True when the presenter aborted this presentation (patient paused, headset removed, tracking lost).
+        /// Logged with disposition "aborted" and ignored by the strategy and the catch-trial counts.
+        /// </summary>
+        public bool Discarded { get; set; }
     }
 
     /// <summary>One row of the audit log: request + result + how it was interpreted.</summary>
@@ -75,7 +81,7 @@ namespace Perimetry.Core.Exam
     {
         public PresentationRequest Request { get; set; }
         public PresentationResult Result { get; set; }
-        /// <summary>"used", "fixationLost", "anticipated" (latency below minimum), "catch", "mapping".</summary>
+        /// <summary>"used", "fixationLost", "anticipated" (latency below minimum), "catch", "mapping", "aborted".</summary>
         public string Disposition { get; set; }
     }
 
@@ -137,7 +143,20 @@ namespace Perimetry.Core.Exam
         public double? BlindSpotY { get; set; }
         public int TotalPresentations { get; set; }
         public double DurationMs { get; set; }
+        public int AbortedPresentations { get; set; }
+        /// <summary>Pauses requested by the patient or operator (ms since exam start).</summary>
+        public List<PauseInterval> Pauses { get; set; } = new List<PauseInterval>();
+        /// <summary>Total paused time; <see cref="DurationMs"/> minus this is the effective test time.</summary>
+        public double PausedMs => Pauses.Sum(p => Math.Max(0, p.EndMs - p.StartMs));
         public bool LowReliability => FixationLosses.Alert || FalsePositives.Alert || FalseNegatives.Alert;
+    }
+
+    public sealed class PauseInterval
+    {
+        public double StartMs { get; set; }
+        public double EndMs { get; set; }
+        /// <summary>"patient" (button held), "operator", "headsetRemoved", "trackingLost".</summary>
+        public string Reason { get; set; }
     }
 
     /// <summary>Complete, self-contained record of one eye's exam (stored on the headset, synced to the portal).</summary>
@@ -159,6 +178,8 @@ namespace Perimetry.Core.Exam
         public List<LocationResult> Locations { get; set; } = new List<LocationResult>();
         public ReliabilitySummary Reliability { get; set; } = new ReliabilitySummary();
         public List<PresentationLogEntry> Presentations { get; set; } = new List<PresentationLogEntry>();
+        /// <summary>True when the exam was stopped before every location finished; such a record must not be analysed as complete.</summary>
+        public bool Aborted { get; set; }
         public string Disclaimer { get; set; } = Disclaimers.Research;
     }
 

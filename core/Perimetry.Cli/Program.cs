@@ -106,6 +106,7 @@ namespace Perimetry.Cli
             string outPath = Get(o, "out", null);
             if (outPath != null)
             {
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outPath)));
                 File.WriteAllText(outPath, JsonConvert.SerializeObject(r.Exam, Json));
                 var analysisPath = Path.ChangeExtension(outPath, null) + ".analysis.json";
                 File.WriteAllText(analysisPath, JsonConvert.SerializeObject(new { analysis = a, truth = r.Field.TrueHfaDb, inDefect = r.Field.InDefect }, Json));

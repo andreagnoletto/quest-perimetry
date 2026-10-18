@@ -10,6 +10,9 @@ jobs:
           dotnet-version: '8.0.x'
       - run: dotnet build Perimetry.sln -c Release
       - run: dotnet test core/Perimetry.Core.Tests -c Release --collect:"XPlat Code Coverage"
+      # headset logic (pure C#, same sources Unity compiles) and a compile check of the Unity scripts
+      - run: dotnet test headset/LogicTests -c Release --collect:"XPlat Code Coverage"
+      - run: dotnet build headset/UnityCompileCheck -c Release
   opi-crosscheck:
     runs-on: ubuntu-latest
     steps:

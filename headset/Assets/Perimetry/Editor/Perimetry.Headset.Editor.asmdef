@@ -1,0 +1,24 @@
+{
+  "name": "Perimetry.Headset.Editor",
+  "rootNamespace": "Perimetry.Headset.Editor",
+  "references": [
+    "Perimetry.Core",
+    "Perimetry.Headset.Logic",
+    "Perimetry.Headset",
+    "Unity.XR.Management",
+    "Unity.XR.Management.Editor",
+    "Unity.XR.OpenXR",
+    "Unity.XR.OpenXR.Editor",
+    "Unity.RenderPipelines.Core.Runtime",
+    "Unity.RenderPipelines.Universal.Runtime"
+  ],
+  "includePlatforms": ["Editor"],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": ["Newtonsoft.Json.dll"],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

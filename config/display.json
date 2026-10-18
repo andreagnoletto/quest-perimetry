@@ -6,5 +6,9 @@
   "hfaBackgroundAsb": 31.5,
   "virtualStimulusDistanceM": 1.0,
   "usableHalfFieldDeg": 50.0,
-  "nominalGamma": "sRGB"
+  "nominalGamma": "sRGB",
+  "panelBitsPerChannel": 8,
+  "dithering": "bayer4x4Temporal",
+  "refreshRateHz": 90,
+  "untestedEyeLuminanceCdm2": 0.0
 }

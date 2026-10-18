@@ -18,7 +18,7 @@ namespace Perimetry.Core.Exam
     /// </summary>
     public sealed class ExamSession
     {
-        public const string Version = "0.1.0-phase1";
+        public const string Version = "0.2.0-phase2";
 
         private readonly ExamSettings _s;
         private readonly ClinicalConfig _cfg;
@@ -158,6 +158,16 @@ namespace Perimetry.Core.Exam
             _pending = null;
 
             var t = _cfg.Timing;
+            if (result.Discarded)
+            {
+                // Not shown to completion: nothing is learned, the same kind of trial will be issued again.
+                _record.Reliability.AbortedPresentations++;
+                _record.Presentations.Add(new PresentationLogEntry { Request = req, Result = result, Disposition = "aborted" });
+                if (req.Kind == PresentationKind.FalsePositiveCatch) _toFp = 0;
+                else if (req.Kind == PresentationKind.FalseNegativeCatch) _toFn = 0;
+                else if (req.Kind == PresentationKind.BlindSpotCatch) _toFl = 0;
+                return;
+            }
             bool anticipated = result.Responded && result.LatencyMs.HasValue && result.LatencyMs.Value < t.MinValidLatencyMs;
             bool inWindow = result.Responded && (!result.LatencyMs.HasValue || result.LatencyMs.Value <= t.ResponseWindowMs);
             bool seen = inWindow && !anticipated;
@@ -208,6 +218,14 @@ namespace Perimetry.Core.Exam
             double end = result.OnsetMs + (seen && result.LatencyMs.HasValue ? result.LatencyMs.Value : t.ResponseWindowMs);
             rel.DurationMs = Math.Max(rel.DurationMs, end);
             _record.Presentations.Add(new PresentationLogEntry { Request = req, Result = result, Disposition = disposition });
+        }
+
+        /// <summary>Records a pause (no presentation may be pending). Times are ms since exam start.</summary>
+        public void RecordPause(double startMs, double endMs, string reason)
+        {
+            if (_pending != null) throw new InvalidOperationException("Submit or discard the pending presentation first");
+            if (endMs < startMs) throw new ArgumentException("endMs < startMs");
+            _record.Reliability.Pauses.Add(new PauseInterval { StartMs = startMs, EndMs = endMs, Reason = reason });
         }
 
         public ExamRecord BuildRecord()

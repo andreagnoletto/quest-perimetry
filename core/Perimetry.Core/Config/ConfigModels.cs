@@ -14,6 +14,14 @@ namespace Perimetry.Core.Config
         public double VirtualStimulusDistanceM { get; set; }
         public double UsableHalfFieldDeg { get; set; }
         public string NominalGamma { get; set; }
+        /// <summary>Panel/swapchain quantisation; the renderer dithers the float drive level to this depth.</summary>
+        public int PanelBitsPerChannel { get; set; } = 8;
+        /// <summary>"none", "bayer4x4" (spatial) or "bayer4x4Temporal" (spatial pattern shifted every frame).</summary>
+        public string Dithering { get; set; } = "bayer4x4Temporal";
+        /// <summary>Display refresh rate requested on the headset; stimulus duration is quantised to frames.</summary>
+        public double RefreshRateHz { get; set; } = 90;
+        /// <summary>Luminance shown to the eye that is not being tested (0 = black, occluded).</summary>
+        public double UntestedEyeLuminanceCdm2 { get; set; }
     }
 
     public sealed class StimulusConfig
@@ -31,6 +39,10 @@ namespace Perimetry.Core.Config
         public int IsiMinMs { get; set; }
         public int IsiMaxMs { get; set; }
         public int MinValidLatencyMs { get; set; }
+        /// <summary>Holding the response button this long pauses the exam (HFA: patient holds the button).</summary>
+        public int PauseHoldMs { get; set; } = 1500;
+        /// <summary>Delay after the patient resumes before the next stimulus.</summary>
+        public int ResumeAfterPauseDelayMs { get; set; } = 1500;
     }
 
     public sealed class CatchTrialConfig

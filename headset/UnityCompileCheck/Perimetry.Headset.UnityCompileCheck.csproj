@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Compile-only check of the Unity runtime scripts and EditMode tests against the UnityEngine reference
+       assemblies (NuGet UnityEngine.Modules, Unity 2021.3 API surface, a subset of Unity 6's). Catches API and
+       typing errors in CI without a Unity licence. It does not replace opening the project in Unity 6:
+       editor scripts (URP/OpenXR APIs) and shaders are only compiled there. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>CS1591</NoWarn>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../Assets/Perimetry/Logic/**/*.cs" LinkBase="Logic" />
+    <Compile Include="../Assets/Perimetry/Runtime/**/*.cs" LinkBase="Runtime" />
+    <Compile Include="../Assets/Perimetry/Tests/**/*.cs" LinkBase="Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <ProjectReference Include="../../core/Perimetry.Core/Perimetry.Core.csproj" />
+  </ItemGroup>
+</Project>
