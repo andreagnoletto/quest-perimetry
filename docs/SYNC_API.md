@@ -64,7 +64,7 @@ Instantâneo da sessão em andamento, enviado a cada mudança de estado e no mí
  "startedUtc":"2026-10-18T16:55:00Z","elapsedMs":123456,
  "exam":{"examId":"...","gridId":"24-2","strategy":"Zest","eye":"OD","hfaOffsetDb":15.5,"minMeasurableHfaDb":15.5,
    "locations":[{"i":0,"x":-9,"y":21,"blindSpot":false,"state":"NotStarted|Active|Finished","db":null|27.3,"hfaEqDb":null|42.8,"censoredLow":false,"presentations":3}],
-   "reliability":{"fixationLosses":{"errors":1,"trials":5},"falsePositives":{"errors":0,"trials":3},"falseNegatives":{"errors":0,"trials":2},
+   "reliability":{"fixationLosses":{"errors":1,"trials":5,"alertLimit":0.2},"falsePositives":{"errors":0,"trials":3,"alertLimit":0.15},"falseNegatives":{"errors":0,"trials":2,"alertLimit":0.33},
                   "totalPresentations":120,"blindSpotFound":true,"blindSpotRemaps":0,"durationMs":100000},
    "last":{"x":9,"y":-3,"db":24,"seen":true,"kind":"Threshold","tMs":99000}},
  "ackCommandIds":["cmd1"]}
