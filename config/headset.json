@@ -51,8 +51,8 @@
     "maxRepeats": 1
   },
   "checks": {
-    "_doc": "Pre-exam verification (SPEC §8.2). Button: the welcome screen only advances on a press. Sharpness: the patient confirms the fixation target is sharp (IPD/focus reminder). Occlusion (on by default, product owner 2026-10-18): during the exam the untested eye always receives black and both eyes stay open; this short check before each eye makes the patient close the tested eye for occlusionWindowMs while a bright disc is shown to the tested eye only, and a press means light reaches the untested eye (stop, call the doctor).",
-    "occlusionCheckEnabled": true,
+    "_doc": "Pre-exam verification (SPEC §8.2). Button: the welcome screen only advances on a press. Sharpness: the patient confirms the fixation target is sharp (IPD/focus reminder). Occlusion (optional, off by default, product owner 2026-10-18: the headset already blocks outside light well): during the exam the untested eye always receives black and both eyes stay open; this short check before each eye makes the patient close the tested eye for occlusionWindowMs while a bright disc is shown to the tested eye only, and a press means light reaches the untested eye (stop, call the doctor).",
+    "occlusionCheckEnabled": false,
     "occlusionWindowMs": 5000,
     "occlusionDiscDeg": 10.0
   },

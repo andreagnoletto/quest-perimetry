@@ -19,7 +19,7 @@ namespace Perimetry.Core.Tests
             Assert.That(files.Keys, Has.Member("grids/24-2.json"));
 
             // CRLF checkouts hash identically
-            var crlf = files.ToDictionary(k => k.Key, k => k.Value.Replace("\n", "\r\n"));
+            var crlf = files.ToDictionary(k => k.Key, k => k.Value.Replace("\r\n", "\n").Replace("\n", "\r\n"));
             Assert.That(ClinicalConfig.ComputeHash(crlf), Is.EqualTo(fromFiles.Hash));
 
             var missing = files.Where(f => f.Key != "timing.json").ToDictionary(k => k.Key, k => k.Value);

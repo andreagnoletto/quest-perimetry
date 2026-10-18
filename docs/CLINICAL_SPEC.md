@@ -285,7 +285,7 @@ Interrupção pelo operador grava o olho em andamento com `Aborted = true`, e a 
 |---|---|---|
 | Pausa ao segurar o botão | 1500 ms; apresentação em curso descartada | **[DECISÃO PENDENTE]** confirmar |
 | Treino | 5 estímulos: 0 dB (9,9), 0 dB (−9,−9), branco (sem luz), 6 dB, 10 dB; feedback 2 s; repete 1 vez se > 2 erros | **[DECISÃO PENDENTE]** |
-| Verificação de oclusão | ligada (`checks.occlusionCheckEnabled`): antes de cada olho, o paciente fecha o olho testado por 5 s; um disco de 10° no máximo aparece só nesse olho; apertar = falha, chama o médico. Durante o exame os dois olhos ficam abertos | aprovado em 2026-10-18 |
+| Verificação de oclusão | opcional, desligada por padrão (`checks.occlusionCheckEnabled`; o headset já bloqueia bem a luz externa). Quando ligada: antes de cada olho, o paciente fecha o olho testado por 5 s; um disco de 10° no máximo aparece só nesse olho; apertar = falha, chama o médico. Durante o exame os dois olhos ficam abertos | aprovado em 2026-10-18 (desligada por padrão após o primeiro teste no Quest 3) |
 | Alvo de fixação | losango amarelo 0,8°, 30 cd/m² | **[DECISÃO PENDENTE]** |
 | Duração a 72 Hz | 194 ms (14 quadros) até o pedido de 90 Hz ser ligado | **[DECISÃO PENDENTE]** |
 | Idade sem pedido de exame | 50 anos, ajustada pelo operador (afeta o prior do ZEST e a análise) | default |
