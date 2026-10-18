@@ -90,6 +90,7 @@ export interface ReportExam {
     BlindSpotFound: boolean;
     BlindSpotX: number | null;
     BlindSpotY: number | null;
+    BlindSpotRemaps?: number;
     TotalPresentations: number;
     DurationMs: number;
     PausedMs: number;

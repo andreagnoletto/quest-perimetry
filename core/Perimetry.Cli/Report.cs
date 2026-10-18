@@ -113,6 +113,7 @@ namespace Perimetry.Cli
                         rel.BlindSpotFound,
                         rel.BlindSpotX,
                         rel.BlindSpotY,
+                        rel.BlindSpotRemaps,
                         rel.TotalPresentations,
                         rel.DurationMs,
                         rel.PausedMs,

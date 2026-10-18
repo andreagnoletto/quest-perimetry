@@ -50,7 +50,7 @@ export function SingleFieldReport({ report, patient, integrity, footerNote }: {
           <dt>Falsos positivos</dt><dd className={red(r.FalsePositives.Alert ?? false)}>{r.FalsePositives.Trials ? pct(r.FalsePositiveRate) : "—"}{r.FalsePositives.Alert ? " xx" : ""}</dd>
           <dt>Falsos negativos</dt><dd className={red(r.FalseNegatives.Alert ?? false)}>{r.FalseNegatives.Trials ? pct(r.FalseNegativeRate) : "—"}{r.FalseNegatives.Alert ? " xx" : ""}</dd>
           <dt>Duração</dt><dd>{duration(r.EffectiveDurationMs)}{r.PausedMs > 0 ? ` (+${duration(r.PausedMs)} em pausa)` : ""}</dd>
-          <dt>Mancha cega</dt><dd>{r.BlindSpotFound ? `(${fmt(r.BlindSpotX, 1)}°, ${fmt(r.BlindSpotY, 1)}°)` : "não localizada"}</dd>
+          <dt>Mancha cega</dt><dd>{r.BlindSpotFound ? `(${fmt(r.BlindSpotX, 1)}°, ${fmt(r.BlindSpotY, 1)}°)` : "não localizada"}{r.BlindSpotRemaps ? ` · relocalizada ${r.BlindSpotRemaps}×` : ""}</dd>
         </dl>
         <dl>
           <dt>Estímulo</dt><dd>{s.StimulusSize}, branco ({fmt(e.StimulusDiameterDeg, 2)}°, {e.StimulusDurationMs} ms)</dd>
