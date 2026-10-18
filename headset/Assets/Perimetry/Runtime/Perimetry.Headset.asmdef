@@ -1,7 +1,7 @@
 {
   "name": "Perimetry.Headset",
   "rootNamespace": "Perimetry.Headset",
-  "references": ["Perimetry.Core", "Perimetry.Headset.Logic"],
+  "references": ["Perimetry.Core", "Perimetry.Headset.Logic", "Unity.InputSystem"],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,

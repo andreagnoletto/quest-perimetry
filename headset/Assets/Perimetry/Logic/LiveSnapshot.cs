@@ -33,6 +33,13 @@ namespace Perimetry.Headset.Logic
                 ["presetId"] = flow.Preset.Id,
                 ["ageYears"] = flow.AgeYears,
                 ["eye"] = flow.CurrentEye.HasValue ? (JToken)flow.CurrentEye.Value.ToString() : JValue.CreateNull(),
+                ["gazeAvailable"] = flow.GazeAvailable,
+                ["fixation"] = new JObject
+                {
+                    ["kind"] = flow.View.FixationTarget.ToString(),
+                    ["x"] = Round(flow.View.FixationX),
+                    ["y"] = Round(flow.View.FixationY),
+                },
                 ["startedUtc"] = Iso(flow.SessionStartedUtc),
                 ["elapsedMs"] = Math.Round(flow.ElapsedMs),
                 ["exam"] = Exam(flow, cfg),
@@ -73,18 +80,33 @@ namespace Perimetry.Headset.Logic
                 {
                     ["x"] = p.Request.FieldX,
                     ["y"] = p.Request.FieldY,
+                    ["targetX"] = Round(p.Request.TargetX),
+                    ["targetY"] = Round(p.Request.TargetY),
                     ["db"] = p.Request.StimulusShown && !double.IsNaN(p.Request.Db) ? (JToken)Round(p.Request.Db) : JValue.CreateNull(),
                     ["seen"] = p.Result != null && p.Result.Responded,
                     ["kind"] = p.Request.Kind.ToString(),
                     ["tMs"] = p.Result != null ? Math.Round(p.Result.OnsetMs) : 0,
                 };
             }
+            bool fovealDone = rec.Foveal != null && !double.IsNaN(rec.Foveal.ThresholdDb);
             return new JObject
             {
                 ["examId"] = rec.ExamId,
                 ["gridId"] = rec.Settings.GridId,
                 ["strategy"] = rec.Settings.Strategy.ToString(),
                 ["eye"] = rec.Settings.Eye.ToString(),
+                ["fixationMode"] = rec.Settings.FixationMode.ToString(),
+                ["responseMode"] = rec.Settings.ResponseMode.ToString(),
+                ["fovealThreshold"] = rec.Settings.FovealThreshold,
+                ["foveal"] = fovealDone
+                    ? new JObject
+                    {
+                        ["db"] = Round(rec.Foveal.ThresholdDb),
+                        ["hfaEqDb"] = Round(rec.Foveal.ThresholdDb + rec.HfaOffsetDb),
+                        ["censoredLow"] = rec.Foveal.CensoredLow,
+                        ["presentations"] = rec.Foveal.Presentations,
+                    }
+                    : (JToken)JValue.CreateNull(),
                 ["hfaOffsetDb"] = Round(rec.HfaOffsetDb),
                 ["minMeasurableHfaDb"] = Round(cfg.Strategies.MinStimulusDb + rec.HfaOffsetDb),
                 ["locations"] = locs,
@@ -97,6 +119,9 @@ namespace Perimetry.Headset.Logic
                     ["blindSpotFound"] = r.BlindSpotFound,
                     ["blindSpotRemaps"] = r.BlindSpotRemaps,
                     ["durationMs"] = Math.Round(Math.Max(0, r.DurationMs)),
+                    ["gazeTracked"] = r.GazeTracked,
+                    ["gazeRejectedPresentations"] = r.GazeRejectedPresentations,
+                    ["gazeMeanErrorDeg"] = r.GazeTracked && !double.IsNaN(r.GazeMeanErrorDeg) ? (JToken)Round(r.GazeMeanErrorDeg) : JValue.CreateNull(),
                 },
                 ["last"] = last,
             };

@@ -90,7 +90,11 @@ namespace Perimetry.Headset.Logic.Tests
             flow.OperatorAdjust(+1);
             Assert.That(flow.Preset.Id, Is.EqualTo("24-2-zest-od"));
             flow.OperatorAdjust(-1); flow.OperatorAdjust(-1); flow.OperatorAdjust(-1);
-            Assert.That(flow.Preset.Id, Is.EqualTo("24-2-zest-os"), "wraps around");
+            Assert.That(flow.Preset.Id, Is.EqualTo(Env.Headset.Presets.Last().Id), "wraps around to the last preset");
+            flow.OperatorAdjust(+1);
+            Assert.That(flow.Preset.Id, Is.EqualTo("24-2-zest"), "and back to the first");
+            flow.OperatorAdjust(+1); flow.OperatorAdjust(+1); flow.OperatorAdjust(+1);
+            Assert.That(flow.Preset.Id, Is.EqualTo("24-2-zest-os"));
             d.Press(1700); d.RunUntil(() => flow.State == FlowState.SetupAge);
             Assert.That(flow.View.Message, Does.Contain("50 anos"));
             flow.OperatorAdjust(+7);

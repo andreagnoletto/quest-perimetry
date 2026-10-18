@@ -117,7 +117,8 @@ namespace Perimetry.Headset.Editor
                 foreach (var f in oxr.GetFeatures())
                 {
                     string n = f.GetType().Name;
-                    if (n == "OculusTouchControllerProfile" || n == "MetaQuestTouchPlusControllerProfile"
+                    // EyeGazeInteraction (Phase 5): XR_EXT_eye_gaze_interaction, used on the Quest Pro; harmless on the Quest 3.
+                    if (n == "OculusTouchControllerProfile" || n == "MetaQuestTouchPlusControllerProfile" || n == "EyeGazeInteraction"
                         || (group == BuildTargetGroup.Android && n == "MetaQuestFeature"))
                     {
                         f.enabled = true;
@@ -129,6 +130,8 @@ namespace Perimetry.Headset.Editor
             log.Add($"XR {group}: OpenXR loader {(assigned ? "assigned" : "already assigned or FAILED, check XR Plug-in Management")}, single-pass instanced, features [{string.Join(", ", enabled)}]");
             if (group == BuildTargetGroup.Android && !enabled.Contains("MetaQuestFeature"))
                 log.Add("WARNING: Meta Quest feature not found; enable it in Project Settings > XR Plug-in Management > OpenXR (Android)");
+            if (!enabled.Contains("EyeGazeInteraction"))
+                log.Add("note: Eye Gaze Interaction Profile not found in this OpenXR package; eye tracking (Quest Pro) stays off");
         }
 
         private static void CreateScene(List<string> log)
