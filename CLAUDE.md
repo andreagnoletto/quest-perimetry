@@ -24,7 +24,8 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 - `core/Perimetry.Core.Tests` — NUnit (net8.0); same tests can run in Unity Test Framework EditMode.
 - `core/Perimetry.Cli` — `perimetry` CLI: simulate / analyze / benchmark / crosscheck / report (strict JSON for the
   portal) / check-calibration.
-- `config/` — clinical constants and grids. `config/normative/` — provisional synthetic normative model.
+- `config/` — clinical constants and grids. `config/normative/` — provisional synthetic normative model and
+  `cohort.json` (phase 6 rules for the clinic's own normative: `Analysis/Cohort.cs`, CLI `perimetry normative`).
 - `tools/opi-crosscheck/` — compares C# ports with OPI in R. `tools/report/` — PNG report (matplotlib).
 - `headset/` — Unity 6 project (phase 2). `Assets/Perimetry/Logic` is pure C# (`PatientFlow` state machine,
   `PresentationTimeline`, `StimulusPlacement`, `Dither`, `ExamStorage`, `PatientMessages`, `PortalSync` sans-IO sync
@@ -44,12 +45,15 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 ## Commands
 ```bash
 dotnet build Perimetry.sln
-dotnet test core/Perimetry.Core.Tests                                   # 133 tests, ~5 s
+dotnet test core/Perimetry.Core.Tests                                   # 140 tests, ~5 s
 dotnet test headset/LogicTests                                           # 53 tests: headset flow, timing, geometry, dithering, portal sync, phase 5 modes
 dotnet build headset/UnityCompileCheck                                   # Unity scripts vs UnityEngine API (no Unity needed)
 dotnet test core/Perimetry.Core.Tests --collect:"XPlat Code Coverage"   # coverage (cobertura xml)
 dotnet run --project core/Perimetry.Cli -c Release -- simulate --strategy ZestFast --defect SuperiorArcuate --seed 4 --out out/ex.json
 dotnet run --project core/Perimetry.Cli -c Release -- benchmark --strategy ZestFast --runs 30
+dotnet run --project core/Perimetry.Cli -c Release -- normative stats --cohort cohort.json       # phase 6: cohort rules, bands, status (JSON)
+dotnet run --project core/Perimetry.Cli -c Release -- normative build --cohort cohort.json --grid 24-2 --id measured-24-2 --out db.json
+dotnet run --project core/Perimetry.Cli -c Release -- report out/ex.json --normative db.json     # analyse with the clinic normative
 python3 tools/report/render_report.py out/ex.analysis.json out/ex.png  # needs matplotlib
 bash tools/opi-crosscheck/run.sh                                         # needs R + jsonlite, python3
 cd portal && npm ci && npm run typecheck && npm test                     # 39 portal unit tests (needs the Release CLI build)
@@ -86,7 +90,7 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 | Catch trials | FP 1/30, HK 1/30, FN 1/40 (threshold − 9 dB) |
 | Alerts | FL > 20%, FP > 15%, FN > 33% |
 | Indices | MD inverse-variance (Heijl 1987), PSD (Heijl 1987), GH = 85th pct, VFI (Bengtsson 2008), GHT (Åsman & Heijl 1992) |
-| Normative | PROVISIONAL synthetic, HFA-eq dB, −0.7 dB/decade |
+| Normative | PROVISIONAL synthetic, HFA-eq dB, −0.7 dB/decade; phase 6 clinic cohort (`config/normative/cohort.json`): age ≥ 18, reliability within alert limits, first exam per eye dropped, latest exam per eye, MEASURED at ≥ 100 eyes |
 
 ## Headset conventions
 - Stimuli are placed on a sphere centred on the TESTED eye (not the head); never in pixels.

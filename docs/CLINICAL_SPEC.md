@@ -235,8 +235,36 @@ dados medidos. Todo exame e relatório leva o aviso vermelho **"NORMATIVO PROVIS
 `fovealExtraDb` (1,5 dB, proposto: no HFA a fóvea costuma medir 1–3 dB acima dos pontos a 3°) + o mesmo deslocamento
 global + variação local e ruído de medida (gerados num fluxo aleatório separado, de modo que os valores da grade são
 idênticos aos da Fase 1). `NormativeBuilder` ajusta a mesma regressão por idade e os percentis inferiores
-(`ExpectedFovealHfa`, `FovealTdProbability`); uma coorte real sem medida foveal produz um normativo sem fóvea e, nesse
-caso, o ZEST foveal parte do esperado do ponto mais central da grade e o relatório mostra o limiar sem p.
+(`ExpectedFovealHfa`, `FovealTdProbability`); uma coorte real com menos de 30 medidas foveais produz um normativo cujo
+modelo foveal é o sintético (o arquivo registra `foveal.fromCohort = false`) e o relatório continua mostrando o limiar com p
+do modelo sintético.
+
+**Normativo PRÓPRIO (Fase 6, padrão proposto, aguardando confirmação do product owner).** O portal marca voluntários
+normais e exporta os exames candidatos num arquivo de coorte (`perimetry-cohort/1`: grade, e por exame `subjectId`
+pseudônimo, `eye`, `examId`, `sequenceForEye`, `ageYears`, `aborted`, `strategy`, taxas de confiabilidade e os limiares em
+dB HFA-eq na convenção OD da grade, mais `fovealHfaDb`). Toda regra e toda estatística ficam no `/core`
+(`CohortFilter`, `config/normative/cohort.json`; comandos `perimetry normative stats|build|inspect`), nunca no portal:
+- **Exclusão por exame:** interrompido; estratégia fora de `allowedStrategies` (ZEST, ZEST rápido, Full Threshold: o
+  rastreio não mede limiar); idade < 18 anos (`minAgeYears`); confiabilidade acima dos limites de alerta de
+  `reliability.json` (FL > 20%, FP > 15%, FN > 33%, como nos estudos normativos do HFA — Heijl, Lindgren & Olsson 1987);
+  limiar ausente num ponto analisado. Pontos da mancha cega sem valor recebem a média dos dois pontos medidos mais
+  próximos do mesmo olho, só para a regressão ter um valor de partida ali.
+- **Efeito de aprendizado:** o primeiro exame de cada olho é descartado quando esse olho tem um exame posterior elegível
+  (`excludeFirstExamPerEye`; Heijl & Bengtsson 1996, Wild et al. 1989), e entra um exame por olho, o mais recente
+  (`oneExamPerEye = latest`), para os percentis não serem ponderados por repetições. Os dois olhos do mesmo sujeito
+  entram, tratados como independentes (como em `visualFields`), o que subestima um pouco a variância entre sujeitos.
+- **Status:** o banco é construído com pelo menos 30 olhos e fica **MEASURED** só com `minEyesForMeasured` = 100 olhos
+  elegíveis; abaixo disso é PROVISIONAL e todo relatório leva "NORMATIVO PRÓPRIO PROVISÓRIO — N olhos (mínimo 100)". A
+  faixa etária da coorte vai no arquivo; um exame com idade fora dela por mais de `ageRangeMarginYears` = 5 anos é
+  analisado por extrapolação da regressão, com o aviso "Idade fora da faixa do normativo (a–b anos)". Faixas de 10 anos
+  (`ageBands`) com menos de 10 olhos são avisadas.
+- **Arquivo** (`perimetry-normative/1`): id, grade, status e motivo, origem (`cohort`, SHA-256 da coorte, versão do
+  construtor), data, número de olhos, faixa etária, e os mesmos vetores do construtor (regressão por ponto, DP de TD e PD,
+  percentis de TD/PD/MD/PSD/GH e dos setores do GHT, fóvea). Carregar e salvar é sem perda e determinístico: a mesma
+  coorte produz os mesmos bytes. `perimetry report --normative db.json` usa esse banco (a grade tem de coincidir) e o
+  relatório registra `analyzedWith.normative` {id, status, origem, olhos, faixa etária} e `analysis.NormativeId/
+  NormativeStatus/NormativeSource/NormativePopulationEyes`; sem a opção, o provisório sintético continua valendo.
+
 
 ### 8.2 Mapas e índices
 
