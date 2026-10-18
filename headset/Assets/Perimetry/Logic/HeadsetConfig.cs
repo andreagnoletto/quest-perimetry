@@ -90,8 +90,8 @@ namespace Perimetry.Headset.Logic
 
     public sealed class ChecksConfig
     {
-        /// <summary>Occlusion check before each eye (5 s, tested eye closed). Product owner kept it on (2026-10-18).</summary>
-        public bool OcclusionCheckEnabled { get; set; } = true;
+        /// <summary>Occlusion check before each eye (5 s, tested eye closed). Optional, off by default (product owner, 2026-10-18).</summary>
+        public bool OcclusionCheckEnabled { get; set; } = false;
         public int OcclusionWindowMs { get; set; } = 5000;
         public double OcclusionDiscDeg { get; set; } = 10;
     }
