@@ -27,6 +27,15 @@ namespace Perimetry.Core.Simulation
         public double FalseNegativeRate { get; set; } = 0.01;
         /// <summary>Probability that fixation is off target during a presentation.</summary>
         public double FixationLossRate { get; set; } = 0.0;
+        /// <summary>
+        /// Simulated eye tracker (phase 5): 0 = no tracker. Otherwise each presentation reports gaze error =
+        /// |N(0, sd)²D| when fixating, or a saccade of <see cref="GazeLossMinDeg"/>..<see cref="GazeLossMaxDeg"/> when fixation is lost.
+        /// </summary>
+        public double GazeNoiseSdDeg { get; set; } = 0.0;
+        public double GazeLossMinDeg { get; set; } = 4;
+        public double GazeLossMaxDeg { get; set; } = 10;
+        /// <summary>Forced choice: the simulated patient picks a random interval when the stimulus was not seen (chance level 1/N).</summary>
+        public bool ForcedChoiceGuesses { get; set; } = true;
         public double MeanLatencyMs { get; set; } = 450;
         public double LatencySdMs { get; set; } = 90;
         /// <summary>Physiological blind spot (OD convention): centre and semi-axes in degrees.</summary>
@@ -84,18 +93,44 @@ namespace Perimetry.Core.Simulation
 
         public PresentationResult Respond(PresentationRequest req, double onsetMs)
         {
+            // FieldX/FieldY are retinal offsets from the target (also in oculokinetic mode), so the field model applies directly.
             var od = new FieldPoint(req.FieldX, req.FieldY).ForEye(_eye); // ForEye is its own inverse
             bool seen;
+            bool fixationLost = req.StimulusShown && _rng.Bernoulli(P.FixationLossRate);
             if (!req.StimulusShown) seen = _rng.Bernoulli(P.FalsePositiveRate);
-            else if (_rng.Bernoulli(P.FixationLossRate)) seen = _rng.Bernoulli(1 - P.FalseNegativeRate);
+            else if (fixationLost) seen = _rng.Bernoulli(1 - P.FalseNegativeRate);
             else seen = _rng.Bernoulli(ProbabilitySeen(req.Db, od));
+
+            var res = new PresentationResult { Sequence = req.Sequence, OnsetMs = onsetMs, FixationOk = true };
+            if (P.GazeNoiseSdDeg > 0)
+            {
+                res.GazeTracked = true;
+                double gx = _rng.Gaussian(0, P.GazeNoiseSdDeg), gy = _rng.Gaussian(0, P.GazeNoiseSdDeg);
+                double err = Math.Sqrt(gx * gx + gy * gy);
+                if (fixationLost) err = _rng.Uniform(P.GazeLossMinDeg, P.GazeLossMaxDeg);
+                res.GazeErrorDeg = err;
+                res.GazeMaxErrorDeg = err;
+            }
+
+            if (req.Intervals > 0)
+            {
+                // Forced choice: correct interval when seen, otherwise a guess (or no answer when guessing is off).
+                int? choice = seen ? req.StimulusInterval
+                    : P.ForcedChoiceGuesses ? _rng.NextInt(1, req.Intervals + 1) : (int?)null;
+                res.RespondedInterval = choice;
+                res.Responded = choice.HasValue;
+                res.LatencyMs = choice.HasValue ? Math.Max(150, Math.Min(req.ResponseWindowMs, _rng.Gaussian(P.MeanLatencyMs, P.LatencySdMs))) : (double?)null;
+                return res;
+            }
 
             double? latency = null;
             if (seen)
                 latency = req.StimulusShown
                     ? Math.Max(150, Math.Min(req.ResponseWindowMs, _rng.Gaussian(P.MeanLatencyMs, P.LatencySdMs)))
                     : _rng.Uniform(150, req.ResponseWindowMs);
-            return new PresentationResult { Sequence = req.Sequence, Responded = seen, LatencyMs = latency, OnsetMs = onsetMs, FixationOk = true };
+            res.Responded = seen;
+            res.LatencyMs = latency;
+            return res;
         }
     }
 }

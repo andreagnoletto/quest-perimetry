@@ -64,12 +64,41 @@ namespace Perimetry.Core.Config
         public int RemapAfterConsecutiveLosses { get; set; }
     }
 
+    /// <summary>Native eye tracking (Quest Pro, OpenXR eye gaze). Phase 5, proposed default awaiting the product owner.</summary>
+    public sealed class GazeConfig
+    {
+        /// <summary>A threshold presentation with gaze farther than this from the fixation target at stimulus onset is rejected.</summary>
+        public double MaxErrorDeg { get; set; } = 3.0;
+        /// <summary>Rejected presentations are not used by the strategy; the location is presented again.</summary>
+        public bool RetestRejected { get; set; } = true;
+        /// <summary>Gaze samples (one per presentation) are kept in the exam record for the report's gaze trace.</summary>
+        public bool RecordTrace { get; set; } = true;
+    }
+
+    /// <summary>Mode B, oculokinetic fixation (VVP-like): the target jumps before each presentation. Phase 5, proposed default awaiting the product owner.</summary>
+    public sealed class OculokineticConfig
+    {
+        /// <summary>Target positions are drawn uniformly in [-range, +range] on both axes (degrees from straight ahead).</summary>
+        public double TargetRangeDeg { get; set; } = 10;
+        /// <summary>Composed stimulus direction must stay within this eccentricity from straight ahead (usable field of the headset).</summary>
+        public double MaxEccentricityDeg { get; set; } = 45;
+        /// <summary>Without eye tracking: time the target is shown at its new position (with the "lock" animation) before the stimulus.</summary>
+        public int LockDelayMs { get; set; } = 600;
+        /// <summary>With eye tracking: gaze must stay within <see cref="GazeConfirmDeg"/> of the target for this long before the stimulus.</summary>
+        public int GazeConfirmMs { get; set; } = 300;
+        public double GazeConfirmDeg { get; set; } = 3;
+        /// <summary>Heijl-Krakau blind-spot catch trials (relative to the current target) also in this mode.</summary>
+        public bool HeijlKrakau { get; set; } = true;
+    }
+
     public sealed class ReliabilityConfig
     {
         public CatchTrialConfig FalsePositive { get; set; }
         public CatchTrialConfig FalseNegative { get; set; }
         public CatchTrialConfig FixationLoss { get; set; }
         public BlindSpotConfig BlindSpot { get; set; }
+        public GazeConfig Gaze { get; set; } = new GazeConfig();
+        public OculokineticConfig Oculokinetic { get; set; } = new OculokineticConfig();
     }
 
     public sealed class LikelihoodSdConfig
@@ -126,6 +155,30 @@ namespace Perimetry.Core.Config
         public bool UseNeighbourSeeding { get; set; }
     }
 
+    /// <summary>Optional foveal threshold before the main test (HFA "Fovea: ON"). Phase 5, proposed default awaiting the product owner.</summary>
+    public sealed class FovealConfig
+    {
+        /// <summary>"Diamond4": four small points around the centre; the patient looks at the (empty) centre where the stimulus appears.</summary>
+        public string FixationTarget { get; set; } = "Diamond4";
+        /// <summary>Distance from the centre to each diamond point (degrees).</summary>
+        public double DiamondHalfSizeDeg { get; set; } = 1.5;
+        /// <summary>Strategy used for the foveal point: "exam" = the exam's own strategy; or Zest, ZestFast, FullThreshold, FourTwo.</summary>
+        public string Strategy { get; set; } = "exam";
+    }
+
+    /// <summary>Forced-choice response mode (experimental, SPEC §5.4): the patient reports in which of N intervals the stimulus appeared.</summary>
+    public sealed class ForcedChoiceConfig
+    {
+        public int Intervals { get; set; } = 2;
+        /// <summary>Each interval lasts this long; the stimulus fills one of them (stimulus duration = interval duration).</summary>
+        public int IntervalMs { get; set; } = 200;
+        public int GapMs { get; set; } = 600;
+        /// <summary>Fixation-target blink that marks the start of each interval.</summary>
+        public int MarkerMs { get; set; } = 100;
+        /// <summary>ZEST likelihood floor: the chance level 1/N replaces the false-positive rate.</summary>
+        public bool ZestGuessRate { get; set; } = true;
+    }
+
     public sealed class StrategiesConfig
     {
         public double MinStimulusDb { get; set; }
@@ -135,6 +188,8 @@ namespace Perimetry.Core.Config
         public FullThresholdConfig FullThreshold { get; set; }
         public ScreeningConfig Screening { get; set; }
         public GrowthConfig Growth { get; set; }
+        public FovealConfig Foveal { get; set; } = new FovealConfig();
+        public ForcedChoiceConfig ForcedChoice { get; set; } = new ForcedChoiceConfig();
     }
 
     public sealed class GrayscaleConfig
@@ -207,6 +262,8 @@ namespace Perimetry.Core.Config
         public double AgeSlopeDbPerDecade { get; set; }
         public LocalSdConfig LocalSd { get; set; }
         public LocalSdConfig MeasurementSd { get; set; }
+        /// <summary>Foveal sensitivity above the model value at eccentricity 0 (the hill of vision peaks at the fovea). Phase 5.</summary>
+        public double FovealExtraDb { get; set; } = 1.5;
         public double GlobalShiftSdDb { get; set; }
         public PopulationConfig Population { get; set; }
     }
@@ -232,6 +289,8 @@ namespace Perimetry.Core.Config
         public double NeighbourRadiusDeg { get; set; }
         public List<GridAnchorConfig> Anchors { get; set; }
         public string Source { get; set; }
+        /// <summary>False for grids whose points do not cover the GHT sectors (10-2): the report shows "not applicable".</summary>
+        public bool GhtApplicable { get; set; } = true;
         public List<GridPointConfig> Points { get; set; }
     }
 }

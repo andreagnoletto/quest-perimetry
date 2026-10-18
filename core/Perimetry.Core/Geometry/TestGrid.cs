@@ -32,12 +32,14 @@ namespace Perimetry.Core.Geometry
         public IReadOnlyList<GridLocation> Locations { get; }
         public double NeighbourRadiusDeg { get; }
         public string Source { get; }
+        /// <summary>False when the grid does not cover the GHT sectors (10-2): GHT is reported as not applicable.</summary>
+        public bool GhtApplicable { get; }
 
         private readonly List<int>[] _neighbours;
 
-        public TestGrid(string id, string name, IEnumerable<GridLocation> locations, double neighbourRadiusDeg, string source)
+        public TestGrid(string id, string name, IEnumerable<GridLocation> locations, double neighbourRadiusDeg, string source, bool ghtApplicable = true)
         {
-            Id = id; Name = name; Source = source;
+            Id = id; Name = name; Source = source; GhtApplicable = ghtApplicable;
             Locations = locations.ToList();
             NeighbourRadiusDeg = neighbourRadiusDeg;
             if (Locations.Select(l => l.Point).Distinct().Count() != Locations.Count)
@@ -71,7 +73,7 @@ namespace Perimetry.Core.Geometry
             }).ToList();
             if (anchors.Count > 0 && locs.Count(l => l.IsAnchor) != anchors.Count)
                 throw new InvalidDataException($"Grid {cfg.Id}: every anchor must be a grid point");
-            return new TestGrid(cfg.Id, cfg.Name, locs, cfg.NeighbourRadiusDeg, cfg.Source);
+            return new TestGrid(cfg.Id, cfg.Name, locs, cfg.NeighbourRadiusDeg, cfg.Source, cfg.GhtApplicable);
         }
 
         /// <summary>

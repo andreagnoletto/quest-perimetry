@@ -13,6 +13,8 @@ namespace Perimetry.Core.Analysis
         public string Id { get; set; }
         public double Age { get; set; }
         public double[] Sensitivity { get; set; }
+        /// <summary>Foveal sensitivity (HFA-equivalent dB), NaN when not measured.</summary>
+        public double Foveal { get; set; } = double.NaN;
     }
 
     /// <summary>Normative database built from a population of normal fields (see <see cref="NormativeBuilder"/>).</summary>
@@ -38,8 +40,16 @@ namespace Perimetry.Core.Analysis
         public double[] PsdLut { get; internal set; }
         internal double[] GhSorted { get; set; }
         internal double[][] GhtAbsDiffSorted { get; set; }
+        /// <summary>Foveal age regression (NaN when the population had no foveal values).</summary>
+        public double FovealIntercept { get; internal set; } = double.NaN;
+        public double FovealSlope { get; internal set; } = double.NaN;
+        public double FovealTdSd { get; internal set; } = double.NaN;
+        public double[] FovealTdLut { get; internal set; }
+        public int FovealPopulationSize { get; internal set; }
 
         public double ExpectedHfa(int i, double age) => Intercept[i] + Slope[i] * age;
+        public double ExpectedFovealHfa(double age) => FovealIntercept + FovealSlope * age;
+        public double FovealTdProbability(double td) => FovealTdLut == null || double.IsNaN(FovealTdLut[0]) ? 1.0 : Classify(td, FovealTdLut);
         public double TdSd(int i) => TdSdByLocation[i];
         public double PdSd(int i) => PdSdByLocation[i];
 
@@ -120,6 +130,17 @@ namespace Perimetry.Core.Analysis
                 db.PdLut[i] = levels.Select(p => Stats.Quantile(pdi, p)).ToArray();
             }
 
+            // Foveal threshold (phase 5): same age regression and lower-tail percentiles, from the subjects that have it.
+            var withFovea = population.Where(s => !double.IsNaN(s.Foveal)).ToList();
+            if (withFovea.Count >= 30)
+            {
+                var (fa, fb) = Stats.LinearFit(withFovea.Select(s => s.Age).ToArray(), withFovea.Select(s => s.Foveal).ToArray());
+                db.FovealIntercept = fa; db.FovealSlope = fb; db.FovealPopulationSize = withFovea.Count;
+                var ftd = withFovea.Select(s => s.Foveal - db.ExpectedFovealHfa(s.Age)).ToArray();
+                db.FovealTdSd = Stats.Sd(ftd);
+                db.FovealTdLut = levels.Select(p => Stats.Quantile(ftd, p)).ToArray();
+            }
+
             var md = td.Select(t => GlobalIndices.MeanDeviation(t, db.TdSdByLocation, analysisIdx, analysis.MdWeighting)).ToArray();
             var psd = td.Select((t, k) => GlobalIndices.PatternStandardDeviation(t, db.TdSdByLocation, analysisIdx, md[k])).ToArray();
             db.MdLut = levels.Select(p => Stats.Quantile(md, p)).ToArray();
@@ -154,9 +175,16 @@ namespace Perimetry.Core.Analysis
         public static double ModelLocalSd(SyntheticNormativeConfig c, FieldPoint p) =>
             c.LocalSd.InterceptDb + c.LocalSd.PerDegDb * p.Eccentricity;
 
+        /// <summary>Model mean foveal sensitivity (HFA-equivalent dB): the hill of vision at eccentricity 0 plus <see cref="SyntheticNormativeConfig.FovealExtraDb"/>.</summary>
+        public static double ModelFoveal(SyntheticNormativeConfig c, double age) =>
+            ModelMean(c, new FieldPoint(0, 0), age) + c.FovealExtraDb;
+
         public static List<NormalSubject> GeneratePopulation(SyntheticNormativeConfig c, TestGrid grid)
         {
             var rng = new Rng(c.Population.Seed);
+            // Separate stream for the foveal value so the grid values are identical to the phase 1 population.
+            var fovealRng = new Rng(c.Population.Seed ^ 0x0F0F0F0F0F0F0F0FUL);
+            var centre = new FieldPoint(0, 0);
             var pop = new List<NormalSubject>();
             for (int k = 0; k < c.Population.Size; k++)
             {
@@ -165,7 +193,9 @@ namespace Perimetry.Core.Analysis
                 var sens = grid.Locations.Select(l => ModelMean(c, l.Point, age) + shift
                     + rng.Gaussian(0, ModelLocalSd(c, l.Point))
                     + (c.MeasurementSd == null ? 0 : rng.Gaussian(0, c.MeasurementSd.InterceptDb + c.MeasurementSd.PerDegDb * l.Point.Eccentricity))).ToArray();
-                pop.Add(new NormalSubject { Id = "synthetic-" + k, Age = age, Sensitivity = sens });
+                double foveal = ModelFoveal(c, age) + shift + fovealRng.Gaussian(0, ModelLocalSd(c, centre))
+                    + (c.MeasurementSd == null ? 0 : fovealRng.Gaussian(0, c.MeasurementSd.InterceptDb));
+                pop.Add(new NormalSubject { Id = "synthetic-" + k, Age = age, Sensitivity = sens, Foveal = foveal });
             }
             return pop;
         }

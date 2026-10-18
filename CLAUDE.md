@@ -43,7 +43,7 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 ## Commands
 ```bash
 dotnet build Perimetry.sln
-dotnet test core/Perimetry.Core.Tests                                   # 122 tests, ~5 s
+dotnet test core/Perimetry.Core.Tests                                   # 133 tests, ~5 s
 dotnet test headset/LogicTests                                           # 37 tests: headset flow, timing, geometry, dithering, portal sync
 dotnet build headset/UnityCompileCheck                                   # Unity scripts vs UnityEngine API (no Unity needed)
 dotnet test core/Perimetry.Core.Tests --collect:"XPlat Code Coverage"   # coverage (cobertura xml)
@@ -56,7 +56,8 @@ cd portal && npm run build && npm run e2e                                # Playw
 ```
 CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThreshold|FourTwo|Screening`,
 `--eye OD|OS`, `--defect Normal|SuperiorArcuate|InferiorArcuate|Hemianopia|CentralScotoma`, `--depth`,
-`--age`, `--seed`, `--fpr`, `--fnr`, `--fixloss`, `--patient-ref`, `--fixation CentralHeijlKrakau|CentralEyeTracking|CentralUnmonitored`, `--config <dir>`.
+`--age`, `--seed`, `--fpr`, `--fnr`, `--fixloss`, `--patient-ref`, `--fixation CentralHeijlKrakau|CentralEyeTracking|CentralUnmonitored|Oculokinetic`,
+`--foveal true`, `--response YesNo|ForcedChoice`, `--gaze <simulated tracker noise sd in deg, 0 = none>`, `--config <dir>`.
 
 ## Conventions
 - Field coordinates: degrees, patient's view, +x right, +y up; grids stored in OD convention, OS mirrors x.
@@ -77,6 +78,10 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 | Full Threshold | 4-2, last seen, re-test if > 4 dB from start |
 | Screening | 6 dB brighter than age-expected, re-test not seen |
 | Fixation | Mode A + Heijl-Krakau; blind spot (15°, −1.5°), remapped after 2 consecutive fixation losses |
+| Eye tracking (phase 5, proposed) | reject threshold presentations with gaze > 3° from target at onset, retest; gaze trace recorded (modes CentralEyeTracking, Oculokinetic) |
+| Oculokinetic mode B (phase 5, proposed) | target jumps uniformly in ±10°, stimulus at `AngularGeometry.Compose(target, point)`, absolute eccentricity ≤ 45°, lock 600 ms (no ET) / gaze within 3° for 300 ms (ET), HK on |
+| Foveal threshold (phase 5, proposed) | optional, OFF by default; diamond-4 target (half-size 1.5°), exam strategy, before the blind-spot search; report "Limiar foveal" |
+| Forced choice (phase 5, experimental) | OFF by default; 2 intervals × 200 ms, gap 600 ms, marker 100 ms; ZEST guess rate 1/N; no FP catch trials, no Heijl-Krakau; ~3× longer |
 | Catch trials | FP 1/30, HK 1/30, FN 1/40 (threshold − 9 dB) |
 | Alerts | FL > 20%, FP > 15%, FN > 33% |
 | Indices | MD inverse-variance (Heijl 1987), PSD (Heijl 1987), GH = 85th pct, VFI (Bengtsson 2008), GHT (Åsman & Heijl 1992) |
@@ -104,5 +109,7 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 
 ## Open decisions (waiting for the product owner)
 Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,
-status TO_BE_VALIDATED); headset pause, training, fixation target, 72 Hz duration (§11). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
+status TO_BE_VALIDATED); headset pause, training, fixation target, 72 Hz duration (§11); phase 5 proposed defaults
+(foveal diamond target and `fovealExtraDb`, gaze limit 3°, oculokinetic ±10° / 600 ms / 300 ms, forced-choice N and stop
+rule, §4–§6.4). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
 grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening. Approved on 2026-10-18: headset occlusion check before each eye (optional, off by default); blind spot remap after 2 consecutive fixation losses; VFI shown with one decimal.

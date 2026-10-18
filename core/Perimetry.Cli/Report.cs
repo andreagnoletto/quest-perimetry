@@ -99,6 +99,22 @@ namespace Perimetry.Cli
                     exam.NormativeProvisional,
                     exam.Aborted,
                     exam.Disclaimer,
+                    GhtApplicable = grid.GhtApplicable,
+                    // Phase 5: foveal threshold (null when not tested), HFA-equivalent dB; details in Foveal.
+                    FovealThresholdHfaDb = exam.Foveal == null ? (double?)null : Math.Max(cfg.Strategies.MinStimulusDb, exam.Foveal.ThresholdDb) + exam.HfaOffsetDb,
+                    Foveal = exam.Foveal == null ? null : new
+                    {
+                        exam.Foveal.ThresholdDb,
+                        ThresholdHfaDb = Math.Max(cfg.Strategies.MinStimulusDb, exam.Foveal.ThresholdDb) + exam.HfaOffsetDb,
+                        exam.Foveal.CensoredLow,
+                        exam.Foveal.CensoredHigh,
+                        exam.Foveal.StopReason,
+                        exam.Foveal.Presentations,
+                        exam.Foveal.Strategy,
+                        ExpectedHfaDb = analysis?.FovealExpectedHfaDb,
+                        Td = analysis?.FovealTd,
+                        TdP = analysis?.FovealTdP,
+                    },
                     Reliability = new
                     {
                         rel.FixationLosses,
@@ -108,6 +124,11 @@ namespace Perimetry.Cli
                         FalsePositiveRate = rel.FalsePositives.Rate,
                         FalseNegativeRate = rel.FalseNegatives.Rate,
                         rel.GazeRejectedPresentations,
+                        rel.GazeTracked,
+                        rel.GazeMeanErrorDeg,
+                        rel.GazeSamples,
+                        GazeMaxErrorDeg = cfg.Reliability.Gaze.MaxErrorDeg,
+                        rel.GazeTrace,
                         rel.AnticipatedResponses,
                         rel.AbortedPresentations,
                         rel.BlindSpotFound,

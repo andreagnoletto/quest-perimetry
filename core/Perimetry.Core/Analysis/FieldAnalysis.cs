@@ -61,6 +61,15 @@ namespace Perimetry.Core.Analysis
         public bool Calibrated { get; set; }
         public bool NormativeProvisional { get; set; }
         public double HfaOffsetDb { get; set; }
+        /// <summary>False when the grid does not cover the GHT sectors (10-2); <see cref="Ght"/> is then NotApplicable.</summary>
+        public bool GhtApplicable { get; set; } = true;
+        /// <summary>Foveal threshold (phase 5): tested, value in HFA-equivalent dB, age-expected value, deviation and its probability.</summary>
+        public bool FovealTested { get; set; }
+        public double FovealHfaDb { get; set; } = double.NaN;
+        public bool FovealCensoredLow { get; set; }
+        public double FovealExpectedHfaDb { get; set; } = double.NaN;
+        public double FovealTd { get; set; } = double.NaN;
+        public double FovealTdP { get; set; } = 1;
         public ReliabilitySummary Reliability { get; set; }
         public List<string> Warnings { get; set; } = new List<string>();
     }
@@ -80,7 +89,7 @@ namespace Perimetry.Core.Analysis
             {
                 ExamId = exam.ExamId, Eye = exam.Settings.Eye, GridId = grid.Id, AgeYears = age,
                 Calibrated = exam.Calibrated, NormativeProvisional = norm.IsProvisional,
-                HfaOffsetDb = exam.HfaOffsetDb, Reliability = exam.Reliability, GhtStatus = cfg.Ght.Status,
+                HfaOffsetDb = exam.HfaOffsetDb, Reliability = exam.Reliability, GhtStatus = cfg.Ght.Status, GhtApplicable = grid.GhtApplicable,
             };
 
             res.Warnings.Add(Disclaimers.Research);
@@ -89,8 +98,26 @@ namespace Perimetry.Core.Analysis
             if (exam.Reliability.FixationLosses.Alert) res.Warnings.Add("Perdas de fixação acima do limite");
             if (exam.Reliability.FalsePositives.Alert) res.Warnings.Add("Falsos positivos acima do limite");
             if (exam.Reliability.FalseNegatives.Alert) res.Warnings.Add("Falsos negativos acima do limite");
-            if (exam.Settings.FixationMode == FixationMode.CentralHeijlKrakau && !exam.Reliability.BlindSpotFound)
+            if (ExamSession.HeijlKrakauActive(exam.Settings, cfg) && !exam.Reliability.BlindSpotFound)
                 res.Warnings.Add("Mancha cega não localizada — monitorização Heijl-Krakau desativada");
+            if (exam.Settings.ResponseMode == ResponseMode.ForcedChoice)
+                res.Warnings.Add("Escolha forçada (experimental): limiares não comparáveis ao HFA; sem falsos positivos nem Heijl-Krakau"
+                                 + (exam.Reliability.GazeTracked ? "" : " — fixação não monitorada"));
+            if (!grid.GhtApplicable) res.Warnings.Add("GHT não se aplica à grade " + grid.Id);
+
+            if (exam.Foveal != null)
+            {
+                // Foveal threshold (phase 5): HFA-equivalent value, age-expected value and deviation; "<0 dB" analysed as 0 dB.
+                res.FovealTested = true;
+                res.FovealCensoredLow = exam.Foveal.CensoredLow;
+                res.FovealHfaDb = Math.Max(minDb, exam.Foveal.ThresholdDb) + exam.HfaOffsetDb;
+                res.FovealExpectedHfaDb = norm.ExpectedFovealHfa(age);
+                if (!double.IsNaN(res.FovealExpectedHfaDb))
+                {
+                    res.FovealTd = res.FovealHfaDb - res.FovealExpectedHfaDb;
+                    res.FovealTdP = norm.FovealTdProbability(res.FovealTd);
+                }
+            }
 
             if (exam.Settings.Strategy == Strategies.StrategyKind.Screening)
             {
@@ -137,9 +164,18 @@ namespace Perimetry.Core.Analysis
             res.PsdP = norm.PsdProbability(res.Psd);
             res.Vfi = GlobalIndices.Vfi(grid, idx, res.Md, sens, normal, td, tdP, pdP, cfg.Analysis.Vfi);
 
-            var sectors = GlobalIndices.ResolveSectors(cfg.Ght, grid);
-            res.GhtSectorDifferences = GlobalIndices.GhtSectorDifferences(pdP, sectors, cfg.Ght.PointScores);
-            res.Ght = ClassifyGht(res.GhtSectorDifferences, gh, norm, cfg.Ght);
+            if (grid.GhtApplicable)
+            {
+                var sectors = GlobalIndices.ResolveSectors(cfg.Ght, grid);
+                res.GhtSectorDifferences = GlobalIndices.GhtSectorDifferences(pdP, sectors, cfg.Ght.PointScores);
+                res.Ght = ClassifyGht(res.GhtSectorDifferences, gh, norm, cfg.Ght);
+            }
+            else
+            {
+                // 10-2: the sectors of Åsman & Heijl are 24-2 points; a few coincident 10-2 points would not be a GHT.
+                res.GhtSectorDifferences = new double[0];
+                res.Ght = GhtResult.NotApplicable;
+            }
 
             for (int i = 0; i < n; i++)
             {

@@ -17,6 +17,7 @@ namespace Perimetry.Core.Simulation
                 if (++count > maxPresentations) throw new InvalidOperationException("simulation did not terminate");
                 clock += req.PreStimulusDelayMs;
                 var res = observer.Respond(req, clock);
+                clock += ExamSession.StimulusSpanMs(req); // forced choice: all intervals before the answer
                 clock += res.Responded && res.LatencyMs.HasValue ? res.LatencyMs.Value : req.ResponseWindowMs;
                 session.Submit(res);
             }

@@ -20,6 +20,8 @@ namespace Perimetry.Core.Exam
         BlindSpotCatch,
         /// <summary>Initial blind spot localisation.</summary>
         BlindSpotMapping,
+        /// <summary>Foveal threshold (phase 5): stimulus at the centre of the diamond fixation target, before the main test.</summary>
+        Foveal,
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -31,6 +33,26 @@ namespace Perimetry.Core.Exam
         CentralEyeTracking,
         /// <summary>Mode A with no fixation monitoring.</summary>
         CentralUnmonitored,
+        /// <summary>Mode B (phase 5): the target jumps to a new position before each presentation; stimuli are placed relative to it.</summary>
+        Oculokinetic,
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum FixationTargetKind
+    {
+        /// <summary>Single central point/cross.</summary>
+        Central,
+        /// <summary>Four small points around an empty centre (HFA foveal test); the patient looks at the centre.</summary>
+        Diamond4,
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum ResponseMode
+    {
+        /// <summary>Press when seen (HFA).</summary>
+        YesNo,
+        /// <summary>Experimental (phase 5): N marked intervals, the patient chooses the one that contained the stimulus.</summary>
+        ForcedChoice,
     }
 
     /// <summary>What the presentation layer (headset or simulator) must show next.</summary>
@@ -55,6 +77,23 @@ namespace Perimetry.Core.Exam
         public int ResponseWindowMs { get; set; }
         /// <summary>Random inter-stimulus delay to wait before onset.</summary>
         public int PreStimulusDelayMs { get; set; }
+        /// <summary>Fixation target to show for this presentation (Diamond4 for the foveal threshold).</summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public FixationTargetKind FixationTarget { get; set; } = FixationTargetKind.Central;
+        /// <summary>
+        /// Position of the fixation target from straight ahead (degrees, tested eye's view). (0, 0) in mode A.
+        /// In oculokinetic mode the presenter places the stimulus at AngularGeometry.Compose(target, (FieldX, FieldY)).
+        /// </summary>
+        public double TargetX { get; set; }
+        public double TargetY { get; set; }
+        /// <summary>Forced choice: number of response intervals (0 = yes/no presentation).</summary>
+        public int Intervals { get; set; }
+        /// <summary>Forced choice: 1-based interval that contains the stimulus (0 when no stimulus is shown).</summary>
+        public int StimulusInterval { get; set; }
+        public int IntervalMs { get; set; }
+        public int IntervalGapMs { get; set; }
+        /// <summary>Forced choice: duration of the target blink marking each interval.</summary>
+        public int MarkerMs { get; set; }
     }
 
     /// <summary>What the presentation layer reports back.</summary>
@@ -64,9 +103,16 @@ namespace Perimetry.Core.Exam
         public bool Responded { get; set; }
         /// <summary>Response latency from stimulus onset (ms); null when no response.</summary>
         public double? LatencyMs { get; set; }
-        /// <summary>False when the eye tracker reported gaze off target during the presentation.</summary>
+        /// <summary>False when the presenter itself rejected the presentation for fixation (disposition "fixationLost").</summary>
         public bool FixationOk { get; set; } = true;
+        /// <summary>True when an eye tracker measured gaze for this presentation (phase 5).</summary>
+        public bool GazeTracked { get; set; }
+        /// <summary>Gaze distance from the fixation target at stimulus onset (degrees); compared with reliability.gaze.maxErrorDeg.</summary>
         public double? GazeErrorDeg { get; set; }
+        /// <summary>Largest gaze distance from the target during the stimulus (degrees); used when the onset value is missing.</summary>
+        public double? GazeMaxErrorDeg { get; set; }
+        /// <summary>Forced choice: 1-based interval the patient chose; null when no choice was made in time.</summary>
+        public int? RespondedInterval { get; set; }
         /// <summary>Stimulus onset, ms since exam start (monotonic clock of the presenter).</summary>
         public double OnsetMs { get; set; }
         /// <summary>
@@ -81,8 +127,32 @@ namespace Perimetry.Core.Exam
     {
         public PresentationRequest Request { get; set; }
         public PresentationResult Result { get; set; }
-        /// <summary>"used", "fixationLost", "anticipated" (latency below minimum), "catch", "mapping", "aborted".</summary>
+        /// <summary>
+        /// "used", "fixationLost" (presenter rejected), "gazeRejected" (eye tracker: gaze farther than the configured limit),
+        /// "anticipated" (latency below minimum), "catch", "mapping", "remapping", "foveal", "aborted".
+        /// </summary>
         public string Disposition { get; set; }
+    }
+
+    /// <summary>One gaze sample per threshold presentation, for the report's gaze trace (HFA-style bar).</summary>
+    public sealed class GazeSample
+    {
+        public int Sequence { get; set; }
+        public double OnsetMs { get; set; }
+        public double ErrorDeg { get; set; }
+        public bool Rejected { get; set; }
+    }
+
+    /// <summary>Result of the optional foveal threshold (device dB).</summary>
+    public sealed class FovealResult
+    {
+        public double ThresholdDb { get; set; }
+        public bool CensoredLow { get; set; }
+        public bool CensoredHigh { get; set; }
+        public string StopReason { get; set; }
+        public int Presentations { get; set; }
+        public double StartValueDb { get; set; }
+        public string Strategy { get; set; }
     }
 
     public sealed class ExamSettings
@@ -100,6 +170,11 @@ namespace Perimetry.Core.Exam
         public ulong Seed { get; set; } = 1;
         public bool FalsePositiveCatchTrials { get; set; } = true;
         public bool FalseNegativeCatchTrials { get; set; } = true;
+        /// <summary>Phase 5: measure the foveal threshold before the main test (HFA "Fovea: ON"). Default off, proposed.</summary>
+        public bool FovealThreshold { get; set; }
+        /// <summary>Phase 5: YesNo (HFA) or the experimental ForcedChoice.</summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ResponseMode ResponseMode { get; set; } = ResponseMode.YesNo;
         public string PatientRef { get; set; }
         public string RefractiveCorrection { get; set; }
     }
@@ -136,7 +211,15 @@ namespace Perimetry.Core.Exam
         public CatchCount FixationLosses { get; set; } = new CatchCount();
         public CatchCount FalsePositives { get; set; } = new CatchCount();
         public CatchCount FalseNegatives { get; set; } = new CatchCount();
+        /// <summary>Threshold presentations not used because fixation was off target (presenter-rejected or gaze beyond the limit).</summary>
         public int GazeRejectedPresentations { get; set; }
+        /// <summary>True when an eye tracker measured gaze during the exam (phase 5).</summary>
+        public bool GazeTracked { get; set; }
+        /// <summary>Mean gaze distance from the target at stimulus onset over tracked threshold presentations (degrees; NaN when not tracked).</summary>
+        public double GazeMeanErrorDeg { get; set; } = double.NaN;
+        public int GazeSamples { get; set; }
+        /// <summary>One sample per tracked threshold presentation (reliability.gaze.recordTrace); drawn as the gaze trace in the report.</summary>
+        public List<GazeSample> GazeTrace { get; set; } = new List<GazeSample>();
         public int AnticipatedResponses { get; set; }
         public bool BlindSpotFound { get; set; }
         public double? BlindSpotX { get; set; }
@@ -178,6 +261,8 @@ namespace Perimetry.Core.Exam
         public string NormativeId { get; set; }
         public bool NormativeProvisional { get; set; }
         public List<LocationResult> Locations { get; set; } = new List<LocationResult>();
+        /// <summary>Foveal threshold when <see cref="ExamSettings.FovealThreshold"/> was on; null otherwise.</summary>
+        public FovealResult Foveal { get; set; }
         public ReliabilitySummary Reliability { get; set; } = new ReliabilitySummary();
         public List<PresentationLogEntry> Presentations { get; set; } = new List<PresentationLogEntry>();
         /// <summary>True when the exam was stopped before every location finished; such a record must not be analysed as complete.</summary>

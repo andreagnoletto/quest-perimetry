@@ -83,6 +83,17 @@ Coordenadas idênticas às do pacote visualFields (`locmaps`), em `config/grids/
 
 60-4 não é implementada (não cabe no campo útil de ±50° do Quest). Pontos-âncora: (±9°, ±9°) nas
 grades de 6° e (±3°, ±3°) no 10-2. Vizinhos: pontos a ≤ 1,5 × espaçamento (inclui diagonais).
+Cada grade declara `ghtApplicable`: falso no 10-2 (os setores do GHT são pontos do 24-2; os poucos pontos
+coincidentes do 10-2 não formariam um GHT), e o relatório mostra "GHT: não se aplica" com MD, PSD e VFI normais.
+
+**Limiar foveal (Fase 5, padrão proposto, aguardando confirmação):** opcional (`ExamSettings.FovealThreshold`,
+**desligado por padrão**, como "Fovea: OFF/ON" do HFA). Quando ligado, é a primeira etapa do exame, antes da busca da
+mancha cega: o alvo de fixação passa a ser um **diamante de 4 pontos** (`config/strategies.json › foveal`, meia-largura
+1,5°), o paciente olha para o centro vazio e o estímulo (Goldmann III, 200 ms) aparece exatamente no centro. A
+estratégia é a do exame (ZEST por padrão; no rastreio usa-se ZEST, pois o rastreio não mede limiar), com prior
+centrado no esperado foveal para a idade. O resultado fica em `ExamRecord.Foveal` (dB do aparelho, censura, paradas) e
+o relatório mostra **"Limiar foveal: NN dB"** em dB HFA-eq com o desvio em relação ao esperado e seu p
+(`analysis.FovealTd`, `FovealTdP`). O valor foveal não entra em MD/PSD/VFI/GHT (como no HFA).
 
 ## 5. Fixação
 
@@ -97,10 +108,28 @@ grades de 6° e (±3°, ±3°) no 10-2. Vizinhos: pontos a ≤ 1,5 × espaçamen
   primeiro exame real no Quest). As perdas já contadas permanecem; `BlindSpotRemaps` registra as
   buscas extras. Se a nova busca não localizar a mancha cega, o monitoramento é desativado como acima.
   0 desliga.
-- **Modo A com eye-tracking:** apresentações marcadas pelo apresentador com olhar fora do alvo não
-  atualizam o algoritmo e o ponto é retestado (contador `GazeRejectedPresentations`). O limiar N e
-  o gaze trace ficam para a Fase 5.
-- **Modo B (oculocinético):** Fase 5.
+- **Modo A com eye-tracking (Fase 5, padrão proposto, aguardando confirmação):** o apresentador informa, a
+  cada apresentação, se houve rastreamento (`GazeTracked`) e a distância do olhar ao alvo no início do estímulo
+  (`GazeErrorDeg`; se faltar, o máximo durante o estímulo). Nos modos `CentralEyeTracking` e `Oculokinetic`, uma
+  apresentação de limiar com erro **> 3°** (`config/reliability.json › gaze.maxErrorDeg`) recebe a disposição
+  `gazeRejected`: não atualiza o algoritmo e o ponto é retestado (`retestRejected`). Toda apresentação rastreada
+  gera uma amostra em `Reliability.GazeTrace` (sequência, instante, erro, rejeitada) — a **barra de gaze trace** do
+  relatório, como no HFA — e `GazeMeanErrorDeg`/`GazeSamples` resumem. No modo Heijl-Krakau o traçado é gravado,
+  mas a regra de rejeição não se aplica (a fixação é monitorada pela mancha cega). Um `FixationOk = false` do
+  apresentador continua valendo em qualquer modo (disposição `fixationLost`).
+- **Modo B (oculocinético, Fase 5, padrão proposto, aguardando confirmação):** `FixationMode.Oculokinetic`.
+  Antes de cada apresentação o alvo salta para uma posição sorteada uniformemente em ±10° nos dois eixos
+  (`oculokinetic.targetRangeDeg`), redesenhada enquanto o estímulo resultante ultrapassar 45° de excentricidade
+  absoluta (`maxEccentricityDeg`). **Geometria:** as coordenadas de cada ponto da grade continuam sendo o
+  deslocamento *retiniano* em relação ao alvo (`FieldX/FieldY`); o headset coloca o estímulo em
+  `AngularGeometry.Compose(alvo, ponto)`: a direção do ponto é girada pela rotação de menor arco que leva o
+  "para a frente" até o alvo (fórmula de Rodrigues, eixo = frente × alvo — a rotação que o olho faz, pela lei de
+  Listing, para fixar o alvo). Assim a distância angular estímulo–alvo é exatamente a excentricidade do ponto,
+  qualquer que seja a posição do alvo, e o conjunto testado no espaço retiniano é a grade escolhida (SPEC §3).
+  `AngularGeometry.Relative` é a inversa (testes de ida e volta no `/core`). Sem eye-tracking, o alvo fica
+  `lockDelayMs` = 600 ms na nova posição com a animação de travamento antes do estímulo; com eye-tracking, o olhar
+  precisa ficar a ≤ 3° do alvo por 300 ms (`gazeConfirmDeg`, `gazeConfirmMs`). Heijl-Krakau continua ativo por
+  padrão (`heijlKrakau: true`), com a busca e os estímulos de mancha cega também relativos ao alvo.
 
 ## 6. Estratégias de limiar
 
@@ -148,7 +177,23 @@ no rastreio (não há limiar medido para referenciar o +9 dB) **[APROVADO 2026-1
 
 ### 6.4 Escolha forçada
 
-Não implementada na Fase 1 (Fase 5, conforme SPEC §9).
+**Fase 5, opção experimental, desligada por padrão** (`ExamSettings.ResponseMode = ForcedChoice`;
+`config/strategies.json › forcedChoice`). Cada apresentação tem N = 2 intervalos de 200 ms separados por 600 ms,
+cada um anunciado por um piscar do alvo de 100 ms (`markerMs`); o estímulo preenche um intervalo sorteado
+(`PresentationRequest.StimulusInterval`) e o paciente indica, depois do último intervalo, em qual ele apareceu
+(`PresentationResult.RespondedInterval`). Acerto = visto; erro ou sem resposta = não visto; não há regra de
+resposta antecipada. Consequências psicofísicas, todas implementadas e avisadas no relatório:
+- no ZEST o piso da verossimilhança passa de fpr = 0,03 para o nível do acaso **1/N** (`zestGuessRate`), isto é,
+  P(acerto | estímulo muito abaixo do limiar) = 0,5 com 2 intervalos;
+- **não há tentativas de falso positivo** (não existe "sem estímulo" quando a resposta é obrigatória) nem
+  **Heijl-Krakau** (um "visto" ao acaso em 50% das vezes tornaria a mancha cega e as perdas de fixação sem
+  sentido): a fixação só é monitorada por eye-tracking; falsos negativos continuam (erro de intervalo com
+  estímulo 9 dB mais brilhante);
+- como cada resposta carrega menos informação, o exame fica **~3× mais longo** (simulação 24-2 ZEST rápido:
+  ≈ 640 apresentações / 25 min contra ≈ 200 / 5 min em sim/não; com N = 4 intervalos cai, mas segue bem acima).
+  Por isso é experimental: antes de usar em pacientes, decidir N e um critério de parada próprio
+  **[DECISÃO PENDENTE]**.
+Os limiares medidos assim não são comparáveis aos do HFA; o relatório traz o aviso.
 
 ## 7. Confiabilidade
 
@@ -160,7 +205,10 @@ Não implementada na Fase 1 (Fase 5, conforme SPEC §9).
 
 As frequências foram **[APROVADO 2026-10-17]** reduzidas de 1/15–1/20 para caber no critério de
 tempo. Também são reportados: duração, número de apresentações, rejeições por olhar, respostas
-antecipadas, posição da mancha cega, modo de fixação, calibração e normativo usados.
+antecipadas, posição da mancha cega, modo de fixação, calibração e normativo usados. Com eye-tracking
+(Fase 5): `GazeTracked`, `GazeMeanErrorDeg`, `GazeSamples` e o traçado `GazeTrace` (§5); as rejeições por olhar
+(`GazeRejectedPresentations`) somam as do apresentador e as da regra de 3°. Na escolha forçada não há FP nem
+Heijl-Krakau (§6.4).
 Flutuação de curto prazo: não implementada (opcional na SPEC).
 
 ## 8. Análise (Single Field Analysis)
@@ -179,6 +227,13 @@ média = 33,0 − 0,17·excentricidade − 0,03·max(y, 0) − 0,07·(idade − 
 mais deslocamento global (DP 0,9 dB), variação local entre sujeitos (DP 1,2 + 0,05·exc) e ruído de
 medida teste-reteste (DP 1,3 + 0,02·exc). Os parâmetros são uma aproximação da literatura, não
 dados medidos. Todo exame e relatório leva o aviso vermelho **"NORMATIVO PROVISÓRIO"**.
+
+**Fóvea (Fase 5):** cada sujeito sintético recebe também um valor foveal = modelo em excentricidade 0 +
+`fovealExtraDb` (1,5 dB, proposto: no HFA a fóvea costuma medir 1–3 dB acima dos pontos a 3°) + o mesmo deslocamento
+global + variação local e ruído de medida (gerados num fluxo aleatório separado, de modo que os valores da grade são
+idênticos aos da Fase 1). `NormativeBuilder` ajusta a mesma regressão por idade e os percentis inferiores
+(`ExpectedFovealHfa`, `FovealTdProbability`); uma coorte real sem medida foveal produz um normativo sem fóvea e, nesse
+caso, o ZEST foveal parte do esperado do ponto mais central da grade e o relatório mostra o limiar sem p.
 
 ### 8.2 Mapas e índices
 
@@ -199,7 +254,8 @@ dados medidos. Todo exame e relatório leva o aviso vermelho **"NORMATIVO PROVIS
   setor comparada aos percentis 97 e 99 dos normais. "Fora dos limites normais" se algum setor excede o
   P99; "Limítrofe" se excede o P97; "Sensibilidade geral reduzida" se GH < P0,5; "Anormalmente alta" se
   GH > P99,5. **A composição dos setores é uma reconstrução e precisa ser validada contra a figura
-  original [DECISÃO PENDENTE]** (`config/ght.json`, status `TO_BE_VALIDATED`).
+  original [DECISÃO PENDENTE]** (`config/ght.json`, status `TO_BE_VALIDATED`). Em grades com `ghtApplicable: false`
+  (10-2) o resultado é "Não se aplica" (`analysis.GhtApplicable`), sem diferenças de setor.
 - **Escala de cinza:** 10 faixas sobre o valor HFA-eq: < 4 dB preto … ≥ 36 dB branco (limites a cada
   4 dB) **[APROVADO 2026-10-17]**.
 
@@ -313,6 +369,13 @@ Interrupção pelo operador grava o olho em andamento com `Aborted = true`, e a 
 - **Tendência:** regressão linear simples de MD e VFI contra o tempo (inclinação/ano, EP, p bicaudal pela t com
   n − 2 gl), sem exames interrompidos nem rastreios. Descritiva; análise por eventos (GPA) fica para depois.
 - **PDF:** A4, uma página por olho, impresso pelo Chromium a partir da mesma página da tela.
+- **Fase 5 (campos novos no `perimetry report`, schema `perimetry-report/1` mantido, chaves adicionais):**
+  `exam.FovealThresholdHfaDb` e `exam.Foveal` (limiar foveal; `null` quando não testado) → linha "Limiar foveal";
+  `exam.Reliability.GazeTracked/GazeMeanErrorDeg/GazeSamples/GazeMaxErrorDeg/GazeTrace` → barra de gaze trace no
+  rodapé (erro por apresentação, limite de 3° marcado, rejeitadas em destaque), só quando houve rastreamento;
+  `exam.GhtApplicable` / `analysis.GhtApplicable` → "GHT: não se aplica" no 10-2; `exam.Settings.FixationMode`
+  (`Oculokinetic`) e `exam.Settings.ResponseMode` (`ForcedChoice`) nos parâmetros, com os avisos correspondentes em
+  `warnings`. Grades 10-2, 30-2 e 24-2C usam a mesma análise; o leiaute dos mapas segue as coordenadas de cada grade.
 
 ## 12a. Sincronização e painel ao vivo (Fase 4)
 

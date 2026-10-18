@@ -26,5 +26,9 @@ namespace Perimetry.Core.Analysis
         double GhQuantile(double p);
         /// <summary>Quantile of |upper - lower| GHT sector-score difference in normals for a sector.</summary>
         double GhtSectorDiffQuantile(int sector, double p);
+        /// <summary>Age-expected foveal sensitivity (HFA-equivalent dB), phase 5; NaN when the database has no foveal data.</summary>
+        double ExpectedFovealHfa(double ageYears);
+        /// <summary>Probability level of a foveal total deviation (as <see cref="TdProbability"/>); 1 when not significant or no foveal data.</summary>
+        double FovealTdProbability(double td);
     }
 }
