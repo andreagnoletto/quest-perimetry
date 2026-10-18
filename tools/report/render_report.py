@@ -120,7 +120,9 @@ def main(analysis_path, out_png, exam_path=None):
         for x, y, p in setup(ax, "Rastreio (o visto, r visto no reteste, ■ não visto)", pts, eye):
             ax.text(x, y, m.get(p.get("ScreeningOutcome"), "?"), ha="center", va="center", fontsize=9)
     else:
-        top, h, w = 0.58, 0.24, 0.42
+        # Panels shrink so their titles stay below the last warning line.
+        top, w = 0.58, 0.42
+        h = min(0.24, 0.885 - len(a["Warnings"]) * 0.015 - 0.015 - top)
         numeric(fig.add_axes([0.05, top, w, h]), "Limiares (dB dispositivo)", pts, eye, "DeviceDb", censored=True)
         grayscale(fig.add_axes([0.53, top, w, h]), pts, eye)
         numeric(fig.add_axes([0.05, top - 0.25, w, h]), "Desvio total (dB)", pts, eye, "Td")
