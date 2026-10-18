@@ -51,8 +51,8 @@ dotnet run --project core/Perimetry.Cli -c Release -- simulate --strategy ZestFa
 dotnet run --project core/Perimetry.Cli -c Release -- benchmark --strategy ZestFast --runs 30
 python3 tools/report/render_report.py out/ex.analysis.json out/ex.png  # needs matplotlib
 bash tools/opi-crosscheck/run.sh                                         # needs R + jsonlite, python3
-cd portal && npm ci && npm run typecheck && npm test                     # portal unit tests (needs the Release CLI build)
-cd portal && npm run build && npm run e2e                                # Playwright e2e; needs PostgreSQL (E2E_DATABASE_URL)
+cd portal && npm ci && npm run typecheck && npm test                     # 38 portal unit tests (needs the Release CLI build)
+cd portal && npm run build && npm run e2e                                # 3 Playwright specs; needs PostgreSQL (E2E_DATABASE_URL)
 ```
 CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThreshold|FourTwo|Screening`,
 `--eye OD|OS`, `--defect Normal|SuperiorArcuate|InferiorArcuate|Hemianopia|CentralScotoma`, `--depth`,
@@ -106,6 +106,10 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 - Headset sync (phase 4): bearer token per device (SHA-256 stored), pairing code shown once; every `/api/headset/*`
   call is audited as `headset.*`. Live state is in-process (`next start` = one process) plus the `LiveSession` row;
   headset → portal is POST at 1 Hz with commands in the response, browser ← portal is Server-Sent Events.
+- Phase 5 in the portal: report lines come from `src/lib/report-format.ts` (foveal line, fixation/target lines, gaze bar
+  data) and `GazeTraceBar.tsx`; map geometry (`FieldMaps.geometry`) derives the lattice step per grid (6° / 2°) and a
+  per-point cell so the 24-2C macular extras draw small. Exam orders carry optional `grid` / `fixationMode` /
+  `fovealThreshold` / `responseMode` (docs/SYNC_API.md), written only when they differ from the preset.
 
 ## Open decisions (waiting for the product owner)
 Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,

@@ -7,7 +7,7 @@ import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { db } from "@/lib/db";
 import { ageAt, createPatient, updatePatient, view } from "@/lib/patients";
-import { presets } from "@/lib/headset";
+import { gridIds, isFixationMode, isResponseMode, presets } from "@/lib/headset";
 
 export type FormState = { error?: string; ok?: string } | undefined;
 
@@ -64,9 +64,21 @@ export async function updatePatientAction(id: string, _: FormState, form: FormDa
 export async function createOrderAction(patientId: string, _: FormState, form: FormData): Promise<FormState> {
   const user = await requireUser(["admin", "doctor", "operator"]);
   const presetId = String(form.get("presetId") ?? "");
-  if (!presets().some((p) => p.id === presetId)) return { error: "Exame inválido." };
+  const preset = presets().find((p) => p.id === presetId);
+  if (!preset) return { error: "Exame inválido." };
   const seedRaw = String(form.get("seed") ?? "").trim();
   if (seedRaw && !/^\d{1,9}$/.test(seedRaw)) return { error: "A semente deve ser um número inteiro." };
+  // Phase 5 options: stored only when they differ from the preset / default, so the order file stays minimal.
+  const gridRaw = String(form.get("gridId") ?? "");
+  if (gridRaw && !gridIds().includes(gridRaw)) return { error: "Grade inválida." };
+  const gridId = gridRaw && gridRaw !== preset.gridId ? gridRaw : null;
+  const fixRaw = String(form.get("fixationMode") ?? "");
+  if (fixRaw && !isFixationMode(fixRaw)) return { error: "Monitor de fixação inválido." };
+  const fixationMode = fixRaw && fixRaw !== preset.fixationMode ? fixRaw : null;
+  const fovealThreshold = form.get("fovealThreshold") === "on" ? true : null;
+  const respRaw = String(form.get("responseMode") ?? "");
+  if (respRaw && !isResponseMode(respRaw)) return { error: "Modo de resposta inválido." };
+  const responseMode = respRaw && respRaw !== "YesNo" ? respRaw : null;
   const row = await db.patient.findUnique({ where: { id: patientId } });
   if (!row) return { error: "Paciente não encontrado." };
   const p = view(row);
@@ -75,9 +87,13 @@ export async function createOrderAction(patientId: string, _: FormState, form: F
   const device = deviceId ? await db.device.findFirst({ where: { id: deviceId, tokens: { some: { revokedAt: null } } } }) : null;
   if (deviceId && !device) return { error: "Headset não pareado." };
   const order = await db.examOrder.create({
-    data: { patientId, presetId, ageYears: ageAt(p.birthDate, new Date()), refraction, seed: seedRaw || null, createdById: user.id, deviceId: device?.id ?? null, sentAt: device ? new Date() : null },
+    data: {
+      patientId, presetId, ageYears: ageAt(p.birthDate, new Date()), refraction, seed: seedRaw || null, createdById: user.id, deviceId: device?.id ?? null, sentAt: device ? new Date() : null,
+      gridId, fixationMode, fovealThreshold, responseMode,
+    },
   });
-  await audit(user.id, "order.create", "examOrder", order.id, `patient ${row.code}, ${presetId}${device ? `, headset ${device.serial.slice(0, 40)}` : ""}`);
+  const opts = [gridId && `grid ${gridId}`, fixationMode && `fixation ${fixationMode}`, fovealThreshold && "foveal", responseMode && `response ${responseMode}`].filter(Boolean).join(", ");
+  await audit(user.id, "order.create", "examOrder", order.id, `patient ${row.code}, ${presetId}${opts ? `, ${opts}` : ""}${device ? `, headset ${device.serial.slice(0, 40)}` : ""}`);
   revalidatePath(`/patients/${patientId}`);
   return { ok: device ? `Pedido criado e enviado ao headset ${device.label ?? device.serial}: ele aparece na tela do operador na próxima abertura do app.` : "Pedido criado. Baixe o arquivo e copie para o headset." };
 }

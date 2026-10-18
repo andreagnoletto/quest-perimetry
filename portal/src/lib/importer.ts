@@ -3,6 +3,7 @@ import { decryptOpt } from "./crypto.ts";
 import { db } from "./db.ts";
 import { verifyHmac } from "./hmac.ts";
 import { analyzeExam, parseHeadsetJson, PerimetryError } from "./perimetry.ts";
+import type { Report } from "./report-types.ts";
 
 // Import of the files the headset writes to exams/ (headset/README.md): exam_*.json and session_*.json,
 // each with an optional ".hmac" sidecar. Every exam is analysed by /core on import and the raw bytes are
@@ -32,6 +33,19 @@ function classify(doc: unknown): "exam" | "session" | "unknown" {
   if (d && typeof d === "object" && "Settings" in d && "Locations" in d && "ExamId" in d) return "exam";
   if (d && typeof d === "object" && "SessionId" in d && "Events" in d) return "session";
   return "unknown";
+}
+
+/**
+ * Columns copied from the /core report for the lists and trends (the report itself stays the source of truth):
+ * global indices, GHT, and the Phase 5 foveal threshold (HFA-equivalent dB) and gaze-tracking flag.
+ */
+export function examSummary(report: Report): { md: number | null; vfi: number | null; psd: number | null; ght: string | null; fovealHfaDb: number | null; gazeTracked: boolean } {
+  const a = report.analysis;
+  return {
+    md: a?.Md ?? null, vfi: a?.Vfi ?? null, psd: a?.Psd ?? null, ght: a?.Ght ?? null,
+    fovealHfaDb: report.exam.Foveal ? report.exam.Foveal.ThresholdHfaDb : report.exam.FovealThresholdHfaDb ?? null,
+    gazeTracked: report.exam.Reliability.GazeTracked === true,
+  };
 }
 
 function integrityOf(bytes: Buffer, sidecar: string | undefined, keyB64: string | null): Integrity {
@@ -102,7 +116,6 @@ export async function importFiles(files: UploadedFile[], opts: { userId: string 
       ? await db.patient.findUnique({ where: { id: opts.patientId } })
       : ref ? await db.patient.findUnique({ where: { code: ref } }) : null;
     const integrity = integrityOf(d.f.bytes, sidecars.get(d.f.name), key);
-    const a = report.analysis;
     const row = await db.exam.create({
       data: {
         examId: e.ExamId, startedUtc, patientId: patient?.id ?? null, sessionId: sessionByExamId.get(e.ExamId) ?? null,
@@ -110,7 +123,7 @@ export async function importFiles(files: UploadedFile[], opts: { userId: string 
         aborted: !!e.Aborted, configHash: e.ConfigHash ?? null, calibrated: !!e.Calibrated,
         rawText: raw, rawHmac: sidecars.get(d.f.name)?.trim() ?? null, integrity,
         report: report as unknown as object, analyzedConfig: report.analyzedWith.configHash,
-        md: a?.Md ?? null, vfi: a?.Vfi ?? null, psd: a?.Psd ?? null, ght: a?.Ght ?? null,
+        ...examSummary(report),
         importedById: opts.userId,
       },
     });

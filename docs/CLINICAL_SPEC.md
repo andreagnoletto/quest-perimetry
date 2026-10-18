@@ -376,6 +376,25 @@ Interrupção pelo operador grava o olho em andamento com `Aborted = true`, e a 
   `exam.GhtApplicable` / `analysis.GhtApplicable` → "GHT: não se aplica" no 10-2; `exam.Settings.FixationMode`
   (`Oculokinetic`) e `exam.Settings.ResponseMode` (`ForcedChoice`) nos parâmetros, com os avisos correspondentes em
   `warnings`. Grades 10-2, 30-2 e 24-2C usam a mesma análise; o leiaute dos mapas segue as coordenadas de cada grade.
+- **Laudo do portal e PNG (Fase 5, padrão proposto, aguardando confirmação do product owner):**
+  - *Limiar foveal* nos parâmetros, como o "Fovea: 35 dB / OFF" do HFA: `NN dB` (equiv. HFA) com a marca de
+    probabilidade do desvio total foveal (`p < 5%` …), `<NN dB` quando censurado no piso do aparelho, ou "não testado".
+  - *Monitor de fixação*: "Heijl-Krakau (mancha cega)", "Eye-tracking", "Oculocinética (modo B)" ou "Não monitorada";
+    na escolha forçada acrescenta "Escolha forçada (experimental)". *Alvo de fixação*: "Central", "Móvel (oculocinético)"
+    e "+ losango de 4 pontos na fóvea" quando houve teste foveal. Com eye-tracking, a linha "Olhar descartado: N de M"
+    (apresentações rejeitadas / rastreadas) entra no bloco de confiabilidade.
+  - *Barra de rastreamento do olhar* (rodapé, só com `GazeTracked`): um traço fino por apresentação, na ordem do exame;
+    altura = erro do olhar no início do estímulo, cortado em 10° (escala 0 / 5 / 10°), linha tracejada no limite de
+    rejeição (`gaze.maxErrorDeg`, 3°); apresentação descartada = traço para baixo, como as marcas "down" do HFA.
+    Legenda "Rastreamento do olhar: erro médio N,N°, N descartadas (M apresentações rastreadas)". Geometria SVG pura.
+  - *GHT*: "Não se aplica" (sem diferenças de setor) quando `GhtApplicable` é falso (10-2); a lista do paciente mostra o
+    mesmo texto. O importador guarda `fovealHfaDb` e `gazeTracked` no exame para as listas ("· fóvea NN dB", "· eye-tracking").
+  - *Mapas por grade*: passo principal da malha = maior intervalo entre coordenadas que ocorre ao menos 3 vezes (6° no
+    24-2/30-2/24-2C, 2° no 10-2); eixos com marcas a cada 10° (5° no 10-2); escala de cinza com células do passo
+    principal e, no 24-2C, os 10 pontos maculares extras desenhados por cima em células de 2°, com números e símbolos
+    menores. O marcador da mancha cega só aparece em grades que a alcançam.
+  - *Pedido de exame*: grade, monitor de fixação, limiar foveal e modo de resposta opcionais, escritos no
+    `exam-order.json` só quando diferem do preset (contrato em `docs/SYNC_API.md`).
 
 ## 12a. Sincronização e painel ao vivo (Fase 4)
 

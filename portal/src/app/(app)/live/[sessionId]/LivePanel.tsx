@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { Frame, geometry } from "@/components/FieldMaps";
-import { dateTimeBr, duration, eyeName, fmt, strategyName } from "@/lib/format";
+import { dateTimeBr, duration, eyeName, fixationName, fmt, responseModeName, strategyName } from "@/lib/format";
 import { LIVE_ACTIVE_MS, liveStateName, type LiveCatch, type LiveCommandType, type LiveView } from "@/lib/live-types";
 import { liveCommandAction, type CommandState } from "../actions";
 
@@ -52,7 +52,8 @@ export function LivePanel({ initial, patientName, patientId, presetLabel }: { in
         </div>
         <dl>
           <dt>Paciente</dt><dd>{patientId ? <Link href={`/patients/${patientId}`}>{patientName}</Link> : patientName ?? "—"} <span className="muted">{s.patientRef ?? "sem pedido"}</span></dd>
-          <dt>Exame</dt><dd>{presetLabel}{ex ? ` · ${ex.gridId} ${strategyName[ex.strategy] ?? ex.strategy}` : ""}</dd>
+          <dt>Exame</dt><dd>{presetLabel}{ex ? ` · ${ex.gridId} ${strategyName[ex.strategy] ?? ex.strategy}` : ""}{ex?.fixationMode ? ` · ${fixationName[ex.fixationMode] ?? ex.fixationMode}` : ""}{ex?.responseMode && ex.responseMode !== "YesNo" ? ` · ${responseModeName[ex.responseMode] ?? ex.responseMode}` : ""}</dd>
+          {ex?.fovealTest && <><dt>Limiar foveal</dt><dd>{ex.fovealThresholdDb === null || ex.fovealThresholdDb === undefined ? "em teste" : `${fmt(ex.fovealThresholdDb + ex.hfaOffsetDb)} dB`}</dd></>}
           <dt>Olho</dt><dd>{s.eye ? eyeName(s.eye) : "—"}</dd>
           <dt>Idade</dt><dd>{s.ageYears === null ? "—" : fmt(s.ageYears, 0)}</dd>
           <dt>Tempo</dt><dd>{duration(s.elapsedMs)}{ex ? ` · ${ex.reliability.totalPresentations} apresentações · ${finished}/${total} pontos` : ""}</dd>
@@ -74,7 +75,7 @@ export function LivePanel({ initial, patientName, patientId, presetLabel }: { in
             <Frame g={g} id="live-map" title={`Limiares (dB equiv. HFA) · ${eyeName(ex.eye)}`}>
               {g.points.map((p) => {
                 const l = p.l;
-                const fs = g.spacing * 0.42;
+                const fs = (p.cell === g.spacing ? g.spacing : Math.max(g.fine * 0.75, g.spacing * 0.25)) * 0.42;
                 if (l.blindSpot) return <circle key={p.Index} cx={p.dx} cy={-p.Y} r={fs * 0.35} fill="none" stroke="#999" strokeWidth={0.2} />;
                 if (l.state === "Finished") {
                   const v = l.censoredLow ? `<${floor}` : l.hfaEqDb === null ? "" : fmt(l.hfaEqDb);
@@ -98,6 +99,7 @@ export function LivePanel({ initial, patientName, patientId, presetLabel }: { in
               <Catch label="Perdas de fixação" c={ex.reliability.fixationLosses} />
               <Catch label="Falsos positivos" c={ex.reliability.falsePositives} />
               <Catch label="Falsos negativos" c={ex.reliability.falseNegatives} />
+              {ex.reliability.gazeTracked && <><dt>Olhar descartado</dt><dd>{ex.reliability.gazeRejected ?? 0}</dd></>}
               <dt>Mancha cega</dt><dd>{ex.reliability.blindSpotFound ? "localizada" : "procurando"}{ex.reliability.blindSpotRemaps ? ` · relocalizada ${ex.reliability.blindSpotRemaps}×` : ""}</dd>
               <dt>Duração efetiva</dt><dd>{duration(ex.reliability.durationMs)}</dd>
             </dl>

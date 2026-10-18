@@ -44,6 +44,25 @@ O headset mostra o pedido ao operador na tela de preparação (código pseudôni
 direcional alterna entre eles e a última opção é "sem pedido" (fluxo manual). O pedido escolhido vai em `orderId` no
 painel ao vivo e no log de sessão (`SessionLog.Order`).
 
+**Opções da Fase 5 (padrão proposto, aguardando confirmação do product owner).** Tanto o `exam-order.json` quanto cada
+item de `orders` podem trazer, **só quando o médico as escolheu**, as chaves opcionais abaixo; ausentes, vale o preset
+(`config/headset.json`) e o padrão do núcleo. Nomes e valores são os do `/core`:
+
+| Chave | Valores | Efeito |
+|---|---|---|
+| `grid` | `"24-2"`, `"30-2"`, `"10-2"`, `"24-2C"` (ids de `config/grids/*.json`) | substitui a grade do preset |
+| `fixationMode` | `"CentralHeijlKrakau"`, `"CentralEyeTracking"`, `"CentralUnmonitored"`, `"Oculokinetic"` | substitui o monitor de fixação do preset; eye-tracking exige headset com rastreamento (Quest Pro) |
+| `fovealThreshold` | `true` | liga o teste de limiar foveal antes da mancha cega (`ExamSettings.FovealThreshold`) |
+| `responseMode` | `"ForcedChoice"` | escolha forçada experimental (`ExamSettings.ResponseMode`); `YesNo` nunca é escrito |
+
+Exemplo: `{"patientRef":"P-7K3M9Q","ageYears":63,"refractiveCorrection":null,"presetId":"24-2-zest","grid":"10-2","fovealThreshold":true}`.
+O portal guarda as opções no pedido (`ExamOrder.gridId/fixationMode/fovealThreshold/responseMode`) e as mostra na lista.
+
+**Instantâneo ao vivo (Fase 5, opcional):** `exam` pode trazer `fixationMode`, `responseMode`, `fovealTest` (bool) e
+`fovealThresholdDb` (dB do aparelho, `null` enquanto o teste foveal corre), e `exam.reliability` pode trazer `gazeTracked`
+e `gazeRejected`; o painel mostra o que vier e ignora o que faltar. Estados novos do fluxo (ex.: `Foveal`) aparecem com o
+nome em pt-BR quando conhecidos e com o nome bruto caso contrário.
+
 ### `POST /api/headset/exams`
 Envio dos arquivos de uma sessão (ou de sessões antigas ainda sem `.sent`), texto bruto + HMAC, exatamente como estão
 no disco:
