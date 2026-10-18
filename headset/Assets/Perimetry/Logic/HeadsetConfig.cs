@@ -24,6 +24,7 @@ namespace Perimetry.Headset.Logic
         public double DefaultAgeYears { get; set; } = 50;
         public List<ExamPreset> Presets { get; set; } = new List<ExamPreset>();
         public PresentationConfig Presentation { get; set; } = new PresentationConfig();
+        public SyncConfig Sync { get; set; } = new SyncConfig();
 
         public static HeadsetConfig From(ClinicalConfig cfg)
         {
@@ -48,6 +49,8 @@ namespace Perimetry.Headset.Logic
             if (EyeOrder.Count == 0) throw new FormatException("eyeOrder is empty");
             foreach (var p in Presets)
                 if (p.Eyes == null || p.Eyes.Count == 0) throw new FormatException("preset " + p.Id + " has no eyes");
+            if (Sync.LiveIntervalMs < 100 || Sync.RequestTimeoutMs < 1000 || Sync.MaxFilesPerUpload < 1 || Sync.RetryBackoffMs.Count == 0)
+                throw new FormatException("sync settings out of range");
         }
 
         public ExamPreset Preset(string id) =>
@@ -69,6 +72,16 @@ namespace Perimetry.Headset.Logic
         public double MessageDistanceM { get; set; } = 1.5;
         public double MessageOffsetDeg { get; set; } = -6;
         public double BackgroundShellRadiusM { get; set; } = 10;
+    }
+
+    /// <summary>Phase 4 link to the doctor portal (docs/SYNC_API.md). Network settings only; nothing clinical.</summary>
+    public sealed class SyncConfig
+    {
+        public bool Enabled { get; set; } = true;
+        public int LiveIntervalMs { get; set; } = 1000;
+        public int RequestTimeoutMs { get; set; } = 8000;
+        public List<int> RetryBackoffMs { get; set; } = new List<int> { 2000, 5000, 15000, 60000 };
+        public int MaxFilesPerUpload { get; set; } = 10;
     }
 
     public sealed class TrainingTrial
@@ -117,6 +130,8 @@ namespace Perimetry.Headset.Logic
     /// </summary>
     public sealed class ExamOrder
     {
+        /// <summary>Portal order id when the order came from the portal (Phase 4); null for exam-order.json or manual setup.</summary>
+        public string Id { get; set; }
         public string PatientRef { get; set; }
         public double? AgeYears { get; set; }
         public string RefractiveCorrection { get; set; }

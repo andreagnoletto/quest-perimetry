@@ -42,6 +42,8 @@ namespace Perimetry.Headset.Logic.Tests
         public readonly Dictionary<Eye, SyntheticField> Fields = new Dictionary<Eye, SyntheticField>();
         public Func<FlowState, bool> PressDuringOcclusion = _ => false;
         public bool TrainingAlwaysPress;
+        /// <summary>When false the simulated patient does not tap on the pause screen (remote-resume tests).</summary>
+        public bool AutoResume = true;
         public int MaxStimulusFramesSeen;
 
         private readonly Rng _rng;
@@ -116,7 +118,7 @@ namespace Perimetry.Headset.Logic.Tests
             }
             bool screen = s == FlowState.Welcome || s == FlowState.Instructions || s == FlowState.EyeIntro || s == FlowState.SharpnessCheck
                 || s == FlowState.OcclusionIntro || s == FlowState.TrainingIntro || s == FlowState.TrainingRepeat
-                || s == FlowState.ExamReady || s == FlowState.BetweenEyes || s == FlowState.Paused;
+                || s == FlowState.ExamReady || s == FlowState.BetweenEyes || (s == FlowState.Paused && AutoResume);
             if (screen && Now - _stateSince > 600) Press();
         }
 

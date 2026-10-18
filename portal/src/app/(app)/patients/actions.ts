@@ -71,10 +71,23 @@ export async function createOrderAction(patientId: string, _: FormState, form: F
   if (!row) return { error: "Paciente não encontrado." };
   const p = view(row);
   const refraction = String(form.get("refraction") ?? "").trim() || p.refraction;
+  const deviceId = String(form.get("deviceId") ?? "") || null;
+  const device = deviceId ? await db.device.findFirst({ where: { id: deviceId, tokens: { some: { revokedAt: null } } } }) : null;
+  if (deviceId && !device) return { error: "Headset não pareado." };
   const order = await db.examOrder.create({
-    data: { patientId, presetId, ageYears: ageAt(p.birthDate, new Date()), refraction, seed: seedRaw || null, createdById: user.id },
+    data: { patientId, presetId, ageYears: ageAt(p.birthDate, new Date()), refraction, seed: seedRaw || null, createdById: user.id, deviceId: device?.id ?? null, sentAt: device ? new Date() : null },
   });
-  await audit(user.id, "order.create", "examOrder", order.id, `patient ${row.code}, ${presetId}`);
+  await audit(user.id, "order.create", "examOrder", order.id, `patient ${row.code}, ${presetId}${device ? `, headset ${device.serial.slice(0, 40)}` : ""}`);
   revalidatePath(`/patients/${patientId}`);
-  return { ok: "Pedido criado. Baixe o arquivo e copie para o headset." };
+  return { ok: device ? `Pedido criado e enviado ao headset ${device.label ?? device.serial}: ele aparece na tela do operador na próxima abertura do app.` : "Pedido criado. Baixe o arquivo e copie para o headset." };
 }
+
+export async function cancelOrderAction(patientId: string, orderId: string): Promise<void> {
+  const user = await requireUser(["admin", "doctor", "operator"]);
+  const o = await db.examOrder.findFirst({ where: { id: orderId, patientId, fulfilledAt: null, cancelledAt: null } });
+  if (!o) return;
+  await db.examOrder.update({ where: { id: orderId }, data: { cancelledAt: new Date() } });
+  await audit(user.id, "order.cancel", "examOrder", orderId);
+  revalidatePath(`/patients/${patientId}`);
+}
+

@@ -3,10 +3,12 @@
 import { useActionState } from "react";
 import type { FormState } from "@/app/(app)/patients/actions";
 
-export function OrderForm({ action, presets, refraction }: {
+export function OrderForm({ action, presets, refraction, devices }: {
   action: (s: FormState, f: FormData) => Promise<FormState>;
   presets: { id: string; label: string }[];
   refraction: string | null;
+  /** Paired headsets (with an active token); preselected when there is exactly one. */
+  devices: { id: string; label: string }[];
 }) {
   const [state, formAction, pending] = useActionState(action, undefined);
   return (
@@ -21,6 +23,12 @@ export function OrderForm({ action, presets, refraction }: {
         </label>
         <label>Correção no exame<input name="refraction" defaultValue={refraction ?? ""} placeholder="+2,00 esf" maxLength={100} /></label>
         <label>Semente (opcional)<input name="seed" inputMode="numeric" pattern="\d*" maxLength={9} style={{ width: 110 }} /></label>
+        <label>Enviar para o headset
+          <select name="deviceId" defaultValue={devices.length === 1 ? devices[0].id : ""}>
+            <option value="">só baixar o arquivo</option>
+            {devices.map((d) => <option key={d.id} value={d.id}>{d.label}</option>)}
+          </select>
+        </label>
         <button type="submit" disabled={pending}>Criar pedido de exame</button>
       </div>
     </form>

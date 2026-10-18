@@ -6,9 +6,12 @@ import type { Eye, PointAnalysis } from "@/lib/report-types";
 
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 
-export interface MapGeometry { points: (PointAnalysis & { dx: number })[]; lim: number; spacing: number }
+/** Anything with a grid position (report points or live locations). */
+export interface MapPoint { Index: number; X: number; Y: number }
 
-export function geometry(points: PointAnalysis[], eye: Eye): MapGeometry {
+export interface MapGeometry<P extends MapPoint = PointAnalysis> { points: (P & { dx: number })[]; lim: number; spacing: number }
+
+export function geometry<P extends MapPoint>(points: P[], eye: Eye): MapGeometry<P> {
   const pts = points.map((p) => ({ ...p, dx: eye === "OS" ? -p.X : p.X }));
   const xs = [...new Set(pts.map((p) => p.dx))].sort((a, b) => a - b);
   const gaps = xs.slice(1).map((x, i) => x - xs[i]).filter((g) => g > 1e-6);
@@ -17,7 +20,7 @@ export function geometry(points: PointAnalysis[], eye: Eye): MapGeometry {
   return { points: pts, lim, spacing };
 }
 
-function Frame({ g, children, title, id }: { g: MapGeometry; children: React.ReactNode; title: string; id: string }) {
+export function Frame({ g, children, title, id }: { g: MapGeometry<MapPoint>; children: React.ReactNode; title: string; id: string }) {
   const L = g.lim;
   const ticks: number[] = [];
   for (let t = -30; t <= 30; t += 10) if (t !== 0 && Math.abs(t) < L) ticks.push(t);
@@ -39,7 +42,7 @@ function Frame({ g, children, title, id }: { g: MapGeometry; children: React.Rea
   );
 }
 
-export function NumericMap({ g, title, id, value }: { g: MapGeometry; title: string; id: string; value: (p: PointAnalysis) => string }) {
+export function NumericMap<P extends MapPoint>({ g, title, id, value }: { g: MapGeometry<P>; title: string; id: string; value: (p: P) => string }) {
   const fs = g.spacing * 0.42;
   return (
     <Frame g={g} title={title} id={id}>

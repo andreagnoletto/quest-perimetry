@@ -21,7 +21,7 @@ export interface ImportOutcome {
 }
 
 interface ExamLike { ExamId: string; StartedUtc: string; Settings: { Eye: string | number; GridId: string; Strategy: string | number; PatientRef?: string | null }; Locations: unknown[]; Aborted?: boolean; ConfigHash?: string; Calibrated?: boolean }
-interface SessionLike { SessionId: string; StartedUtc: string; DeviceSerial?: string; DeviceModel?: string; ExamIds?: string[]; Outcome?: string }
+interface SessionLike { SessionId: string; StartedUtc: string; DeviceSerial?: string; DeviceModel?: string; ExamIds?: string[]; Outcome?: string; Order?: { Id?: string | null; PatientRef?: string | null } | null }
 
 const EYES = ["OD", "OS"];
 const STRATEGIES = ["Zest", "ZestFast", "FullThreshold", "FourTwo", "Screening"];
@@ -39,7 +39,8 @@ function integrityOf(bytes: Buffer, sidecar: string | undefined, keyB64: string 
   return verifyHmac(bytes, sidecar, keyB64) ? "verified" : "failed";
 }
 
-export async function importFiles(files: UploadedFile[], opts: { userId: string; deviceId?: string | null; patientId?: string | null }): Promise<ImportOutcome[]> {
+/** `userId` null = uploaded by the headset itself through the sync API. */
+export async function importFiles(files: UploadedFile[], opts: { userId: string | null; deviceId?: string | null; patientId?: string | null }): Promise<ImportOutcome[]> {
   const out: ImportOutcome[] = [];
   const sidecars = new Map<string, string>();
   const docs: { f: UploadedFile; doc: unknown; kind: "exam" | "session" }[] = [];
@@ -67,8 +68,10 @@ export async function importFiles(files: UploadedFile[], opts: { userId: string;
 
   // Sessions first so exams can link to them.
   const sessionByExamId = new Map<string, string>();
+  const orderByExamId = new Map<string, string>(); // order chosen on the headset (SessionLog.Order.Id, Phase 4)
   for (const d of docs.filter((x) => x.kind === "session")) {
     const s = d.doc as SessionLike;
+    if (s.Order?.Id) for (const id of s.ExamIds ?? []) orderByExamId.set(id, s.Order.Id);
     const integrity = integrityOf(d.f.bytes, sidecars.get(d.f.name), key);
     const existing = await db.headsetSession.findUnique({ where: { sessionId: s.SessionId } });
     const row = existing ?? await db.headsetSession.create({
@@ -111,8 +114,10 @@ export async function importFiles(files: UploadedFile[], opts: { userId: string;
         importedById: opts.userId,
       },
     });
-    if (patient) {
-      await db.examOrder.updateMany({ where: { patientId: patient.id, fulfilledAt: null, createdAt: { lte: startedUtc } }, data: { fulfilledAt: new Date() } });
+    const orderId = orderByExamId.get(e.ExamId);
+    if (orderId) await db.examOrder.updateMany({ where: { id: orderId, fulfilledAt: null }, data: { fulfilledAt: new Date() } });
+    else if (patient) {
+      await db.examOrder.updateMany({ where: { patientId: patient.id, fulfilledAt: null, cancelledAt: null, createdAt: { lte: startedUtc } }, data: { fulfilledAt: new Date() } });
     }
     out.push({
       file: d.f.name, kind: "exam", status: "imported", examDbId: row.id, patientCode: patient?.code ?? null, integrity,

@@ -114,5 +114,18 @@
     "messageDistanceM": 1.5,
     "messageOffsetDeg": -6.0,
     "backgroundShellRadiusM": 10.0
+  },
+  "sync": {
+    "_doc": "Phase 4: optional link to the doctor portal (docs/SYNC_API.md). The exam never depends on it: files are written locally first and sent later; without portal.json / portal-token.json on the headset the flow is the Phase 2 one. liveIntervalMs is the maximum gap between live snapshots; retryBackoffMs is applied in order after consecutive network failures, then the last value repeats.",
+    "enabled": true,
+    "liveIntervalMs": 1000,
+    "requestTimeoutMs": 8000,
+    "retryBackoffMs": [
+      2000,
+      5000,
+      15000,
+      60000
+    ],
+    "maxFilesPerUpload": 10
   }
 }

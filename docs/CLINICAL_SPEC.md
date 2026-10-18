@@ -266,6 +266,15 @@ nem nas contagens de confiabilidade) e o mesmo tipo de apresentação volta depo
 `resumeAfterPauseDelayMs` = 1500 ms. As pausas ficam em `Reliability.Pauses`; `DurationMs − PausedMs` é o tempo
 efetivo.
 
+**Painel ao vivo e comandos remotos (Fase 4).** O headset envia ao portal, a cada segundo, um instantâneo do que o
+`ExamSession` já contém (estado do fluxo, limiares das localizações concluídas em dB do aparelho e equivalente HFA,
+contagens de confiabilidade com o limite de alerta da config, última apresentação); nada é calculado no portal e
+nada muda na psicofísica. O médico pode pausar, retomar e encerrar pelo portal: a pausa remota é idêntica ao paciente
+segurar o botão (apresentação em curso descartada, pausa em `Reliability.Pauses` com motivo `operator`), a retomada
+respeita o mesmo `resumeAfterPauseDelayMs` e só vale com o headset na cabeça, e encerrar equivale à interrupção pelo
+operador. O exame nunca depende da rede: sem portal o fluxo é o mesmo, e os arquivos são enviados depois
+(`docs/SYNC_API.md`).
+
 **Fluxo do paciente (SPEC §8).** Boas-vindas (verifica o botão) → operador escolhe exame e idade, se não houver
 `exam-order.json` → instruções → por olho: apresentação do olho, nitidez do alvo (lembrete de IPD/foco),
 verificação de oclusão → treino (só no primeiro olho) → pronto → exame (mancha cega + grade) → descanso entre
@@ -291,7 +300,8 @@ Interrupção pelo operador grava o olho em andamento com `Aborted = true`, e a 
   (estímulo, fundo, estratégia, correção, calibração, escala), avisos em vermelho (protótipo/ANVISA, NÃO
   CALIBRADO, normativo PROVISÓRIO, confiabilidade), mapas numérico de limiares, escala de cinza, desvio total e
   desvio padrão (pattern) numéricos e de probabilidade, GHT, VFI, MD e PSD com p. Campo visto pelo paciente
-  (OS espelhado), x à direita, y para cima.
+  (OS espelhado), x à direita, y para cima. **VFI com uma casa decimal** (99,5%, não 100%), por decisão do
+  product owner em 2026-10-18; o HFA imprime inteiro.
 - **Limiares:** em dB equivalente HFA (dB do aparelho + `HfaOffsetDb`), a mesma escala do normativo e da escala de
   cinza. Abaixo do mínimo mensurável do aparelho o valor sai como "<NN". *(Escolha de apresentação; dB do
   aparelho continua no CSV e no JSON.)*
@@ -303,6 +313,21 @@ Interrupção pelo operador grava o olho em andamento com `Aborted = true`, e a 
 - **Tendência:** regressão linear simples de MD e VFI contra o tempo (inclinação/ano, EP, p bicaudal pela t com
   n − 2 gl), sem exames interrompidos nem rastreios. Descritiva; análise por eventos (GPA) fica para depois.
 - **PDF:** A4, uma página por olho, impresso pelo Chromium a partir da mesma página da tela.
+
+## 12a. Sincronização e painel ao vivo (Fase 4)
+
+- O exame no headset continua **independente da rede**: gravação local primeiro (HMAC), envio depois; sem rede o
+  fluxo é o da Fase 2. Contrato completo em `docs/SYNC_API.md`.
+- **Painel ao vivo** (equivalente à tela do operador do HFA): estado do fluxo, mapa de limiares preenchendo com os
+  pontos já terminados (dB equivalente HFA calculado no headset pelo `/core`; "<NN" abaixo do mínimo mensurável),
+  pontos em teste, último estímulo (posição, intensidade, visto/não visto), perdas de fixação, FP e FN com "xx"
+  acima do limite do `config/`, mancha cega, duração. Nenhum número é calculado no portal.
+- **Pausar / Retomar / Encerrar** pelo portal: chegam ao headset no envio seguinte (≤ 1 s). A pausa remota é
+  idêntica à pausa pelo botão do paciente (apresentação em curso descartada, intervalo registrado em
+  `Reliability.Pauses` com motivo `operator`); encerrar salva o olho em andamento com `Aborted: true`. Nenhum
+  resultado é mostrado ao paciente.
+- Pedido de exame enviado ao headset: só o código pseudônimo, idade, correção, exame e semente; o operador confirma
+  na tela de preparação. O exame importado pela rede traz a integridade **verificada** pela chave enviada no pareamento.
 
 ## 13. Referências
 

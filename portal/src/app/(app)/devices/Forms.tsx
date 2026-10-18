@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import type { DeviceState } from "./actions";
+import type { DeviceState, PairingState } from "./actions";
 
 type Action = (s: DeviceState, f: FormData) => Promise<DeviceState>;
 
@@ -36,6 +36,25 @@ export function CalibrationForm({ action }: { action: Action }) {
         <label>Calibração fotométrica (LuminanceCalibration JSON)<input type="file" name="file" accept=".json,application/json" required /></label>
         <button type="submit" disabled={pending}>{pending ? "Validando…" : "Enviar e validar"}</button>
       </div>
+    </form>
+  );
+}
+
+export function PairingForm({ action }: { action: (s: PairingState) => Promise<PairingState> }) {
+  const [state, formAction, pending] = useActionState(action, undefined);
+  return (
+    <form action={formAction}>
+      {state?.error && <div className="notice error">{state.error}</div>}
+      {state?.code ? (
+        <div className="notice" data-testid="pairing-code">
+          Código de pareamento: <b className="pairing-code">{state.code}</b> (vale 15 minutos, uma vez).<br />
+          <a href={`/devices/pairing/${state.pairingId}?code=${state.code}`} download="portal.json">Baixar portal.json</a> e copiar para a pasta do app no headset:
+          <code> adb push portal.json /sdcard/Android/data/br.questperimetry.headset/files/</code>. Na próxima abertura o app pareia sozinho.
+        </div>
+      ) : (
+        <p className="muted small">Gera um código de uso único que o headset troca por um token. A chave de integridade é enviada no pareamento, então os exames chegam já verificados.</p>
+      )}
+      <div className="actions"><button type="submit" disabled={pending}>{state?.code ? "Gerar outro código" : "Parear headset"}</button></div>
     </form>
   );
 }

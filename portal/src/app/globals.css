@@ -99,3 +99,19 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   .map figcaption { font-size: 10.5px; }
   .sfa-warnings p { margin: 0; }
 }
+
+/* ---- live panel ---- */
+.live-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--ok); margin-right: 6px; animation: live-pulse 1.2s ease-in-out infinite; }
+@keyframes live-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+.live-head { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px 24px; align-items: start; }
+.live-state { font-size: 22px; font-weight: 700; }
+.live-head dl, .live-rel { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; margin: 0; font-size: 14px; }
+.live-head dt, .live-rel dt { color: var(--muted); }
+.live-head dd, .live-rel dd { margin: 0; }
+.live-buttons { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+button.danger { background: var(--alert); border-color: var(--alert); }
+button:disabled { opacity: .5; cursor: default; }
+.live-grid { display: grid; grid-template-columns: minmax(0, 520px) 1fr; gap: 16px; }
+.live .map svg { max-width: 480px; margin: 0 auto; }
+.live .map .num { font-weight: 600; }
+@media (max-width: 860px) { .live-head, .live-grid { grid-template-columns: 1fr; } }

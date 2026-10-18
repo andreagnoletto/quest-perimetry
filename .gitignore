@@ -24,3 +24,6 @@ headset/*.csproj
 headset/*.sln
 headset/Assets/Resources/PerimetryConfig*
 headset/Assets/Resources/PerformanceTestRun*
+
+# agent worktrees
+.claude/worktrees/

@@ -59,3 +59,25 @@ export async function uploadCalibrationAction(deviceId: string, _: DeviceState, 
   revalidatePath("/devices");
   return { ok: "Calibração validada e ativada. Baixe o calibration.json e copie para o headset." };
 }
+
+export type PairingState = { error?: string; code?: string; pairingId?: string; expiresAt?: string } | undefined;
+
+/** New pairing code for a headset (docs/SYNC_API.md). Shown once; the headset exchanges it for a token. */
+export async function createPairingAction(_: PairingState): Promise<PairingState> {
+  const user = await requireUser(["admin", "doctor"]);
+  const { newPairingCode, codeHash, PAIRING_TTL_MIN } = await import("@/lib/headset-auth");
+  const code = newPairingCode();
+  const expiresAt = new Date(Date.now() + PAIRING_TTL_MIN * 60_000);
+  const pc = await db.pairingCode.create({ data: { codeHash: codeHash(code), createdById: user.id, expiresAt } });
+  await audit(user.id, "device.pairing.create", "pairingCode", pc.id);
+  return { code, pairingId: pc.id, expiresAt: expiresAt.toISOString() };
+}
+
+export async function revokeTokenAction(tokenId: string): Promise<void> {
+  const user = await requireUser(["admin", "doctor"]);
+  const t = await db.deviceToken.findUnique({ where: { id: tokenId }, include: { device: true } });
+  if (!t || t.revokedAt) return;
+  await db.deviceToken.update({ where: { id: tokenId }, data: { revokedAt: new Date() } });
+  await audit(user.id, "device.token.revoke", "device", t.deviceId, t.device.serial.slice(0, 40));
+  revalidatePath("/devices");
+}
