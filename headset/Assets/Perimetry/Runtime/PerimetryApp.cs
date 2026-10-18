@@ -18,6 +18,7 @@ namespace Perimetry.Headset
     ///   exam-order.json   optional {patientRef, ageYears, refractiveCorrection, presetId, seed}; renamed after use
     ///   exams/            exam_*.json + session_*.json, each with a .hmac integrity sidecar
     ///   device.key        per-device HMAC key (created on first run)
+    ///   portal.json / portal-token.json   optional link to the doctor portal (docs/SYNC_API.md, Phase 4)
     /// </summary>
     public sealed class PerimetryApp : MonoBehaviour
     {
@@ -33,6 +34,7 @@ namespace Perimetry.Headset
         private ResponseInput _input;
         private VoicePlayer _voice;
         private ExamStorage _storage;
+        private PortalSync _sync;
         private readonly List<double> _frameTimes = new List<double>();
         private bool _refreshMeasured, _eyeSourceLogged, _wasPresent = true;
         private string _fatal;
@@ -72,7 +74,8 @@ namespace Perimetry.Headset
             string data = Application.persistentDataPath;
 
             _lum = new LuminanceMapper(_cfg.Display, LoadCalibration(data, out string calNote));
-            _storage = new ExamStorage(Path.Combine(data, "exams"), ExamStorage.LoadOrCreateKey(Path.Combine(data, ExamStorage.KeyFileName)));
+            byte[] deviceKey = ExamStorage.LoadOrCreateKey(Path.Combine(data, ExamStorage.KeyFileName));
+            _storage = new ExamStorage(Path.Combine(data, "exams"), deviceKey);
             var order = LoadOrder(data);
 
             var cam = Camera.main;
@@ -97,6 +100,17 @@ namespace Perimetry.Headset
             _flow.Note("calibration", calNote);
             if (order != null) _flow.Note("examOrder", "loaded from " + OrderFile);
             RefreshRate.TryRequest(_cfg.Display.RefreshRateHz, n => _flow.Note("refreshRateRequest", n));
+            if (_h.Sync.Enabled)
+            {
+                _sync = new PortalSync(_cfg, _h, new SyncPaths(data), new SyncFiles(), new SyncIdentity
+                {
+                    Serial = SystemInfo.deviceUniqueIdentifier,
+                    Model = SystemInfo.deviceModel,
+                    Software = Perimetry.Core.Exam.ExamSession.Version + "/" + PatientFlow.Version,
+                    HmacKeyBase64 = Convert.ToBase64String(deviceKey),
+                });
+                gameObject.AddComponent<PortalSyncBehaviour>().Init(_sync, _flow, _h.Sync.RequestTimeoutMs);
+            }
             Debug.Log("[Perimetry] ready, config " + _cfg.Hash.Substring(0, 12) + ", storage " + _storage.DirectoryPath);
         }
 
@@ -181,6 +195,7 @@ namespace Perimetry.Headset
                     $"FP {r.FalsePositives.Errors}/{r.FalsePositives.Trials}  FN {r.FalseNegatives.Errors}/{r.FalseNegatives.Trials}");
             }
             GUI.Label(new Rect(10, 54, 1200, 22), Perimetry.Core.Exam.Disclaimers.Research);
+            if (_sync != null) GUI.Label(new Rect(10, 76, 1200, 22), _sync.Status + (_sync.Events.Count > 0 ? "  —  " + _sync.Events[_sync.Events.Count - 1] : ""));
         }
 
         private void OnDestroy() => _head?.Dispose();

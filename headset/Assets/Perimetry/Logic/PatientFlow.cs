@@ -11,7 +11,7 @@ namespace Perimetry.Headset.Logic
 {
     public enum FlowState
     {
-        Welcome, SetupPreset, SetupAge, Instructions,
+        Welcome, SetupOrder, SetupPreset, SetupAge, Instructions,
         EyeIntro, SharpnessCheck, OcclusionIntro, OcclusionWindow, OcclusionFailed,
         TrainingIntro, TrainingTrial, TrainingFeedback, TrainingRepeat,
         ExamReady, Exam, Paused, Resuming, BetweenEyes,
@@ -62,7 +62,9 @@ namespace Perimetry.Headset.Logic
     /// with feedback), ready, exam (blind-spot mapping + 24-2 etc. inside <see cref="ExamSession"/>) ->
     /// rest between eyes -> "Exame concluído. Aguarde o médico." No result is ever shown to the patient.
     /// Holding the button during the exam pauses it (the presentation in progress is discarded); taking the
-    /// headset off pauses it too.
+    /// headset off pauses it too. The portal (Phase 4) can pause, resume and abort through
+    /// <see cref="OperatorPause"/>, <see cref="OperatorResume"/> and <see cref="OperatorAbort"/>; a remote pause
+    /// is exactly the patient's hold with another reason, so the psychophysics are unchanged.
     /// </summary>
     public sealed class PatientFlow
     {
@@ -73,7 +75,11 @@ namespace Perimetry.Headset.Logic
         private readonly LuminanceMapper _lum;
         private readonly IExamSink _sink;
         private readonly FlowEnvironment _env;
-        private readonly ExamOrder _order;
+        private ExamOrder _order;
+        private readonly bool _orderFromFile;
+        private readonly List<ExamOrder> _pendingOrders = new List<ExamOrder>();
+        private int _orderIndex;
+        private ulong _examSeed;
         private readonly Rng _trainingRng;
         private readonly string _culture;
         private readonly List<ExamRecord> _exams = new List<ExamRecord>();
@@ -110,7 +116,9 @@ namespace Perimetry.Headset.Logic
             _age = _order.AgeYears ?? headset.DefaultAgeYears;
             if (_order.PresetId != null) _presetIndex = headset.Presets.FindIndex(p => p.Id == _order.PresetId);
             if (_presetIndex < 0) throw new ArgumentException("exam order names an unknown preset: " + _order.PresetId);
+            _orderFromFile = _order.PresetId != null || _order.PatientRef != null || _order.AgeYears != null;
             Seed = _order.Seed ?? (ulong)_env.UtcNow().Ticks;
+            _examSeed = Seed;
             _trainingRng = new Rng(Seed ^ 0x5EED_7EA1UL);
             Log = new SessionLog
             {
@@ -138,6 +146,16 @@ namespace Perimetry.Headset.Logic
         public double AgeYears => _age;
         public Eye? CurrentEye => _eyes != null && _eyeIndex < _eyes.Count ? _eyes[_eyeIndex] : (Eye?)null;
         public ExamSession CurrentSession => _session;
+        /// <summary>The order in effect: from exam-order.json, chosen on the <see cref="FlowState.SetupOrder"/> screen, or empty (manual setup).</summary>
+        public ExamOrder ActiveOrder => _order;
+        /// <summary>Orders offered on the SetupOrder screen (from the portal); the extra last option is "manual".</summary>
+        public IReadOnlyList<ExamOrder> PendingOrders => _pendingOrders;
+        /// <summary>Incremented on every state change; lets a poller notice transitions without diffing.</summary>
+        public int StateChanges { get; private set; }
+        /// <summary>ms since the first input/tick, for the live panel.</summary>
+        public double ElapsedMs => _t0.HasValue ? _now - _t0.Value : 0;
+        public DateTime SessionStartedUtc => Log.StartedUtc;
+        public bool IsPaused => State == FlowState.Paused || State == FlowState.Resuming;
         /// <summary>Presentation in progress (training or exam), for the operator display and simulators.</summary>
         public PresentationTimeline CurrentPresentation => _timeline;
         public IReadOnlyList<ExamRecord> CompletedExams => _exams;
@@ -161,6 +179,26 @@ namespace Perimetry.Headset.Logic
         public void Note(string type, string detail) => Event(type, detail);
 
         public bool IsFinished => State == FlowState.Done || State == FlowState.Aborted || State == FlowState.SaveError;
+
+        /// <summary>
+        /// Orders fetched from the portal, offered to the operator after the welcome tap. Ignored once the flow
+        /// has left the welcome screen or when an exam-order file already fixed the order. Orders naming a
+        /// preset this headset does not have are dropped (logged).
+        /// </summary>
+        public void SetPendingOrders(IReadOnlyList<ExamOrder> orders)
+        {
+            if (State != FlowState.Welcome || _orderFromFile) return;
+            _pendingOrders.Clear();
+            foreach (var o in orders ?? new List<ExamOrder>())
+            {
+                if (o == null) continue;
+                if (o.PresetId != null && _h.Presets.FindIndex(p => p.Id == o.PresetId) < 0) { Event("order", "skipped " + o.Id + ": unknown preset " + o.PresetId); continue; }
+                _pendingOrders.Add(o);
+            }
+            _orderIndex = 0;
+            Event("orders", _pendingOrders.Count + " pending from portal");
+            View = BuildView();
+        }
 
         // ---------------------------------------------------------------- inputs
 
@@ -195,6 +233,12 @@ namespace Perimetry.Headset.Logic
         public void OperatorAdjust(int delta)
         {
             if (State == FlowState.SetupAge) { _age = Math.Max(1, Math.Min(110, _age + delta)); View = BuildView(); }
+            else if (State == FlowState.SetupOrder && delta != 0)
+            {
+                int n = _pendingOrders.Count + 1; // + "manual"
+                _orderIndex = ((_orderIndex + Math.Sign(delta)) % n + n) % n;
+                View = BuildView();
+            }
             else if (State == FlowState.SetupPreset && delta != 0)
             {
                 _presetIndex = ((_presetIndex + Math.Sign(delta)) % _h.Presets.Count + _h.Presets.Count) % _h.Presets.Count;
@@ -215,6 +259,24 @@ namespace Perimetry.Headset.Logic
                 else if (State == FlowState.Resuming) { State = FlowState.Paused; Event("state", State.ToString()); }
             }
             View = BuildView();
+        }
+
+        /// <summary>Doctor pauses from the portal: same as the patient holding the button, reason "operator".</summary>
+        public void OperatorPause(double tMs)
+        {
+            Clock(tMs);
+            if (State != FlowState.Exam) return;
+            Pause("operator");
+        }
+
+        /// <summary>Doctor resumes from the portal: same as the patient's tap on the pause screen; ignored while the headset is off.</summary>
+        public void OperatorResume(double tMs)
+        {
+            Clock(tMs);
+            if (State != FlowState.Paused || !_present) return;
+            Event("operatorResume", _pauseReason);
+            _stateUntil = tMs + _cfg.Timing.ResumeAfterPauseDelayMs;
+            Go(FlowState.Resuming);
         }
 
         /// <summary>Operator stops the session. A running eye exam is saved with Aborted = true.</summary>
@@ -285,9 +347,8 @@ namespace Perimetry.Headset.Logic
             {
                 case FlowState.Welcome:
                     Event("buttonCheck", "ok");
-                    if (_order.PresetId == null) Go(FlowState.SetupPreset);
-                    else if (_order.AgeYears == null) Go(FlowState.SetupAge);
-                    else StartInstructions();
+                    if (_pendingOrders.Count > 0 && !_orderFromFile) Go(FlowState.SetupOrder);
+                    else AfterOrder();
                     break;
                 case FlowState.SetupPreset:
                     OperatorAdjust(+1);
@@ -333,6 +394,11 @@ namespace Perimetry.Headset.Logic
         {
             switch (State)
             {
+                case FlowState.SetupOrder:
+                    if (_orderIndex < _pendingOrders.Count) ApplyOrder(_pendingOrders[_orderIndex]);
+                    else Event("order", "manual");
+                    AfterOrder();
+                    break;
                 case FlowState.SetupPreset:
                     Event("preset", Preset.Id);
                     if (_order.AgeYears == null) Go(FlowState.SetupAge); else StartInstructions();
@@ -349,6 +415,26 @@ namespace Perimetry.Headset.Logic
                     Pause("patient");
                     break;
             }
+        }
+
+        /// <summary>Welcome / order screen done: ask the operator only for what the order does not provide.</summary>
+        private void AfterOrder()
+        {
+            if (_order.PresetId == null) Go(FlowState.SetupPreset);
+            else if (_order.AgeYears == null) Go(FlowState.SetupAge);
+            else StartInstructions();
+        }
+
+        private void ApplyOrder(ExamOrder o)
+        {
+            _order = o;
+            Log.Order = o;
+            if (o.AgeYears != null) _age = o.AgeYears.Value;
+            if (o.PresetId != null) _presetIndex = _h.Presets.FindIndex(p => p.Id == o.PresetId);
+            // The session seed (training PRNG, session id) was fixed at start-up from the clock; an order seed
+            // applies to the exams themselves, which is what replay needs (ExamSettings.Seed is in the record).
+            _examSeed = o.Seed ?? Seed;
+            Event("order", o.Id ?? "(no id)");
         }
 
         private void StartInstructions()
@@ -464,7 +550,7 @@ namespace Perimetry.Headset.Logic
                 FixationMode = Preset.FixationMode,
                 StimulusSize = Preset.StimulusSize,
                 AgeYears = _age,
-                Seed = Seed + (ulong)_eyeIndex,
+                Seed = _examSeed + (ulong)_eyeIndex,
                 PatientRef = _order.PatientRef,
                 RefractiveCorrection = _order.RefractiveCorrection,
             };
@@ -538,6 +624,7 @@ namespace Perimetry.Headset.Logic
         private void Go(FlowState s)
         {
             State = s;
+            StateChanges++;
             Event("state", s.ToString());
             View = BuildView();
         }
@@ -559,6 +646,7 @@ namespace Perimetry.Headset.Logic
             switch (s)
             {
                 case FlowState.Welcome: return "welcome";
+                case FlowState.SetupOrder: return "setup.order";
                 case FlowState.SetupPreset: return "setup.preset";
                 case FlowState.SetupAge: return "setup.age";
                 case FlowState.Instructions: return "instructions";
@@ -580,6 +668,15 @@ namespace Perimetry.Headset.Logic
             }
         }
 
+        private string OrderLabel()
+        {
+            if (_orderIndex >= _pendingOrders.Count) return PatientMessages.Get("setup.order.none", _culture);
+            var o = _pendingOrders[_orderIndex];
+            var preset = _h.Presets.Find(p => p.Id == o.PresetId);
+            return PatientMessages.Get("setup.order.item", _culture, o.PatientRef ?? "—", preset?.Label ?? o.PresetId ?? "—",
+                o.AgeYears.HasValue ? o.AgeYears.Value.ToString("0", System.Globalization.CultureInfo.InvariantCulture) : "—");
+        }
+
         /// <param name="consumeCue">True only for the per-frame view built by <see cref="Tick"/>, so a cue raised by an input edge is still delivered once.</param>
         private FlowView BuildView(bool consumeCue = false)
         {
@@ -590,6 +687,7 @@ namespace Perimetry.Headset.Logic
             {
                 switch (key)
                 {
+                    case "setup.order": text = PatientMessages.Get(key, _culture, OrderLabel()); break;
                     case "setup.preset": text = PatientMessages.Get(key, _culture, Preset.Label); break;
                     case "setup.age": text = PatientMessages.Get(key, _culture, _age); break;
                     case "eye.intro": text = PatientMessages.Get(key, _culture, PatientMessages.EyeName(CurrentEye.Value, _culture)); break;
