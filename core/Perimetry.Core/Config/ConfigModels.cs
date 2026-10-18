@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Perimetry.Core.Config
 {
@@ -266,6 +267,30 @@ namespace Perimetry.Core.Config
         public double FovealExtraDb { get; set; } = 1.5;
         public double GlobalShiftSdDb { get; set; }
         public PopulationConfig Population { get; set; }
+    }
+
+    /// <summary>Phase 6: rules for building the clinic's own normative database from a cohort of healthy eyes (config/normative/cohort.json).</summary>
+    public sealed class NormativeCohortConfig
+    {
+        public double MinAgeYears { get; set; } = 18;
+        public double? MaxAgeYears { get; set; }
+        public bool ExcludeAborted { get; set; } = true;
+        // Replace (not append to) the defaults when the file lists these.
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public List<string> AllowedStrategies { get; set; } = new List<string> { "Zest", "ZestFast", "FullThreshold" };
+        public CohortReliabilityRule Reliability { get; set; } = new CohortReliabilityRule();
+        public bool ExcludeFirstExamPerEye { get; set; } = true;
+        /// <summary>"latest" (default) or "all": with "all" every eligible exam of an eye enters the population.</summary>
+        public string OneExamPerEye { get; set; } = "latest";
+        public int MinEyesForMeasured { get; set; } = 100;
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public List<double[]> AgeBands { get; set; } = new List<double[]> { new[] { 18.0, 29 }, new[] { 30.0, 39 }, new[] { 40.0, 49 }, new[] { 50.0, 59 }, new[] { 60.0, 69 }, new[] { 70.0, 79 }, new[] { 80.0, 120 } };
+        public double AgeRangeMarginYears { get; set; } = 5;
+    }
+
+    public sealed class CohortReliabilityRule
+    {
+        public bool UseAlertLimits { get; set; } = true;
     }
 
     public sealed class GridPointConfig

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Perimetry.Core.Config;
 using Perimetry.Core.Geometry;
 using Perimetry.Core.MathUtil;
@@ -20,11 +21,31 @@ namespace Perimetry.Core.Analysis
     /// <summary>Normative database built from a population of normal fields (see <see cref="NormativeBuilder"/>).</summary>
     public sealed class NormativeDatabase : INormativeDatabase
     {
+        public const string Schema = "perimetry-normative/1";
+        public const string StatusMeasured = "MEASURED";
+        public const string StatusProvisional = "PROVISIONAL";
+        public const string SourceSynthetic = "synthetic";
+        public const string SourceCohort = "cohort";
+
         public string Id { get; internal set; }
         public string GridId { get; internal set; }
         public bool IsProvisional { get; internal set; }
+        public string Status => IsProvisional ? StatusProvisional : StatusMeasured;
+        /// <summary>Why the status is what it is (e.g. "synthetic model" or "42 eyes, minimum 100").</summary>
+        public string StatusReason { get; internal set; }
+        public string Source { get; internal set; } = SourceSynthetic;
+        /// <summary>SHA-256 of the cohort file the database was built from (cohort source only).</summary>
+        public string CohortHash { get; internal set; }
+        public string Builder { get; internal set; }
+        public DateTime? BuiltUtc { get; internal set; }
+        public int MinEyesForMeasured { get; internal set; }
         public int LocationCount => Intercept.Length;
         public int PopulationSize { get; internal set; }
+        public int PopulationEyes => PopulationSize;
+        public double AgeMin { get; internal set; } = double.NaN;
+        public double AgeMax { get; internal set; } = double.NaN;
+        /// <summary>True when the foveal regression comes from measured cohort values (false: synthetic model or no foveal data).</summary>
+        public bool FovealFromCohort { get; internal set; }
 
         public double[] Intercept { get; internal set; }
         public double[] Slope { get; internal set; }
@@ -73,6 +94,113 @@ namespace Perimetry.Core.Analysis
 
         public double GhQuantile(double p) => Stats.QuantileSorted(GhSorted, p);
         public double GhtSectorDiffQuantile(int sector, double p) => Stats.QuantileSorted(GhtAbsDiffSorted[sector], p);
+
+        // ------------------------------------------------------------------ serialisation (phase 6)
+
+        private static readonly JsonSerializerSettings FileJson = new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
+            FloatFormatHandling = FloatFormatHandling.String, // NaN (blind-spot percentiles, missing fovea) stays valid JSON
+            DateFormatHandling = DateFormatHandling.IsoDateFormat,
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+            NullValueHandling = NullValueHandling.Include,
+        };
+
+        /// <summary>On-disk form of a normative database (schema perimetry-normative/1). Field names are the file's keys.</summary>
+        public sealed class NormativeFile
+        {
+            public string Schema { get; set; } = NormativeDatabase.Schema;
+            public string Id { get; set; }
+            public string GridId { get; set; }
+            public string Status { get; set; }
+            public string StatusReason { get; set; }
+            public NormativeSource Source { get; set; }
+            public DateTime? BuiltUtc { get; set; }
+            public int PopulationEyes { get; set; }
+            public double[] AgeRange { get; set; }
+            public int Locations { get; set; }
+            public double[] Levels { get; set; }
+            public double[] Intercept { get; set; }
+            public double[] Slope { get; set; }
+            public double[] TdSd { get; set; }
+            public double[] PdSd { get; set; }
+            public double[][] TdLut { get; set; }
+            public double[][] PdLut { get; set; }
+            public double[] MdLut { get; set; }
+            public double[] PsdLut { get; set; }
+            public double[] GhSorted { get; set; }
+            public double[][] GhtAbsDiffSorted { get; set; }
+            public NormativeFoveal Foveal { get; set; }
+        }
+
+        public sealed class NormativeSource
+        {
+            public string Kind { get; set; }
+            public string CohortHash { get; set; }
+            public string Builder { get; set; }
+            public int MinEyesForMeasured { get; set; }
+        }
+
+        public sealed class NormativeFoveal
+        {
+            public bool FromCohort { get; set; }
+            public int PopulationEyes { get; set; }
+            public double Intercept { get; set; }
+            public double Slope { get; set; }
+            public double TdSd { get; set; }
+            public double[] TdLut { get; set; }
+        }
+
+        public NormativeFile ToFile() => new NormativeFile
+        {
+            Id = Id, GridId = GridId, Status = Status, StatusReason = StatusReason,
+            Source = new NormativeSource { Kind = Source, CohortHash = CohortHash, Builder = Builder, MinEyesForMeasured = MinEyesForMeasured },
+            BuiltUtc = BuiltUtc, PopulationEyes = PopulationSize,
+            AgeRange = new[] { AgeMin, AgeMax }, Locations = LocationCount, Levels = Levels,
+            Intercept = Intercept, Slope = Slope, TdSd = TdSdByLocation, PdSd = PdSdByLocation,
+            TdLut = TdLut, PdLut = PdLut, MdLut = MdLut, PsdLut = PsdLut, GhSorted = GhSorted, GhtAbsDiffSorted = GhtAbsDiffSorted,
+            Foveal = new NormativeFoveal
+            {
+                FromCohort = FovealFromCohort, PopulationEyes = FovealPopulationSize,
+                Intercept = FovealIntercept, Slope = FovealSlope, TdSd = FovealTdSd, TdLut = FovealTdLut,
+            },
+        };
+
+        public string ToJson() => JsonConvert.SerializeObject(ToFile(), FileJson);
+
+        public static NormativeDatabase FromJson(string json)
+        {
+            var f = JsonConvert.DeserializeObject<NormativeFile>(json, FileJson) ?? throw new FormatException("empty normative file");
+            return FromFile(f);
+        }
+
+        public static NormativeDatabase FromFile(NormativeFile f)
+        {
+            if (f.Schema != Schema) throw new FormatException("not a normative database file (schema " + (f.Schema ?? "missing") + ")");
+            if (f.Intercept == null || f.Slope == null || f.TdLut == null || f.PdLut == null || f.Levels == null || f.GhSorted == null || f.GhtAbsDiffSorted == null)
+                throw new FormatException("normative file is missing arrays");
+            int n = f.Intercept.Length;
+            if (f.Slope.Length != n || f.TdSd.Length != n || f.PdSd.Length != n || f.TdLut.Length != n || f.PdLut.Length != n)
+                throw new FormatException("normative file arrays disagree on the number of locations");
+            var db = new NormativeDatabase
+            {
+                Id = f.Id, GridId = f.GridId, IsProvisional = f.Status != StatusMeasured, StatusReason = f.StatusReason,
+                Source = f.Source?.Kind ?? SourceCohort, CohortHash = f.Source?.CohortHash, Builder = f.Source?.Builder,
+                MinEyesForMeasured = f.Source?.MinEyesForMeasured ?? 0,
+                BuiltUtc = f.BuiltUtc, PopulationSize = f.PopulationEyes,
+                AgeMin = f.AgeRange != null && f.AgeRange.Length == 2 ? f.AgeRange[0] : double.NaN,
+                AgeMax = f.AgeRange != null && f.AgeRange.Length == 2 ? f.AgeRange[1] : double.NaN,
+                Levels = f.Levels, Intercept = f.Intercept, Slope = f.Slope, TdSdByLocation = f.TdSd, PdSdByLocation = f.PdSd,
+                TdLut = f.TdLut, PdLut = f.PdLut, MdLut = f.MdLut, PsdLut = f.PsdLut, GhSorted = f.GhSorted, GhtAbsDiffSorted = f.GhtAbsDiffSorted,
+            };
+            if (f.Foveal != null)
+            {
+                db.FovealFromCohort = f.Foveal.FromCohort; db.FovealPopulationSize = f.Foveal.PopulationEyes;
+                db.FovealIntercept = f.Foveal.Intercept; db.FovealSlope = f.Foveal.Slope; db.FovealTdSd = f.Foveal.TdSd; db.FovealTdLut = f.Foveal.TdLut;
+            }
+            return db;
+        }
     }
 
     /// <summary>
@@ -98,6 +226,8 @@ namespace Perimetry.Core.Analysis
             var db = new NormativeDatabase
             {
                 Id = id, GridId = grid.Id, IsProvisional = provisional, PopulationSize = population.Count,
+                Builder = "perimetry-core/" + Exam.ExamSession.Version + " nvgenerate-port",
+                AgeMin = ages.Min(), AgeMax = ages.Max(),
                 Intercept = new double[n], Slope = new double[n],
                 TdSdByLocation = new double[n], PdSdByLocation = new double[n],
                 Levels = levels, TdLut = new double[n][], PdLut = new double[n][],
@@ -157,6 +287,38 @@ namespace Perimetry.Core.Analysis
                 .Select(s => diffs.Select(d => Math.Abs(d[s])).OrderBy(v => v).ToArray()).ToArray();
             return db;
         }
+
+        /// <summary>
+        /// Phase 6: builds the clinic's own database from a filtered cohort (<see cref="CohortFilter.Apply"/>).
+        /// Status is MEASURED with at least <see cref="NormativeCohortConfig.MinEyesForMeasured"/> eyes, else PROVISIONAL
+        /// (still usable, with a warning on every report). Blind-spot locations without a measured value take the
+        /// mean of the subject's two nearest analysed locations, so the regression there still yields a start value.
+        /// </summary>
+        public static NormativeDatabase BuildFromCohort(string id, TestGrid grid, ClinicalConfig cfg, CohortSelection selection,
+            string cohortHash, DateTime? builtUtc)
+        {
+            var rules = cfg.NormativeCohort;
+            int eyes = selection.Population.Count;
+            bool provisional = eyes < rules.MinEyesForMeasured;
+            var db = Build(id, provisional, grid, selection.Population, cfg.Analysis, cfg.Ght);
+            db.Source = NormativeDatabase.SourceCohort;
+            db.CohortHash = cohortHash;
+            db.BuiltUtc = builtUtc;
+            db.MinEyesForMeasured = rules.MinEyesForMeasured;
+            db.StatusReason = provisional
+                ? $"{eyes} olhos elegíveis, mínimo {rules.MinEyesForMeasured} para MEASURED"
+                : $"{eyes} olhos elegíveis (mínimo {rules.MinEyesForMeasured})";
+            db.FovealFromCohort = db.FovealPopulationSize > 0;
+            if (!db.FovealFromCohort)
+            {
+                // Fewer than 30 foveal values in the cohort: fall back to the synthetic foveal model so the foveal
+                // test still has an expected value; the file says so (foveal.fromCohort = false).
+                var syn = ProvisionalNormative.For(cfg, grid);
+                db.FovealIntercept = syn.FovealIntercept; db.FovealSlope = syn.FovealSlope;
+                db.FovealTdSd = syn.FovealTdSd; db.FovealTdLut = syn.FovealTdLut; db.FovealPopulationSize = 0;
+            }
+            return db;
+        }
     }
 
     /// <summary>
@@ -210,6 +372,9 @@ namespace Perimetry.Core.Analysis
                 if (Cache.TryGetValue(key, out var db)) return db;
                 db = NormativeBuilder.Build("provisional-synthetic/" + grid.Id, true, grid,
                     GeneratePopulation(cfg.ProvisionalNormative, grid), cfg.Analysis, cfg.Ght);
+                db.Source = NormativeDatabase.SourceSynthetic;
+                db.StatusReason = "modelo sintético da literatura, não medido neste aparelho";
+                db.FovealFromCohort = false;
                 Cache[key] = db;
                 return db;
             }
