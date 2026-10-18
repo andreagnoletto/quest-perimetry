@@ -135,6 +135,11 @@ model ExamOrder {
   ageYears    Float
   refraction  String?
   seed        String?
+  /// Phase 5 options written to exam-order.json when set; null = the preset's own value (grid, fixation) or off.
+  gridId          String?
+  fixationMode    String?
+  fovealThreshold Boolean?
+  responseMode    String?
   createdById String
   createdAt   DateTime  @default(now())
   fulfilledAt DateTime?
@@ -220,6 +225,9 @@ model Exam {
   vfi              Float?
   psd              Float?
   ght              String?
+  /// Phase 5: foveal threshold (HFA-equivalent dB, null = not tested) and whether gaze was tracked, for the lists.
+  fovealHfaDb      Float?
+  gazeTracked      Boolean         @default(false)
   /// Null when the headset uploaded the file itself (POST /api/headset/exams); the access log names the device.
   importedById     String?
   importedAt       DateTime        @default(now())

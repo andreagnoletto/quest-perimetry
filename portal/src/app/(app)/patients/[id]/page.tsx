@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { db } from "@/lib/db";
-import { dateBr, dateTimeBr, eyeName, fmt, strategyName } from "@/lib/format";
-import { pairedDevices, presets } from "@/lib/headset";
+import { dateBr, dateTimeBr, eyeName, fixationName, fmt, responseModeName, strategyName } from "@/lib/format";
+import { gridIds, pairedDevices, presets } from "@/lib/headset";
 import { ageAt, view } from "@/lib/patients";
 import { trend } from "@/lib/progression";
 import type { Report } from "@/lib/report-types";
@@ -29,6 +29,8 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
   const ps = presets();
   const devices = await pairedDevices();
   const presetLabel = (pid: string) => ps.find((x) => x.id === pid)?.label ?? pid;
+  const orderOptions = (o: { gridId: string | null; fixationMode: string | null; fovealThreshold: boolean | null; responseMode: string | null }) =>
+    [o.gridId, o.fixationMode && (fixationName[o.fixationMode] ?? o.fixationMode), o.fovealThreshold && "limiar foveal", o.responseMode && (responseModeName[o.responseMode] ?? o.responseMode)].filter(Boolean).join(" · ");
 
   return (
     <>
@@ -49,7 +51,7 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
 
       <h2>Pedido de exame para o headset</h2>
       <div className="card">
-        <OrderForm action={createOrderAction.bind(null, id)} presets={ps.map((x) => ({ id: x.id, label: x.label }))} refraction={p.refraction} devices={devices} />
+        <OrderForm action={createOrderAction.bind(null, id)} presets={ps.map((x) => ({ id: x.id, label: x.label, gridId: x.gridId, fixationMode: x.fixationMode }))} grids={gridIds()} refraction={p.refraction} devices={devices} />
         <p className="muted small">Enviado ao headset pareado, o pedido aparece na tela do operador; sem headset pareado, copie o arquivo baixado para a pasta do app com o nome <code>exam-order.json</code>. Em ambos os casos vai só o código {p.code}, a idade, a correção e o exame, nunca o nome.</p>
         {row.orders.length > 0 && (
           <div className="table-wrap">
@@ -59,7 +61,7 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
                 {row.orders.map((o) => (
                   <tr key={o.id}>
                     <td>{dateTimeBr(o.createdAt)}</td>
-                    <td>{presetLabel(o.presetId)}</td>
+                    <td>{presetLabel(o.presetId)}{orderOptions(o) ? <span className="muted"> · {orderOptions(o)}</span> : null}</td>
                     <td className="num">{fmt(o.ageYears, 1)}</td>
                     <td>{o.device ? o.device.label ?? o.device.model ?? o.device.serial : "—"}</td>
                     <td>{o.fulfilledAt ? `realizado (importado ${dateBr(o.fulfilledAt)})` : o.cancelledAt ? "cancelado" : o.deviceId ? "enviado ao headset, aguardando" : "aguardando"}</td>
@@ -90,7 +92,7 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
                     return (
                       <tr key={e.id}>
                         <td><Link href={`/exams/${e.id}`}>{dateTimeBr(e.startedUtc)}</Link></td>
-                        <td>{e.gridId} {strategyName[e.strategy] ?? e.strategy}{e.aborted ? <span className="alert"> (interrompido)</span> : null}{r.exam.Reliability.LowReliability ? <span className="alert"> baixa confiabilidade</span> : null}</td>
+                        <td>{e.gridId} {strategyName[e.strategy] ?? e.strategy}{e.fovealHfaDb !== null ? <span className="muted"> · fóvea {fmt(e.fovealHfaDb)} dB</span> : null}{e.gazeTracked ? <span className="muted"> · eye-tracking</span> : null}{e.aborted ? <span className="alert"> (interrompido)</span> : null}{r.exam.Reliability.LowReliability ? <span className="alert"> baixa confiabilidade</span> : null}</td>
                         <td className="num">{fmt(e.md, 2)}</td>
                         <td className="num">{fmt(e.psd, 2)}</td>
                         <td className="num">{e.vfi === null ? "—" : fmt(e.vfi, 1) + "%"}</td>
