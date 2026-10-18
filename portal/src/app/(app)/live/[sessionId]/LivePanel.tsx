@@ -53,7 +53,7 @@ export function LivePanel({ initial, patientName, patientId, presetLabel }: { in
         <dl>
           <dt>Paciente</dt><dd>{patientId ? <Link href={`/patients/${patientId}`}>{patientName}</Link> : patientName ?? "—"} <span className="muted">{s.patientRef ?? "sem pedido"}</span></dd>
           <dt>Exame</dt><dd>{presetLabel}{ex ? ` · ${ex.gridId} ${strategyName[ex.strategy] ?? ex.strategy}` : ""}{ex?.fixationMode ? ` · ${fixationName[ex.fixationMode] ?? ex.fixationMode}` : ""}{ex?.responseMode && ex.responseMode !== "YesNo" ? ` · ${responseModeName[ex.responseMode] ?? ex.responseMode}` : ""}</dd>
-          {ex?.fovealTest && <><dt>Limiar foveal</dt><dd>{ex.fovealThresholdDb === null || ex.fovealThresholdDb === undefined ? "em teste" : `${fmt(ex.fovealThresholdDb + ex.hfaOffsetDb)} dB`}</dd></>}
+          {ex?.fovealThreshold && <><dt>Limiar foveal</dt><dd>{!ex.foveal ? "em teste" : `${ex.foveal.censoredLow ? "<" : ""}${fmt(ex.foveal.hfaEqDb)} dB`}</dd></>}
           <dt>Olho</dt><dd>{s.eye ? eyeName(s.eye) : "—"}</dd>
           <dt>Idade</dt><dd>{s.ageYears === null ? "—" : fmt(s.ageYears, 0)}</dd>
           <dt>Tempo</dt><dd>{duration(s.elapsedMs)}{ex ? ` · ${ex.reliability.totalPresentations} apresentações · ${finished}/${total} pontos` : ""}</dd>
@@ -99,7 +99,7 @@ export function LivePanel({ initial, patientName, patientId, presetLabel }: { in
               <Catch label="Perdas de fixação" c={ex.reliability.fixationLosses} />
               <Catch label="Falsos positivos" c={ex.reliability.falsePositives} />
               <Catch label="Falsos negativos" c={ex.reliability.falseNegatives} />
-              {ex.reliability.gazeTracked && <><dt>Olhar descartado</dt><dd>{ex.reliability.gazeRejected ?? 0}</dd></>}
+              {ex.reliability.gazeTracked && <><dt>Olhar descartado</dt><dd>{ex.reliability.gazeRejectedPresentations ?? 0}{ex.reliability.gazeMeanErrorDeg != null ? ` · erro médio ${fmt(ex.reliability.gazeMeanErrorDeg, 1)}°` : ""}</dd></>}
               <dt>Mancha cega</dt><dd>{ex.reliability.blindSpotFound ? "localizada" : "procurando"}{ex.reliability.blindSpotRemaps ? ` · relocalizada ${ex.reliability.blindSpotRemaps}×` : ""}</dd>
               <dt>Duração efetiva</dt><dd>{duration(ex.reliability.durationMs)}</dd>
             </dl>

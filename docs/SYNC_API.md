@@ -57,10 +57,12 @@ item de `orders` podem trazer, **só quando o médico as escolheu**, as chaves o
 
 Exemplo: `{"patientRef":"P-7K3M9Q","ageYears":63,"refractiveCorrection":null,"presetId":"24-2-zest","grid":"10-2","fovealThreshold":true}`.
 O portal guarda as opções no pedido (`ExamOrder.gridId/fixationMode/fovealThreshold/responseMode`) e as mostra na lista.
+No headset, `ExamOrder.ApplyTo(preset)` aplica as chaves presentes sobre o preset (a estratégia, o tamanho do estímulo e a
+ordem dos olhos vêm sempre do preset); um pedido com grade desconhecida é ignorado e registrado no log da sessão.
 
-**Instantâneo ao vivo (Fase 5, opcional):** `exam` pode trazer `fixationMode`, `responseMode`, `fovealTest` (bool) e
-`fovealThresholdDb` (dB do aparelho, `null` enquanto o teste foveal corre), e `exam.reliability` pode trazer `gazeTracked`
-e `gazeRejected`; o painel mostra o que vier e ignora o que faltar. Estados novos do fluxo (ex.: `Foveal`) aparecem com o
+**Instantâneo ao vivo (Fase 5, opcional):** `exam` pode trazer `fixationMode`, `responseMode`, `fovealThreshold` (bool) e
+`foveal` (`null` enquanto o teste foveal corre; depois `{db, hfaEqDb, censoredLow, presentations}`), e `exam.reliability` pode trazer
+`gazeTracked`, `gazeRejectedPresentations` e `gazeMeanErrorDeg` (ver o `POST /api/headset/live` abaixo); o painel mostra o que vier e ignora o que faltar. Estados novos do fluxo (ex.: `Foveal`) aparecem com o
 nome em pt-BR quando conhecidos e com o nome bruto caso contrário.
 
 ### `POST /api/headset/exams`

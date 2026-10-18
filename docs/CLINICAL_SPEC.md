@@ -194,6 +194,9 @@ resposta antecipada. Consequências psicofísicas, todas implementadas e avisada
   Por isso é experimental: antes de usar em pacientes, decidir N e um critério de parada próprio
   **[DECISÃO PENDENTE]**.
 Os limiares medidos assim não são comparáveis aos do HFA; o relatório traz o aviso.
+**Decisão do product owner (2026-10-18):** a escolha forçada fica como opção que o médico marca no pedido do exame
+(portal › novo pedido › "Modo de resposta"), pensada para repetir exames pouco confiáveis em sim/não; os exames de rotina
+continuam em sim/não. O laudo mostra a duração e o número de apresentações para avaliar o custo na prática.
 
 ## 7. Confiabilidade
 
@@ -390,6 +393,7 @@ diagonal), dentro do campo útil configurado (`usableHalfFieldDeg` 50°) e do ca
 | Diamante foveal | 4 pontos de 0,4° a 1,5° do centro, amarelos, 30 cd/m² | Fase 5, **padrão proposto** |
 | Travamento no modo B | 600 ms (ou olhar ≤ 3° por 300 ms; timeout 3 s), animação 1,6× / 60%; ISI depois do travamento | Fase 5, **padrão proposto** |
 | Marcador da escolha forçada | losango some por 100 ms antes de cada intervalo | Fase 5, **padrão proposto** |
+| Demonstração para o paciente antes de colocar o headset | página/animação em pt-BR no portal (monitor ou tablet) | **Fase 6** (decisão de 2026-10-18: depois da Fase 5) |
 | Olhar "disponível" | última amostra há < 500 ms | Fase 5, default técnico |
 
 ## 12. Portal e relatório (Fase 3)

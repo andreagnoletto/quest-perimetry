@@ -161,7 +161,10 @@ namespace Perimetry.Headset.Logic
         public FlowView View { get; private set; }
         public SessionLog Log { get; }
         public ulong Seed { get; }
-        public ExamPreset Preset => _h.Presets[_presetIndex];
+        /// <summary>The selected preset with the order's Phase 5 overrides (grid, fixation, foveal, response mode) applied.</summary>
+        public ExamPreset Preset => _order.ApplyTo(_h.Presets[_presetIndex]);
+        /// <summary>The preset as configured in headset.json, without order overrides.</summary>
+        public ExamPreset BasePreset => _h.Presets[_presetIndex];
         public double AgeYears => _age;
         public Eye? CurrentEye => _eyes != null && _eyeIndex < _eyes.Count ? _eyes[_eyeIndex] : (Eye?)null;
         public ExamSession CurrentSession => _session;
@@ -228,6 +231,7 @@ namespace Perimetry.Headset.Logic
             {
                 if (o == null) continue;
                 if (o.PresetId != null && _h.Presets.FindIndex(p => p.Id == o.PresetId) < 0) { Event("order", "skipped " + o.Id + ": unknown preset " + o.PresetId); continue; }
+                if (o.Grid != null && !_cfg.Grids.ContainsKey(o.Grid)) { Event("order", "skipped " + o.Id + ": unknown grid " + o.Grid); continue; }
                 _pendingOrders.Add(o);
             }
             _orderIndex = 0;

@@ -171,6 +171,28 @@ namespace Perimetry.Headset.Logic
         public string PresetId { get; set; }
         /// <summary>Seed for the exam PRNG; recorded in the exam so it can be replayed. Null = derived from the clock.</summary>
         public ulong? Seed { get; set; }
+        /// <summary>Phase 5 options chosen on the portal order form; each one, when present, overrides the preset (docs/SYNC_API.md).</summary>
+        public string Grid { get; set; }
+        public FixationMode? FixationMode { get; set; }
+        public bool? FovealThreshold { get; set; }
+        public ResponseMode? ResponseMode { get; set; }
+
+        /// <summary>The preset with this order's overrides applied (a copy; the preset list is never modified).</summary>
+        public ExamPreset ApplyTo(ExamPreset preset)
+        {
+            if (Grid == null && FixationMode == null && FovealThreshold == null && ResponseMode == null) return preset;
+            return new ExamPreset
+            {
+                Id = preset.Id, Label = preset.Label,
+                GridId = Grid ?? preset.GridId,
+                Strategy = preset.Strategy,
+                FixationMode = FixationMode ?? preset.FixationMode,
+                StimulusSize = preset.StimulusSize,
+                Eyes = preset.Eyes,
+                FovealThreshold = FovealThreshold ?? preset.FovealThreshold,
+                ResponseMode = ResponseMode ?? preset.ResponseMode,
+            };
+        }
 
         public static ExamOrder Parse(string json) => JsonConvert.DeserializeObject<ExamOrder>(json) ?? new ExamOrder();
     }

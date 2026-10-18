@@ -25,6 +25,50 @@ namespace Perimetry.Headset.Logic.Tests
             Intervals = 2, StimulusInterval = stimulusInterval, IntervalMs = 200, IntervalGapMs = 600, MarkerMs = 100,
         };
 
+        // ------------------------------------------------------------------ portal order overrides
+
+        [Test]
+        public void OrderOverrides_GridFixationFovealResponse_ApplyOverThePreset_AndAreRecorded()
+        {
+            var order = ExamOrder.Parse("{\"id\":\"o1\",\"presetId\":\"24-2-zest-fast\",\"ageYears\":50,\"patientRef\":\"P-000001\",\"seed\":3," +
+                "\"grid\":\"10-2\",\"fixationMode\":\"CentralUnmonitored\",\"fovealThreshold\":true,\"responseMode\":\"ForcedChoice\"}");
+            Assert.That(order.Grid, Is.EqualTo("10-2"));
+            Assert.That(order.FixationMode, Is.EqualTo(FixationMode.CentralUnmonitored));
+            Assert.That(order.FovealThreshold, Is.True);
+            Assert.That(order.ResponseMode, Is.EqualTo(ResponseMode.ForcedChoice));
+
+            var sink = new MemorySink();
+            var flow = new PatientFlow(Env.Config, Env.Headset, Env.Lum, sink, order);
+            Assert.That(flow.BasePreset.GridId, Is.EqualTo("24-2"), "preset list untouched");
+            Assert.That(flow.Preset.GridId, Is.EqualTo("10-2"));
+            Assert.That(flow.Preset.Strategy, Is.EqualTo(flow.BasePreset.Strategy), "strategy always comes from the preset");
+            var d = new FlowDriver(flow, 5);
+            d.RunUntil(() => flow.CurrentSettings != null);
+            var s2 = flow.CurrentSettings;
+            Assert.That(s2.GridId, Is.EqualTo("10-2"));
+            Assert.That(s2.FixationMode, Is.EqualTo(FixationMode.CentralUnmonitored));
+            Assert.That(s2.FovealThreshold, Is.True);
+            Assert.That(s2.ResponseMode, Is.EqualTo(ResponseMode.ForcedChoice));
+
+            // A plain order (no overrides) leaves the preset exactly as configured.
+            var plain = new ExamOrder { PresetId = "24-2-zest-fast", AgeYears = 50 };
+            var h = Env.Headset;
+            Assert.That(plain.ApplyTo(h.Presets[1]), Is.SameAs(h.Presets[1]));
+        }
+
+        [Test]
+        public void PendingOrder_WithUnknownGrid_IsSkipped()
+        {
+            var sink = new MemorySink();
+            var flow = new PatientFlow(Env.Config, Env.Headset, Env.Lum, sink);
+            flow.SetPendingOrders(new List<ExamOrder>
+            {
+                new ExamOrder { Id = "bad", PresetId = "24-2-zest", AgeYears = 40, Grid = "99-9" },
+                new ExamOrder { Id = "ok", PresetId = "24-2-zest", AgeYears = 40, Grid = "30-2" },
+            });
+            Assert.That(flow.PendingOrders.Select(o => o.Id), Is.EqualTo(new[] { "ok" }));
+        }
+
         // ------------------------------------------------------------------ presets and config
 
         [Test]

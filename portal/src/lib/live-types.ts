@@ -27,7 +27,8 @@ export interface LiveReliability {
   durationMs: number;
   /** Phase 5 (optional): eye-tracking in use and presentations rejected for gaze error. */
   gazeTracked?: boolean;
-  gazeRejected?: number;
+  gazeRejectedPresentations?: number;
+  gazeMeanErrorDeg?: number | null;
 }
 
 export interface LiveLast { x: number; y: number; db: number | null; seen: boolean; kind: string; tMs: number }
@@ -45,9 +46,9 @@ export interface LiveExam {
   /** Phase 5 (all optional, older headsets omit them). */
   fixationMode?: string;
   responseMode?: string;
-  /** Foveal threshold in device dB once the foveal test finished; null while running / absent when off. */
-  fovealThresholdDb?: number | null;
-  fovealTest?: boolean;
+  /** Foveal test requested; `foveal` is null while it runs and carries the result once finished. */
+  fovealThreshold?: boolean;
+  foveal?: { db: number; hfaEqDb: number; censoredLow: boolean; presentations: number } | null;
 }
 
 export interface LiveSnapshot {

@@ -45,14 +45,14 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 ```bash
 dotnet build Perimetry.sln
 dotnet test core/Perimetry.Core.Tests                                   # 133 tests, ~5 s
-dotnet test headset/LogicTests                                           # 51 tests: headset flow, timing, geometry, dithering, portal sync, phase 5 modes
+dotnet test headset/LogicTests                                           # 53 tests: headset flow, timing, geometry, dithering, portal sync, phase 5 modes
 dotnet build headset/UnityCompileCheck                                   # Unity scripts vs UnityEngine API (no Unity needed)
 dotnet test core/Perimetry.Core.Tests --collect:"XPlat Code Coverage"   # coverage (cobertura xml)
 dotnet run --project core/Perimetry.Cli -c Release -- simulate --strategy ZestFast --defect SuperiorArcuate --seed 4 --out out/ex.json
 dotnet run --project core/Perimetry.Cli -c Release -- benchmark --strategy ZestFast --runs 30
 python3 tools/report/render_report.py out/ex.analysis.json out/ex.png  # needs matplotlib
 bash tools/opi-crosscheck/run.sh                                         # needs R + jsonlite, python3
-cd portal && npm ci && npm run typecheck && npm test                     # 38 portal unit tests (needs the Release CLI build)
+cd portal && npm ci && npm run typecheck && npm test                     # 39 portal unit tests (needs the Release CLI build)
 cd portal && npm run build && npm run e2e                                # 3 Playwright specs; needs PostgreSQL (E2E_DATABASE_URL)
 ```
 CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThreshold|FourTwo|Screening`,
@@ -121,4 +121,5 @@ Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector member
 status TO_BE_VALIDATED); headset pause, training, fixation target, 72 Hz duration (§11); phase 5 proposed defaults
 (foveal diamond target and `fovealExtraDb`, gaze limit 3°, oculokinetic ±10° / 600 ms / 300 ms, forced-choice N and stop
 rule, §4–§6.4). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
-grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening. Approved on 2026-10-18: headset occlusion check before each eye (optional, off by default); blind spot remap after 2 consecutive fixation losses; VFI shown with one decimal.
+grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening. Approved on 2026-10-18: headset occlusion check before each eye (optional, off by default); blind spot remap after 2 consecutive fixation losses; VFI shown with one decimal; forced choice stays a doctor-selected
+option on the order (for repeating unreliable exams), off by default; patient demo page deferred to phase 6.
