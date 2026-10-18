@@ -108,3 +108,13 @@ describe("exam order options", () => {
     expect(examOrderFile({ ...base, responseMode: "YesNo", fovealThreshold: false, gridId: null })).not.toHaveProperty("responseMode");
   });
 });
+
+import { deviceLine } from "../../src/components/SingleFieldReport.tsx";
+
+describe("deviceLine", () => {
+  it("prints model and serial, falls back to label, empty without a device", () => {
+    expect(deviceLine({ model: "Meta Quest 3", serial: "ABC123", label: null })).toBe(" · aparelho Meta Quest 3 (S/N ABC123)");
+    expect(deviceLine({ model: null, serial: "X1", label: "Sala 2" })).toBe(" · aparelho Sala 2 (S/N X1)");
+    expect(deviceLine(null)).toBe("");
+  });
+});

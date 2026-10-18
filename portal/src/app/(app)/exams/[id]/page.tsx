@@ -12,7 +12,7 @@ export default async function ExamPage({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const x = await loadExam(id, user.id, "exam.view");
   if (!x) notFound();
-  const { exam, report, patient } = x;
+  const { exam, report, patient, device } = x;
   return (
     <>
       <div className="no-print">
@@ -28,7 +28,7 @@ export default async function ExamPage({ params }: { params: Promise<{ id: strin
           <p className="muted small">Importado em {dateTimeBr(exam.importedAt)}. Config do headset {exam.configHash?.slice(0, 12) ?? "—"}, análise com {exam.analyzedConfig.slice(0, 12)}.</p>
         </div>
       </div>
-      <SingleFieldReport report={report} patient={patient} integrity={exam.integrity} />
+      <SingleFieldReport report={report} patient={patient} device={device} integrity={exam.integrity} />
     </>
   );
 }

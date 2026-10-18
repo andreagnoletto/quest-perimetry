@@ -10,9 +10,19 @@ import { GazeTraceBar } from "./GazeTraceBar";
 
 export interface ReportPatient { name: string; internalId: string; birthDate: string; code: string }
 
-export function SingleFieldReport({ report, patient, integrity, footerNote }: {
+export interface ReportDevice { model: string | null; serial: string; label: string | null }
+
+/** Footer text for the headset that recorded the exam: "aparelho Meta Quest 3 (S/N …)". */
+export function deviceLine(d: ReportDevice | null | undefined): string {
+  if (!d) return "";
+  const name = d.model ?? d.label ?? "modelo não informado";
+  return ` · aparelho ${name} (S/N ${d.serial})`;
+}
+
+export function SingleFieldReport({ report, patient, device, integrity, footerNote }: {
   report: Report;
   patient?: ReportPatient | null;
+  device?: ReportDevice | null;
   integrity?: "verified" | "unverified" | "failed";
   footerNote?: string;
 }) {
@@ -90,7 +100,7 @@ export function SingleFieldReport({ report, patient, integrity, footerNote }: {
       <footer className="sfa-foot">
         <span>{e.Disclaimer}</span>
         <span>
-          Exame {e.ExamId} · headset {e.SoftwareVersion} · análise {report.analyzedWith.software} · config {report.analyzedWith.configHash.slice(0, 12)}
+          Exame {e.ExamId} · headset {e.SoftwareVersion}{deviceLine(device)} · análise {report.analyzedWith.software} · config {report.analyzedWith.configHash.slice(0, 12)}
           {integrity ? ` · integridade: ${integrity === "verified" ? "verificada" : integrity === "failed" ? "FALHOU" : "não verificada"}` : ""}
           {footerNote ? ` · ${footerNote}` : ""}
         </span>

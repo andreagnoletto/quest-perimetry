@@ -12,5 +12,5 @@ export default async function PrintExam({ params }: { params: Promise<{ id: stri
   const { id } = await params;
   const x = await loadExam(id, user.id, "exam.print");
   if (!x) notFound();
-  return <SingleFieldReport report={x.report} patient={x.patient} integrity={x.exam.integrity} footerNote={`impresso por ${user.name} em ${dateTimeBr(new Date())}`} />;
+  return <SingleFieldReport report={x.report} patient={x.patient} device={x.device} integrity={x.exam.integrity} footerNote={`impresso por ${user.name} em ${dateTimeBr(new Date())}`} />;
 }
