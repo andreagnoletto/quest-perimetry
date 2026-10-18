@@ -91,6 +91,12 @@ grades de 6° e (±3°, ±3°) no 10-2. Vizinhos: pontos a ≤ 1,5 × espaçamen
   em 2 de 2 apresentações é aceita. Durante o teste, a cada ~30 apresentações (±6) um estímulo de
   0 dB é mostrado ali; resposta = perda de fixação. Se a mancha cega não for localizada, o
   monitoramento é desativado e o relatório avisa.
+- **Remapeamento (aprovado em 2026-10-18):** após `remapAfterConsecutiveLosses` (default 2) perdas de
+  fixação seguidas, a busca da mancha cega é refeita antes de contar novas perdas, porque o ponto
+  aceito pode estar na borda da mancha cega (visto com latência normal e fixação boa; observado no
+  primeiro exame real no Quest). As perdas já contadas permanecem; `BlindSpotRemaps` registra as
+  buscas extras. Se a nova busca não localizar a mancha cega, o monitoramento é desativado como acima.
+  0 desliga.
 - **Modo A com eye-tracking:** apresentações marcadas pelo apresentador com olhar fora do alvo não
   atualizam o algoritmo e o ponto é retestado (contador `GazeRejectedPresentations`). O limiar N e
   o gaze trace ficam para a Fase 5.

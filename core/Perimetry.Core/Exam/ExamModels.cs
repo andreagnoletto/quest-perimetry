@@ -141,6 +141,8 @@ namespace Perimetry.Core.Exam
         public bool BlindSpotFound { get; set; }
         public double? BlindSpotX { get; set; }
         public double? BlindSpotY { get; set; }
+        /// <summary>Times the blind spot was searched again after consecutive fixation losses.</summary>
+        public int BlindSpotRemaps { get; set; }
         public int TotalPresentations { get; set; }
         public double DurationMs { get; set; }
         public int AbortedPresentations { get; set; }

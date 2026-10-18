@@ -27,7 +27,7 @@ namespace Perimetry.Core.Exam
         private readonly Rng _rng;
         private readonly TestGrid _grid;
         private readonly ThresholdStrategy _strategy;
-        private readonly BlindSpotLocator _bsLocator;
+        private BlindSpotLocator _bsLocator;
         private readonly ExamRecord _record;
         private readonly double _sizeDeg;
 
@@ -35,6 +35,7 @@ namespace Perimetry.Core.Exam
         private int _seq;
         private int _toFp, _toFn, _toFl;
         private bool _hkActive;
+        private int _consecutiveFixationLosses;
         private FieldPoint? _blindSpot;
 
         public TestGrid Grid => _grid;
@@ -178,7 +179,7 @@ namespace Perimetry.Core.Exam
             {
                 case PresentationKind.BlindSpotMapping:
                     _bsLocator.Update(seen);
-                    disposition = "mapping";
+                    disposition = rel.BlindSpotRemaps > 0 ? "remapping" : "mapping";
                     if (_bsLocator.IsFinished)
                     {
                         _blindSpot = _bsLocator.Found;
@@ -201,6 +202,17 @@ namespace Perimetry.Core.Exam
                     rel.FixationLosses.Trials++;
                     if (seen) rel.FixationLosses.Errors++;
                     disposition = "catch";
+                    _consecutiveFixationLosses = seen ? _consecutiveFixationLosses + 1 : 0;
+                    int remapAfter = _cfg.Reliability.BlindSpot.RemapAfterConsecutiveLosses;
+                    if (remapAfter > 0 && _consecutiveFixationLosses >= remapAfter)
+                    {
+                        // The catch point may sit on the edge of the blind spot (seen with normal latency while
+                        // fixation is fine): search it again before counting more losses there.
+                        _consecutiveFixationLosses = 0;
+                        rel.BlindSpotRemaps++;
+                        _hkActive = false;
+                        _bsLocator = new BlindSpotLocator(_cfg.Reliability.BlindSpot);
+                    }
                     break;
                 default:
                     if (anticipated) { rel.AnticipatedResponses++; disposition = "anticipated"; }
