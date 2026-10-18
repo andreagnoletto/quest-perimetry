@@ -1,0 +1,20 @@
+{
+  "name": "Perimetry.Headset.Tests.EditMode",
+  "rootNamespace": "Perimetry.Headset.Tests",
+  "references": [
+    "Perimetry.Core",
+    "Perimetry.Headset.Logic",
+    "Perimetry.Headset",
+    "UnityEngine.TestRunner",
+    "UnityEditor.TestRunner"
+  ],
+  "includePlatforms": ["Editor"],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": ["nunit.framework.dll", "Newtonsoft.Json.dll"],
+  "autoReferenced": false,
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

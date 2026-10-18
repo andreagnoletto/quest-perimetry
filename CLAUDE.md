@@ -25,12 +25,20 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 - `core/Perimetry.Cli` — `perimetry` CLI: simulate / analyze / benchmark / crosscheck.
 - `config/` — clinical constants and grids. `config/normative/` — provisional synthetic normative model.
 - `tools/opi-crosscheck/` — compares C# ports with OPI in R. `tools/report/` — PNG report (matplotlib).
-- `headset/` (Unity, phase 2), `portal/` (Next.js, phase 3) — not started.
+- `headset/` — Unity 6 project (phase 2). `Assets/Perimetry/Logic` is pure C# (`PatientFlow` state machine,
+  `PresentationTimeline`, `StimulusPlacement`, `Dither`, `ExamStorage`, `PatientMessages`), tested by
+  `headset/LogicTests`. `Runtime` (MonoBehaviours, head-locked rig), `Resources/Perimetry` (monocular dithering
+  shaders), `Editor` (Configure Project, config sync), `Tests/EditMode`. `/core` is a local Unity package
+  (`core/Perimetry.Core/package.json`); build output goes to `/artifacts` (Directory.Build.props) so no bin/
+  lands inside the package. `headset/UnityCompileCheck` compiles the Unity scripts against UnityEngine reference DLLs.
+- `portal/` (Next.js, phase 3) — not started.
 
 ## Commands
 ```bash
 dotnet build Perimetry.sln
-dotnet test core/Perimetry.Core.Tests                                   # 118 tests, ~5 s
+dotnet test core/Perimetry.Core.Tests                                   # 122 tests, ~5 s
+dotnet test headset/LogicTests                                           # 26 tests: headset flow, timing, geometry, dithering
+dotnet build headset/UnityCompileCheck                                   # Unity scripts vs UnityEngine API (no Unity needed)
 dotnet test core/Perimetry.Core.Tests --collect:"XPlat Code Coverage"   # coverage (cobertura xml)
 dotnet run --project core/Perimetry.Cli -c Release -- simulate --strategy ZestFast --defect SuperiorArcuate --seed 4 --out out/ex.json
 dotnet run --project core/Perimetry.Cli -c Release -- benchmark --strategy ZestFast --runs 30
@@ -59,13 +67,20 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 | ZEST | domain −5..35 dB, fpr=fnr=0.03, σ=1, bimodal prior 4:1, stop SD < 1.5 dB (fast: 2.0 dB) |
 | Full Threshold | 4-2, last seen, re-test if > 4 dB from start |
 | Screening | 6 dB brighter than age-expected, re-test not seen |
-| Fixation | Mode A + Heijl-Krakau; blind spot (15°, −1.5°) |
+| Fixation | Mode A + Heijl-Krakau; blind spot (15°, −1.5°), remapped after 2 consecutive fixation losses |
 | Catch trials | FP 1/30, HK 1/30, FN 1/40 (threshold − 9 dB) |
 | Alerts | FL > 20%, FP > 15%, FN > 33% |
 | Indices | MD inverse-variance (Heijl 1987), PSD (Heijl 1987), GH = 85th pct, VFI (Bengtsson 2008), GHT (Åsman & Heijl 1992) |
 | Normative | PROVISIONAL synthetic, HFA-eq dB, −0.7 dB/decade |
 
+## Headset conventions
+- Stimuli are placed on a sphere centred on the TESTED eye (not the head); never in pixels.
+- Clinical/presentation constants for the headset live in `config/headset.json`, `display.json`, `timing.json`.
+- The flow never shows results to the patient. Unity layer only renders `FlowView` and feeds input edges + Tick.
+- Unity, the Meta XR Simulator and APK builds cannot run in the cloud container: verify those on the product
+  owner's machine (or a Remote Control session).
+
 ## Open decisions (waiting for the product owner)
 Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,
-status TO_BE_VALIDATED). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
-grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening.
+status TO_BE_VALIDATED); headset pause, training, fixation target, 72 Hz duration (§11). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
+grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening. Approved on 2026-10-18: headset occlusion check before each eye (optional, off by default); blind spot remap after 2 consecutive fixation losses; VFI shown with one decimal.

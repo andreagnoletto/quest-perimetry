@@ -3,5 +3,7 @@
   "responseWindowMs": 1000,
   "isiMinMs": 600,
   "isiMaxMs": 1200,
-  "minValidLatencyMs": 100
+  "minValidLatencyMs": 100,
+  "pauseHoldMs": 1500,
+  "resumeAfterPauseDelayMs": 1500
 }

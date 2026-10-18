@@ -11,6 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Perimetry.Core.Tests", "cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Perimetry.Cli", "core\Perimetry.Cli\Perimetry.Cli.csproj", "{AFC0ECDB-5595-484E-BC51-85AEBC9F830D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "headset", "headset", "{1C5D1A6E-3733-4CA0-9B09-21B2CB6C92BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Perimetry.Headset.Logic.Tests", "headset\LogicTests\Perimetry.Headset.Logic.Tests.csproj", "{40A7D4AA-12F9-4595-8A4F-AC12A06C0F93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Perimetry.Headset.UnityCompileCheck", "headset\UnityCompileCheck\Perimetry.Headset.UnityCompileCheck.csproj", "{E0A995BD-79FA-49B9-9933-C3F109A6971F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,10 +38,20 @@ Global
 		{AFC0ECDB-5595-484E-BC51-85AEBC9F830D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFC0ECDB-5595-484E-BC51-85AEBC9F830D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFC0ECDB-5595-484E-BC51-85AEBC9F830D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40A7D4AA-12F9-4595-8A4F-AC12A06C0F93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40A7D4AA-12F9-4595-8A4F-AC12A06C0F93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40A7D4AA-12F9-4595-8A4F-AC12A06C0F93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40A7D4AA-12F9-4595-8A4F-AC12A06C0F93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0A995BD-79FA-49B9-9933-C3F109A6971F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0A995BD-79FA-49B9-9933-C3F109A6971F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0A995BD-79FA-49B9-9933-C3F109A6971F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0A995BD-79FA-49B9-9933-C3F109A6971F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1D2C0590-1482-4B67-89E9-C3B30155313A} = {00024D30-FB1B-4815-933C-CB628ADC5FE8}
 		{58F7D135-0AE3-4911-A8B7-1FA3E444618C} = {00024D30-FB1B-4815-933C-CB628ADC5FE8}
 		{AFC0ECDB-5595-484E-BC51-85AEBC9F830D} = {00024D30-FB1B-4815-933C-CB628ADC5FE8}
+		{40A7D4AA-12F9-4595-8A4F-AC12A06C0F93} = {1C5D1A6E-3733-4CA0-9B09-21B2CB6C92BF}
+		{E0A995BD-79FA-49B9-9933-C3F109A6971F} = {1C5D1A6E-3733-4CA0-9B09-21B2CB6C92BF}
 	EndGlobalSection
 EndGlobal

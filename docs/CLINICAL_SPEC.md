@@ -91,6 +91,12 @@ grades de 6° e (±3°, ±3°) no 10-2. Vizinhos: pontos a ≤ 1,5 × espaçamen
   em 2 de 2 apresentações é aceita. Durante o teste, a cada ~30 apresentações (±6) um estímulo de
   0 dB é mostrado ali; resposta = perda de fixação. Se a mancha cega não for localizada, o
   monitoramento é desativado e o relatório avisa.
+- **Remapeamento (aprovado em 2026-10-18):** após `remapAfterConsecutiveLosses` (default 2) perdas de
+  fixação seguidas, a busca da mancha cega é refeita antes de contar novas perdas, porque o ponto
+  aceito pode estar na borda da mancha cega (visto com latência normal e fixação boa; observado no
+  primeiro exame real no Quest). As perdas já contadas permanecem; `BlindSpotRemaps` registra as
+  buscas extras. Se a nova busca não localizar a mancha cega, o monitoramento é desativado como acima.
+  0 desliga.
 - **Modo A com eye-tracking:** apresentações marcadas pelo apresentador com olhar fora do alvo não
   atualizam o algoritmo e o ponto é retestado (contador `GazeRejectedPresentations`). O limiar N e
   o gaze trace ficam para a Fase 5.
@@ -222,7 +228,60 @@ dados medidos. Todo exame e relatório leva o aviso vermelho **"NORMATIVO PROVIS
 
 O erro é medido nos pontos cujo limiar verdadeiro está dentro da faixa mensurável do dispositivo.
 
-## 11. Referências
+## 11. Apresentação no headset (Fase 2)
+
+Implementado em `headset/Assets/Perimetry` (lógica testada fora do Unity em `headset/LogicTests`).
+Parâmetros em `config/display.json`, `config/timing.json` e `config/headset.json`.
+
+**Geometria.** O conteúdo é preso à cabeça (filho da câmera). Cada estímulo fica na esfera de raio
+`virtualStimulusDistanceM` (1 m) **centrada no olho testado**, na direção `Stimulus.Direction(x, y)` (mesma
+convenção da cúpula do HFA, §1); o alvo de fixação fica à frente desse olho. Centrar na cabeça em vez do olho
+deslocaria todos os pontos ≈ 1,8° (IPD 63 mm a 1 m); teste em `GeometryTests`. A posição dos olhos vem do
+runtime XR (`left/rightEyePosition`) e a origem fica registrada no log da sessão. O disco é um polígono de 64
+lados com a **mesma área** do círculo (tamanhos de Goldmann são definidos por área). Tamanho angular
+verificado para I–V a partir do olho testado: erro < 0,1% (critério < 5%), também no Unity pelo rig real.
+
+**Monocular.** O shader `Perimetry/MonocularUnlit` usa o índice do olho do estéreo single-pass: o olho não
+testado recebe `untestedEyeLuminanceCdm2` = 0 (preto) durante verificações, treino e exame. Mensagens entre os
+olhos e telas do operador aparecem nos dois olhos.
+
+**Luminância e dithering.** O painel é de 8 bits; perto do fundo de 10 cd/m² um degrau de código vale
+≈ 0,23 cd/m² (≈ 26 dB do dispositivo), então sem dithering os estímulos mais fracos se confundem com o fundo
+(erro > 2 dB a partir de 28 dB, estímulo invisível a 30 dB). O shader aplica dithering ordenado Bayer 4×4
+(com deslocamento por quadro) no nível codificado em sRGB, saída em espaço linear para um alvo sRGB:
+erro da luminância média renderizada ≤ 0,43 dB em 0–30 dB do dispositivo (`DitheredLuminance_TracksDbScale_0To30`).
+Exige espaço de cor Linear, HDR e pós-processamento desligados (feito por *Perimetry > Configure Project*).
+O alvo de fixação é um losango amarelo de 0,8°, 30 cd/m². Texto em cinza-escuro (2 cd/m²) abaixo do centro.
+
+**Tempo.** A duração de 200 ms é quantizada em quadros inteiros da taxa medida (90 Hz → 18 quadros; 72 Hz →
+14 quadros = 194 ms; o Quest inicia a 72 Hz e o pedido de 90 Hz ainda não está ligado). O início do estímulo é o
+primeiro quadro após o ISI; a janela de resposta (1000 ms) conta a partir dele. A resposta vale do início do
+estímulo até o fim da janela; apertos antes do início são registrados como `earlyPress` e não contam. Resolução
+do tempo de resposta: um quadro. A latência inclui o atraso fixo do display (dezenas de ms), igual para todos os
+estímulos.
+
+**Pausa.** Segurar o botão por `pauseHoldMs` = 1500 ms durante o exame pausa (comportamento do HFA); tirar o
+headset também pausa. A apresentação em curso é descartada (`Disposition = "aborted"`, não entra na estratégia
+nem nas contagens de confiabilidade) e o mesmo tipo de apresentação volta depois. A retomada espera
+`resumeAfterPauseDelayMs` = 1500 ms. As pausas ficam em `Reliability.Pauses`; `DurationMs − PausedMs` é o tempo
+efetivo.
+
+**Fluxo do paciente (SPEC §8).** Boas-vindas (verifica o botão) → operador escolhe exame e idade, se não houver
+`exam-order.json` → instruções → por olho: apresentação do olho, nitidez do alvo (lembrete de IPD/foco),
+verificação de oclusão → treino (só no primeiro olho) → pronto → exame (mancha cega + grade) → descanso entre
+olhos → "Exame concluído. Aguarde o médico." Nenhum resultado é mostrado ao paciente (teste de mensagens).
+Interrupção pelo operador grava o olho em andamento com `Aborted = true`, e a análise recusa esse registro.
+
+| Item | Default | Status |
+|---|---|---|
+| Pausa ao segurar o botão | 1500 ms; apresentação em curso descartada | **[DECISÃO PENDENTE]** confirmar |
+| Treino | 5 estímulos: 0 dB (9,9), 0 dB (−9,−9), branco (sem luz), 6 dB, 10 dB; feedback 2 s; repete 1 vez se > 2 erros | **[DECISÃO PENDENTE]** |
+| Verificação de oclusão | opcional, desligada por padrão (`checks.occlusionCheckEnabled`; o headset já bloqueia bem a luz externa). Quando ligada: antes de cada olho, o paciente fecha o olho testado por 5 s; um disco de 10° no máximo aparece só nesse olho; apertar = falha, chama o médico. Durante o exame os dois olhos ficam abertos | aprovado em 2026-10-18 (desligada por padrão após o primeiro teste no Quest 3) |
+| Alvo de fixação | losango amarelo 0,8°, 30 cd/m² | **[DECISÃO PENDENTE]** |
+| Duração a 72 Hz | 194 ms (14 quadros) até o pedido de 90 Hz ser ligado | **[DECISÃO PENDENTE]** |
+| Idade sem pedido de exame | 50 anos, ajustada pelo operador (afeta o prior do ZEST e a análise) | default |
+
+## 12. Referências
 
 1. Heijl A, Lindgren G, Olsson J. A package for the statistical analysis of visual fields. *Doc Ophthalmol Proc Ser* 1987;49:153–168. (MD, PSD)
 2. Åsman P, Heijl A. Glaucoma Hemifield Test: automated visual field evaluation. *Arch Ophthalmol* 1992;110:812–819.

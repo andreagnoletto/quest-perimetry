@@ -1,0 +1,7 @@
+<Project>
+  <!-- Build output goes to /artifacts, never next to the sources: core/Perimetry.Core is also a Unity
+       package (headset/Packages/manifest.json) and a bin/ folder inside it would be imported as a plugin. -->
+  <PropertyGroup>
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+  </PropertyGroup>
+</Project>

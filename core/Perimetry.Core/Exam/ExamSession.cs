@@ -18,7 +18,7 @@ namespace Perimetry.Core.Exam
     /// </summary>
     public sealed class ExamSession
     {
-        public const string Version = "0.1.0-phase1";
+        public const string Version = "0.2.0-phase2";
 
         private readonly ExamSettings _s;
         private readonly ClinicalConfig _cfg;
@@ -27,7 +27,7 @@ namespace Perimetry.Core.Exam
         private readonly Rng _rng;
         private readonly TestGrid _grid;
         private readonly ThresholdStrategy _strategy;
-        private readonly BlindSpotLocator _bsLocator;
+        private BlindSpotLocator _bsLocator;
         private readonly ExamRecord _record;
         private readonly double _sizeDeg;
 
@@ -35,6 +35,7 @@ namespace Perimetry.Core.Exam
         private int _seq;
         private int _toFp, _toFn, _toFl;
         private bool _hkActive;
+        private int _consecutiveFixationLosses;
         private FieldPoint? _blindSpot;
 
         public TestGrid Grid => _grid;
@@ -158,6 +159,16 @@ namespace Perimetry.Core.Exam
             _pending = null;
 
             var t = _cfg.Timing;
+            if (result.Discarded)
+            {
+                // Not shown to completion: nothing is learned, the same kind of trial will be issued again.
+                _record.Reliability.AbortedPresentations++;
+                _record.Presentations.Add(new PresentationLogEntry { Request = req, Result = result, Disposition = "aborted" });
+                if (req.Kind == PresentationKind.FalsePositiveCatch) _toFp = 0;
+                else if (req.Kind == PresentationKind.FalseNegativeCatch) _toFn = 0;
+                else if (req.Kind == PresentationKind.BlindSpotCatch) _toFl = 0;
+                return;
+            }
             bool anticipated = result.Responded && result.LatencyMs.HasValue && result.LatencyMs.Value < t.MinValidLatencyMs;
             bool inWindow = result.Responded && (!result.LatencyMs.HasValue || result.LatencyMs.Value <= t.ResponseWindowMs);
             bool seen = inWindow && !anticipated;
@@ -168,7 +179,7 @@ namespace Perimetry.Core.Exam
             {
                 case PresentationKind.BlindSpotMapping:
                     _bsLocator.Update(seen);
-                    disposition = "mapping";
+                    disposition = rel.BlindSpotRemaps > 0 ? "remapping" : "mapping";
                     if (_bsLocator.IsFinished)
                     {
                         _blindSpot = _bsLocator.Found;
@@ -191,6 +202,17 @@ namespace Perimetry.Core.Exam
                     rel.FixationLosses.Trials++;
                     if (seen) rel.FixationLosses.Errors++;
                     disposition = "catch";
+                    _consecutiveFixationLosses = seen ? _consecutiveFixationLosses + 1 : 0;
+                    int remapAfter = _cfg.Reliability.BlindSpot.RemapAfterConsecutiveLosses;
+                    if (remapAfter > 0 && _consecutiveFixationLosses >= remapAfter)
+                    {
+                        // The catch point may sit on the edge of the blind spot (seen with normal latency while
+                        // fixation is fine): search it again before counting more losses there.
+                        _consecutiveFixationLosses = 0;
+                        rel.BlindSpotRemaps++;
+                        _hkActive = false;
+                        _bsLocator = new BlindSpotLocator(_cfg.Reliability.BlindSpot);
+                    }
                     break;
                 default:
                     if (anticipated) { rel.AnticipatedResponses++; disposition = "anticipated"; }
@@ -208,6 +230,14 @@ namespace Perimetry.Core.Exam
             double end = result.OnsetMs + (seen && result.LatencyMs.HasValue ? result.LatencyMs.Value : t.ResponseWindowMs);
             rel.DurationMs = Math.Max(rel.DurationMs, end);
             _record.Presentations.Add(new PresentationLogEntry { Request = req, Result = result, Disposition = disposition });
+        }
+
+        /// <summary>Records a pause (no presentation may be pending). Times are ms since exam start.</summary>
+        public void RecordPause(double startMs, double endMs, string reason)
+        {
+            if (_pending != null) throw new InvalidOperationException("Submit or discard the pending presentation first");
+            if (endMs < startMs) throw new ArgumentException("endMs < startMs");
+            _record.Reliability.Pauses.Add(new PauseInterval { StartMs = startMs, EndMs = endMs, Reason = reason });
         }
 
         public ExamRecord BuildRecord()

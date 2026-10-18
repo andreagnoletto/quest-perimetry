@@ -70,6 +70,7 @@ namespace Perimetry.Core.Analysis
     {
         public static AnalysisResult Analyze(ExamRecord exam, ClinicalConfig cfg, INormativeDatabase norm)
         {
+            if (exam.Aborted) throw new InvalidOperationException("exam " + exam.ExamId + " was aborted; it cannot be analysed as a complete field");
             var grid = GridLibrary.Get(cfg, exam.Settings.GridId);
             if (norm.GridId != grid.Id) throw new ArgumentException("normative/grid mismatch");
             double age = exam.Settings.AgeYears;

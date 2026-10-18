@@ -1,0 +1,11 @@
+{
+  "name": "com.quest-perimetry.core",
+  "version": "0.2.0",
+  "displayName": "Perimetry Core",
+  "description": "Pure C# psychophysics for automated static perimetry (grids, dB scale, ZEST/FT/4-2/screening, reliability, HFA-style analysis). Shared by the headset and the CLI. Research prototype, not registered with ANVISA.",
+  "unity": "6000.0",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  }
+}

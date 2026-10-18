@@ -130,6 +130,36 @@ namespace Perimetry.Core.Tests
         }
 
         [Test]
+        public void BlindSpot_IsRemapped_AfterConsecutiveFixationLosses()
+        {
+            int after = TestEnv.Config.Reliability.BlindSpot.RemapAfterConsecutiveLosses;
+            Assert.That(after, Is.EqualTo(2), "clinical default agreed with the product owner");
+            int remapped = 0;
+            for (ulong seed = 1; seed <= 12; seed++)
+            {
+                var (exam, _) = TestEnv.Simulate(seed, obs: new ObserverParameters { FixationLossRate = 0.5 });
+                var rel = exam.Reliability;
+                int run = 0, maxRun = 0, searches = 0;
+                foreach (var p in exam.Presentations)
+                {
+                    if (p.Request.Kind == PresentationKind.BlindSpotCatch) { run = p.Result.Responded ? run + 1 : 0; maxRun = Math.Max(maxRun, run); }
+                    else if (p.Request.Kind == PresentationKind.BlindSpotMapping)
+                    {
+                        if (run > 0) searches++; // a new search right after losses
+                        run = 0;
+                        Assert.That(p.Disposition, Is.EqualTo(searches > 0 ? "remapping" : "mapping"));
+                    }
+                }
+                Assert.That(maxRun, Is.LessThanOrEqualTo(after), $"seed {seed}: losses counted at one point before a new search");
+                Assert.That(rel.BlindSpotRemaps, Is.EqualTo(searches), $"seed {seed}");
+                if (rel.BlindSpotRemaps > 0) remapped++;
+            }
+            Assert.That(remapped, Is.GreaterThan(0), "a patient with 50% fixation losses triggers the remap in some exams");
+            var (normal, _) = TestEnv.Simulate(5);
+            Assert.That(normal.Reliability.BlindSpotRemaps, Is.EqualTo(0), "the normal observer never triggers it");
+        }
+
+        [Test]
         public void TriggerHappyObserver_RaisesFalsePositives_AndBlindSpotIsNotFound()
         {
             var (exam, _) = TestEnv.Simulate(7, obs: new ObserverParameters { FalsePositiveRate = 0.6 });
