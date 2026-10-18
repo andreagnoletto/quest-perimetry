@@ -90,6 +90,27 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 10px; font-size: 11px; }
 .legend-item { display: inline-flex; align-items: center; gap: 4px; }
 
+/* ---- Overview (Phase 6): one eye's exams side by side, oldest first, then the trend charts ---- */
+.ovw { max-width: 1180px; }
+.ovw h2 { font-size: 13px; margin: 10px 0 4px; border-bottom: 1px solid #000; }
+.ovw-series { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 6px 10px; }
+.ovw-exam { break-inside: avoid; }
+.ovw-date { font-size: 11px; text-align: center; min-height: 2.4em; line-height: 1.2; }
+.ovw-exam .map { margin: 2px 0; }
+.ovw-idx { display: grid; grid-template-columns: max-content 1fr; gap: 0 6px; margin: 2px 0 0; font-size: 10px; line-height: 1.25; }
+.ovw-idx dt { color: #333; }
+.ovw-idx dd { margin: 0; }
+.ovw-trends { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+.ovw .trend { border: none; padding: 0; margin: 0; background: #fff; }
+.ovw .trend figcaption { font-size: 11px; }
+@media (max-width: 720px) { .ovw-trends { grid-template-columns: 1fr; } }
+@media print {
+  .ovw { max-width: none; font-size: 10px; }
+  .ovw-series { grid-template-columns: repeat(8, 1fr); gap: 4px 6px; }
+  .ovw-grid + .ovw-grid { break-before: page; }
+  .ovw-trends { break-inside: avoid; }
+}
+
 @media (max-width: 720px) {
   .sfa { padding: 12px; }
   .sfa-params, .sfa-grid.two, .sfa-grid.three { grid-template-columns: 1fr; }

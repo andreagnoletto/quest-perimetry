@@ -20,6 +20,16 @@ export function gridIds(): string[] {
   return ids.sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99));
 }
 
+/** Number of test locations of a grid (config/grids/<id>.json), for cohort rows of exams without analysis. */
+export function gridPointCount(gridId: string): number {
+  const dir = path.join(env.configDir, "grids");
+  for (const f of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+    const g = JSON.parse(readFileSync(path.join(dir, f), "utf8")) as { id: string; points: unknown[] };
+    if (g.id === gridId) return g.points.length;
+  }
+  throw new Error(`grade desconhecida: ${gridId}`);
+}
+
 /** Phase 5 options of an order; null/undefined = not set (the headset keeps the preset's value or the default). */
 export interface OrderOptions {
   gridId?: string | null;

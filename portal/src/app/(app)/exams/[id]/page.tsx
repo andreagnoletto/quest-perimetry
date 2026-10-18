@@ -4,7 +4,8 @@ import { requireUser } from "@/lib/auth";
 import { loadExam } from "@/lib/exams";
 import { dateTimeBr } from "@/lib/format";
 import { SingleFieldReport } from "@/components/SingleFieldReport";
-import { linkExamAction } from "../actions";
+import { normativeLine } from "@/lib/report-format";
+import { linkExamAction, reanalyzeExamAction } from "../actions";
 import { LinkForm } from "./LinkForm";
 
 export default async function ExamPage({ params }: { params: Promise<{ id: string }> }) {
@@ -25,7 +26,10 @@ export default async function ExamPage({ params }: { params: Promise<{ id: strin
         </div>
         <div className="card">
           <LinkForm action={linkExamAction.bind(null, id)} code={patient?.code ?? null} />
-          <p className="muted small">Importado em {dateTimeBr(exam.importedAt)}. Config do headset {exam.configHash?.slice(0, 12) ?? "—"}, análise com {exam.analyzedConfig.slice(0, 12)}.</p>
+          <p className="muted small">
+            Importado em {dateTimeBr(exam.importedAt)}. Config do headset {exam.configHash?.slice(0, 12) ?? "—"}, análise com {exam.analyzedConfig.slice(0, 12)}{normativeLine(report) ? `, ${normativeLine(report)}` : ""}.
+            {user.role !== "operator" && <form action={reanalyzeExamAction.bind(null, id)} style={{ display: "inline" }}> <button className="link" type="submit">Reanalisar</button> <span>com o normativo ativo hoje (o arquivo original é reprocessado pelo /core).</span></form>}
+          </p>
         </div>
       </div>
       <SingleFieldReport report={report} patient={patient} device={device} integrity={exam.integrity} />

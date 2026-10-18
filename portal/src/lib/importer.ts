@@ -48,6 +48,30 @@ export function examSummary(report: Report): { md: number | null; vfi: number | 
   };
 }
 
+/**
+ * Everything the analysis writes on the Exam row: the report, the config it was analysed with, the derived
+ * columns and (Phase 6) the clinic normative used. Shared by import and re-analysis so they cannot drift.
+ */
+export function analysisColumns(report: Report, normativeSetId: string | null) {
+  return { report: report as unknown as object, analyzedConfig: report.analyzedWith.configHash, ...examSummary(report), normativeSetId };
+}
+
+/** Analyses a raw exam with the clinic normative active for its grid (Phase 6), else the provisional one. */
+export async function analyzeWithActiveNormative(rawText: string, gridId: string): Promise<{ report: Report; normativeSetId: string | null }> {
+  // the active clinic normative of the grid (lib/normative.ts activateNormative keeps one per grid)
+  const set = await db.normativeSet.findFirst({ where: { gridId, activatedAt: { not: null } }, orderBy: { activatedAt: "desc" } });
+  const report = await analyzeExam(rawText, set ? JSON.stringify(set.database) : null);
+  return { report, normativeSetId: set?.id ?? null };
+}
+
+/** Re-runs the analysis of a stored exam (e.g. after a normative was activated); returns the normative used. */
+export async function reanalyzeExam(examDbId: string): Promise<{ normativeSetId: string | null; report: Report }> {
+  const e = await db.exam.findUniqueOrThrow({ where: { id: examDbId }, select: { rawText: true, gridId: true } });
+  const { report, normativeSetId } = await analyzeWithActiveNormative(e.rawText, e.gridId);
+  await db.exam.update({ where: { id: examDbId }, data: analysisColumns(report, normativeSetId) });
+  return { normativeSetId, report };
+}
+
 function integrityOf(bytes: Buffer, sidecar: string | undefined, keyB64: string | null): Integrity {
   if (!sidecar || !keyB64) return "unverified";
   return verifyHmac(bytes, sidecar, keyB64) ? "verified" : "failed";
@@ -105,8 +129,8 @@ export async function importFiles(files: UploadedFile[], opts: { userId: string 
     const dup = await db.exam.findUnique({ where: { examId_startedUtc: { examId: e.ExamId, startedUtc } } });
     if (dup) { out.push({ file: d.f.name, kind: "exam", status: "duplicate", message: "exame já importado", examDbId: dup.id }); continue; }
 
-    let report;
-    try { report = await analyzeExam(raw); } catch (err) {
+    let report: Report, normativeSetId: string | null;
+    try { ({ report, normativeSetId } = await analyzeWithActiveNormative(raw, e.Settings.GridId)); } catch (err) {
       out.push({ file: d.f.name, kind: "exam", status: "error", message: err instanceof PerimetryError ? err.message : "falha na análise" });
       continue;
     }
@@ -122,8 +146,7 @@ export async function importFiles(files: UploadedFile[], opts: { userId: string 
         eye: enumName(e.Settings.Eye, EYES), gridId: e.Settings.GridId, strategy: enumName(e.Settings.Strategy, STRATEGIES),
         aborted: !!e.Aborted, configHash: e.ConfigHash ?? null, calibrated: !!e.Calibrated,
         rawText: raw, rawHmac: sidecars.get(d.f.name)?.trim() ?? null, integrity,
-        report: report as unknown as object, analyzedConfig: report.analyzedWith.configHash,
-        ...examSummary(report),
+        ...analysisColumns(report, normativeSetId),
         importedById: opts.userId,
       },
     });

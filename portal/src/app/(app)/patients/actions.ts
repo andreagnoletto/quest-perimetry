@@ -8,6 +8,8 @@ import { audit } from "@/lib/audit";
 import { db } from "@/lib/db";
 import { ageAt, createPatient, updatePatient, view } from "@/lib/patients";
 import { gridIds, isFixationMode, isResponseMode, presets } from "@/lib/headset";
+import { CONSENT_VERSION } from "@/lib/consent-text";
+import { anonymizedFields, confirmsCode, isAnonymized } from "@/lib/lgpd";
 
 export type FormState = { error?: string; ok?: string } | undefined;
 
@@ -20,6 +22,9 @@ const patientSchema = z.object({
     return Number.isFinite(t) && t < Date.now() && t > Date.parse("1900-01-01");
   }, "Data de nascimento inválida"),
   sex: opt, refraction: opt, diagnosis: opt,
+  // Phase 6: healthy volunteer for the clinic's own normative (checkbox arrives as "on" or is absent)
+  normativeVolunteer: z.preprocess((v) => v === "on", z.boolean()),
+  normativeNote: opt,
 });
 
 const firstError = (e: z.ZodError) => e.issues[0]?.message ?? "Dados inválidos";
@@ -35,10 +40,11 @@ export async function createPatientAction(_: FormState, form: FormData): Promise
       ...parsed.data,
       consent: true,
       consentNote: String(form.get("consentNote") ?? "").trim() || null,
+      consentVersion: CONSENT_VERSION,
       researchConsent: form.get("researchConsent") === "on",
     }, user.id);
     id = p.id;
-    await audit(user.id, "patient.create", "patient", p.id, `consent; research=${p.researchConsent}`);
+    await audit(user.id, "patient.create", "patient", p.id, `consent v${CONSENT_VERSION}; research=${p.researchConsent}; volunteer=${p.normativeVolunteer}`);
   } catch (e) {
     return { error: e instanceof Error && e.message.startsWith("Já existe") ? e.message : "Não foi possível salvar o paciente." };
   }
@@ -49,6 +55,9 @@ export async function updatePatientAction(id: string, _: FormState, form: FormDa
   const user = await requireUser(["admin", "doctor", "operator"]);
   const parsed = patientSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: firstError(parsed.error) };
+  const before = await db.patient.findUnique({ where: { id } });
+  if (!before) return { error: "Paciente não encontrado." };
+  if (isAnonymized(before)) return { error: "Paciente anonimizado: o registro não pode mais ser editado." };
   try {
     await updatePatient(id, parsed.data);
   } catch (e) {
@@ -56,8 +65,27 @@ export async function updatePatientAction(id: string, _: FormState, form: FormDa
     return { error: code === "P2002" ? "Já existe um paciente com esse ID interno" : "Não foi possível salvar." };
   }
   const researchConsent = form.get("researchConsent") === "on";
-  await db.patient.update({ where: { id }, data: { researchConsent } });
-  await audit(user.id, "patient.update", "patient", id, `research=${researchConsent}`);
+  const changed = researchConsent !== before.researchConsent;
+  await db.patient.update({
+    where: { id },
+    data: { researchConsent, ...(changed ? { researchConsentAt: researchConsent ? new Date() : null, researchConsentById: researchConsent ? user.id : null } : {}) },
+  });
+  await audit(user.id, "patient.update", "patient", id, `research=${researchConsent}${changed ? " (changed)" : ""}; volunteer=${parsed.data.normativeVolunteer}`);
+  redirect(`/patients/${id}`);
+}
+
+/** LGPD erasure as anonymisation (src/lib/lgpd.ts). Needs the patient's code typed as confirmation. */
+export async function anonymizePatientAction(id: string, _: FormState, form: FormData): Promise<FormState> {
+  const user = await requireUser(["admin", "doctor"]);
+  const row = await db.patient.findUnique({ where: { id } });
+  if (!row) return { error: "Paciente não encontrado." };
+  if (isAnonymized(row)) return { error: "Este paciente já foi anonimizado." };
+  if (!confirmsCode(String(form.get("confirm") ?? ""), row.code)) return { error: `Digite o código ${row.code} para confirmar.` };
+  await db.$transaction(async (tx) => {
+    await tx.patient.update({ where: { id }, data: anonymizedFields(id, user.id) });
+    await tx.examOrder.updateMany({ where: { patientId: id, fulfilledAt: null, cancelledAt: null }, data: { cancelledAt: new Date() } });
+  });
+  await audit(user.id, "patient.anonymize", "patient", id, `code ${row.code}; exams kept; open orders cancelled; reason: ${String(form.get("reason") ?? "").trim().slice(0, 200) || "não informado"}`);
   redirect(`/patients/${id}`);
 }
 
@@ -81,6 +109,7 @@ export async function createOrderAction(patientId: string, _: FormState, form: F
   const responseMode = respRaw && respRaw !== "YesNo" ? respRaw : null;
   const row = await db.patient.findUnique({ where: { id: patientId } });
   if (!row) return { error: "Paciente não encontrado." };
+  if (isAnonymized(row)) return { error: "Paciente anonimizado: não é possível pedir exames." };
   const p = view(row);
   const refraction = String(form.get("refraction") ?? "").trim() || p.refraction;
   const deviceId = String(form.get("deviceId") ?? "") || null;

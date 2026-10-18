@@ -19,11 +19,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link href="/exams">Exames</Link>
             <Link href="/live">Ao vivo</Link>
             <Link href="/devices">Headsets e calibração</Link>
+            {user.role !== "operator" && <Link href="/normative">Normativo</Link>}
             {user.role === "admin" && <Link href="/research">Exportação para pesquisa</Link>}
             {user.role === "admin" && <Link href="/audit">Log de acesso</Link>}
           </nav>
           <form action={logoutAction} className="user">
-            <span>{user.name} ({roleName[user.role]})</span>
+            <Link href="/account">{user.name} ({roleName[user.role]})</Link>
             <button className="link" type="submit">Sair</button>
           </form>
         </header>

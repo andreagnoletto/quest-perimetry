@@ -20,7 +20,7 @@ if (!email || !name || !["admin", "doctor", "operator"].includes(role)) {
 let password = process.env.PERIMETRY_NEW_PASSWORD;
 if (!password) {
   const rl = createInterface({ input: process.stdin, output: process.stderr });
-  password = await rl.question("Senha (mínimo 10 caracteres): ");
+  password = await rl.question("Senha (mínimo 12 caracteres): ");
   rl.close();
 }
 

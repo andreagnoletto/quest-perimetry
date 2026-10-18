@@ -4,6 +4,17 @@ import { fixationName, fmt, pLabel, responseModeName } from "./format.ts";
 // Phase 5 report lines, kept as pure functions so they can be unit-tested without rendering. Every number
 // comes from the /core report; nothing clinical is computed here.
 
+/** Phase 6 footer text: which normative the analysis used ("" for an exam without analysis). */
+export function normativeLine(report: Report): string {
+  if (!report.analysis) return "";
+  const n = report.analyzedWith.normative;
+  if (n && n.source === "cohort") {
+    const age = n.ageMin !== null && n.ageMax !== null ? `, ${Math.round(n.ageMin)}–${Math.round(n.ageMax)} anos` : "";
+    return `normativo próprio ${n.id} (${n.populationEyes} olhos${age}${n.status === "PROVISIONAL" ? ", provisório" : ""})`;
+  }
+  return "normativo provisório sintético";
+}
+
 /** "Limiar foveal" value as HFA prints "Fovea: 35 dB" / "Fovea: OFF"; the p-mark is the foveal total deviation. */
 export function fovealLine(report: Report, floor: number): { value: string; p: string; tested: boolean } {
   const f = report.exam.Foveal;

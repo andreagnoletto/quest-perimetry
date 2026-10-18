@@ -1,0 +1,19 @@
+{
+  "_doc": "Phase 6: rules for building the clinic's own normative database from healthy volunteers (perimetry normative build). The portal exports the candidate exams (schema perimetry-cohort/1); every inclusion/exclusion rule and every statistic is applied here, in /core, never in the portal. Padrão proposto, aguardando confirmação do product owner (docs/CLINICAL_SPEC.md §8.1).",
+  "minAgeYears": 18,
+  "maxAgeYears": null,
+  "excludeAborted": true,
+  "allowedStrategies": ["Zest", "ZestFast", "FullThreshold"],
+  "reliability": {
+    "_doc": "When useAlertLimits is true an exam is excluded when any reliability rate exceeds the alert limits of reliability.json (FL > 20%, FP > 15%, FN > 33%), as the HFA normative studies did.",
+    "useAlertLimits": true
+  },
+  "_learningDoc": "excludeFirstExamPerEye drops each eye's first exam when that eye has a later eligible exam (learning effect: Heijl & Bengtsson 1996, Wild et al. 1989). oneExamPerEye = 'latest' keeps one exam per eye so the percentiles are not weighted by repeat examinations. Both eyes of a subject are allowed (as in visualFields); the eyes are treated as independent, which slightly underestimates between-subject variance.",
+  "excludeFirstExamPerEye": true,
+  "oneExamPerEye": "latest",
+  "_statusDoc": "The database is MEASURED only with at least minEyesForMeasured eligible eyes; below that it is built (from 30 eyes) but stays PROVISIONAL and every report carries the warning with N.",
+  "minEyesForMeasured": 100,
+  "ageBands": [[18, 29], [30, 39], [40, 49], [50, 59], [60, 69], [70, 79], [80, 120]],
+  "_ageRangeDoc": "An exam whose age lies more than ageRangeMarginYears outside the cohort's age range is analysed (the regression is extrapolated) with a warning.",
+  "ageRangeMarginYears": 5
+}

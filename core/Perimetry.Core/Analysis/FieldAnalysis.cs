@@ -60,6 +60,11 @@ namespace Perimetry.Core.Analysis
         public string GhtStatus { get; set; }
         public bool Calibrated { get; set; }
         public bool NormativeProvisional { get; set; }
+        /// <summary>Phase 6: which normative database produced the deviations and probabilities.</summary>
+        public string NormativeId { get; set; }
+        public string NormativeStatus { get; set; }
+        public string NormativeSource { get; set; }
+        public int NormativePopulationEyes { get; set; }
         public double HfaOffsetDb { get; set; }
         /// <summary>False when the grid does not cover the GHT sectors (10-2); <see cref="Ght"/> is then NotApplicable.</summary>
         public bool GhtApplicable { get; set; } = true;
@@ -89,12 +94,28 @@ namespace Perimetry.Core.Analysis
             {
                 ExamId = exam.ExamId, Eye = exam.Settings.Eye, GridId = grid.Id, AgeYears = age,
                 Calibrated = exam.Calibrated, NormativeProvisional = norm.IsProvisional,
+                NormativeId = norm.Id, NormativeStatus = norm.Status, NormativeSource = norm.Source, NormativePopulationEyes = norm.PopulationEyes,
                 HfaOffsetDb = exam.HfaOffsetDb, Reliability = exam.Reliability, GhtStatus = cfg.Ght.Status, GhtApplicable = grid.GhtApplicable,
             };
 
             res.Warnings.Add(Disclaimers.Research);
             if (!exam.Calibrated) res.Warnings.Add(Disclaimers.Uncalibrated + " — escala dB baseada em curva sRGB nominal");
-            if (norm.IsProvisional) res.Warnings.Add(Disclaimers.ProvisionalNormative);
+            if (norm.IsProvisional)
+            {
+                // Phase 6: a clinic cohort below the minimum is "própria" but still provisional; the synthetic model keeps the original text.
+                if (norm.Source == NormativeDatabase.SourceCohort)
+                {
+                    int min = (norm as NormativeDatabase)?.MinEyesForMeasured ?? cfg.NormativeCohort.MinEyesForMeasured;
+                    res.Warnings.Add($"NORMATIVO PRÓPRIO PROVISÓRIO — {norm.PopulationEyes} olhos (mínimo {min})");
+                }
+                else res.Warnings.Add(Disclaimers.ProvisionalNormative);
+            }
+            if (!double.IsNaN(norm.AgeMin) && !double.IsNaN(norm.AgeMax))
+            {
+                double margin = cfg.NormativeCohort.AgeRangeMarginYears;
+                if (age < norm.AgeMin - margin || age > norm.AgeMax + margin)
+                    res.Warnings.Add($"Idade fora da faixa do normativo ({norm.AgeMin:0}–{norm.AgeMax:0} anos)");
+            }
             if (exam.Reliability.FixationLosses.Alert) res.Warnings.Add("Perdas de fixação acima do limite");
             if (exam.Reliability.FalsePositives.Alert) res.Warnings.Add("Falsos positivos acima do limite");
             if (exam.Reliability.FalseNegatives.Alert) res.Warnings.Add("Falsos negativos acima do limite");

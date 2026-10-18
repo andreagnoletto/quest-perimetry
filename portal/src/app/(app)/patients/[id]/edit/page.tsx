@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { db } from "@/lib/db";
@@ -11,6 +11,7 @@ export default async function EditPatient({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const row = await db.patient.findUnique({ where: { id } });
   if (!row) notFound();
+  if (row.anonymizedAt) redirect(`/patients/${id}`); // anonymised records are read-only
   const p = view(row);
   await audit(user.id, "patient.view", "patient", id, "edit form");
   return (

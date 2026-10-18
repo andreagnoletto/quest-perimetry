@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { db } from "@/lib/db";
-import { importFiles, type ImportOutcome } from "@/lib/importer";
+import { importFiles, reanalyzeExam, type ImportOutcome } from "@/lib/importer";
 
 export type ImportState = { outcomes?: ImportOutcome[]; error?: string } | undefined;
 
@@ -24,6 +24,14 @@ export async function importAction(_: ImportState, form: FormData): Promise<Impo
   }
   revalidatePath("/exams");
   return { outcomes };
+}
+
+/** Phase 6: re-runs `perimetry report` on the stored original file with the normative active now for its grid. */
+export async function reanalyzeExamAction(examId: string, _form: FormData) {
+  const user = await requireUser(["admin", "doctor"]);
+  const { report, normativeSetId } = await reanalyzeExam(examId);
+  await audit(user.id, "exam.reanalyze", "exam", examId, `normative=${report.analyzedWith.normative?.id ?? "synthetic"}; set=${normativeSetId ?? "none"}; config=${report.analyzedWith.configHash.slice(0, 12)}`);
+  revalidatePath(`/exams/${examId}`);
 }
 
 export type LinkState = { error?: string; ok?: string } | undefined;

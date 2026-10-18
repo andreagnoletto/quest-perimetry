@@ -24,7 +24,7 @@ export default async function Patients({ searchParams }: { searchParams: Promise
         <button type="submit">Buscar</button>
         <Link className="button secondary" href="/patients/new">Novo paciente</Link>
       </form>
-      {q && <p className="muted small">A busca por nome é exata (nome completo, sem diferenciar acentos e maiúsculas), porque os nomes ficam criptografados.</p>}
+      {q && <p className="muted small">A busca por nome é exata (nome completo, sem diferenciar acentos e maiúsculas), porque os nomes ficam criptografados. Pacientes anonimizados só aparecem pelo código.</p>}
       {list.length === 0 ? <p className="muted">Nenhum paciente encontrado.</p> : (
         <div className="table-wrap">
           <table>
@@ -34,10 +34,10 @@ export default async function Patients({ searchParams }: { searchParams: Promise
                 const c = byId.get(p.id);
                 return (
                   <tr key={p.id}>
-                    <td><Link href={`/patients/${p.id}`}>{p.name}</Link></td>
+                    <td><Link href={`/patients/${p.id}`}>{p.name}</Link>{p.anonymizedAt && <span className="badge" style={{ marginLeft: 6 }}>anonimizado</span>}</td>
                     <td>{p.internalId}</td>
                     <td>{p.code}</td>
-                    <td>{dateBr(p.birthDate + "T12:00:00Z")}</td>
+                    <td>{p.birthDate ? dateBr(p.birthDate + "T12:00:00Z") : "—"}</td>
                     <td className="num">{c?._count ?? 0}</td>
                     <td>{c?._max.startedUtc ? dateBr(c._max.startedUtc) : "—"}</td>
                   </tr>

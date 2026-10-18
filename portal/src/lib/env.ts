@@ -23,4 +23,9 @@ export const env = {
     return process.env.PERIMETRY_SECURE_COOKIES === "true";
   },
   sessionTtlHours: 12,
+  /** Idle timeout of a staff session (Phase 6); SESSION_IDLE_MINUTES, default 60. */
+  get sessionIdleMinutes(): number {
+    const n = Number(process.env.SESSION_IDLE_MINUTES ?? 60);
+    return Number.isFinite(n) && n > 0 ? n : 60;
+  },
 };

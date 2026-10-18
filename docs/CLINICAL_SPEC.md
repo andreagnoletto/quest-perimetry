@@ -1,7 +1,7 @@
 # Especificação clínica e psicofísica implementada
 
 > **Protótipo para pesquisa/uso sob supervisão médica — não registrado na ANVISA.**
-> Documento-base para a futura documentação regulatória. Descreve o que está implementado
+> Documento-base para a futura documentação regulatória (requisitos, riscos e rastreabilidade em `docs/regulatory/`). Descreve o que está implementado
 > em `/core` (Fase 1). Toda constante citada vive em `config/*.json`; o hash SHA-256 desse
 > diretório é gravado em cada exame (`ExamRecord.ConfigHash`).
 
@@ -235,8 +235,36 @@ dados medidos. Todo exame e relatório leva o aviso vermelho **"NORMATIVO PROVIS
 `fovealExtraDb` (1,5 dB, proposto: no HFA a fóvea costuma medir 1–3 dB acima dos pontos a 3°) + o mesmo deslocamento
 global + variação local e ruído de medida (gerados num fluxo aleatório separado, de modo que os valores da grade são
 idênticos aos da Fase 1). `NormativeBuilder` ajusta a mesma regressão por idade e os percentis inferiores
-(`ExpectedFovealHfa`, `FovealTdProbability`); uma coorte real sem medida foveal produz um normativo sem fóvea e, nesse
-caso, o ZEST foveal parte do esperado do ponto mais central da grade e o relatório mostra o limiar sem p.
+(`ExpectedFovealHfa`, `FovealTdProbability`); uma coorte real com menos de 30 medidas foveais produz um normativo cujo
+modelo foveal é o sintético (o arquivo registra `foveal.fromCohort = false`) e o relatório continua mostrando o limiar com p
+do modelo sintético.
+
+**Normativo PRÓPRIO (Fase 6; regras da coorte aprovadas pelo product owner em 2026-10-18: idade ≥ 18, limites de confiabilidade dos alertas, descarte do primeiro exame de cada olho, um exame por olho, mínimo de 100 olhos para MEASURED).** O portal marca voluntários
+normais e exporta os exames candidatos num arquivo de coorte (`perimetry-cohort/1`: grade, e por exame `subjectId`
+pseudônimo, `eye`, `examId`, `sequenceForEye`, `ageYears`, `aborted`, `strategy`, taxas de confiabilidade e os limiares em
+dB HFA-eq na convenção OD da grade, mais `fovealHfaDb`). Toda regra e toda estatística ficam no `/core`
+(`CohortFilter`, `config/normative/cohort.json`; comandos `perimetry normative stats|build|inspect`), nunca no portal:
+- **Exclusão por exame:** interrompido; estratégia fora de `allowedStrategies` (ZEST, ZEST rápido, Full Threshold: o
+  rastreio não mede limiar); idade < 18 anos (`minAgeYears`); confiabilidade acima dos limites de alerta de
+  `reliability.json` (FL > 20%, FP > 15%, FN > 33%, como nos estudos normativos do HFA — Heijl, Lindgren & Olsson 1987);
+  limiar ausente num ponto analisado. Pontos da mancha cega sem valor recebem a média dos dois pontos medidos mais
+  próximos do mesmo olho, só para a regressão ter um valor de partida ali.
+- **Efeito de aprendizado:** o primeiro exame de cada olho é descartado quando esse olho tem um exame posterior elegível
+  (`excludeFirstExamPerEye`; Heijl & Bengtsson 1996, Wild et al. 1989), e entra um exame por olho, o mais recente
+  (`oneExamPerEye = latest`), para os percentis não serem ponderados por repetições. Os dois olhos do mesmo sujeito
+  entram, tratados como independentes (como em `visualFields`), o que subestima um pouco a variância entre sujeitos.
+- **Status:** o banco é construído com pelo menos 30 olhos e fica **MEASURED** só com `minEyesForMeasured` = 100 olhos
+  elegíveis; abaixo disso é PROVISIONAL e todo relatório leva "NORMATIVO PRÓPRIO PROVISÓRIO — N olhos (mínimo 100)". A
+  faixa etária da coorte vai no arquivo; um exame com idade fora dela por mais de `ageRangeMarginYears` = 5 anos é
+  analisado por extrapolação da regressão, com o aviso "Idade fora da faixa do normativo (a–b anos)". Faixas de 10 anos
+  (`ageBands`) com menos de 10 olhos são avisadas.
+- **Arquivo** (`perimetry-normative/1`): id, grade, status e motivo, origem (`cohort`, SHA-256 da coorte, versão do
+  construtor), data, número de olhos, faixa etária, e os mesmos vetores do construtor (regressão por ponto, DP de TD e PD,
+  percentis de TD/PD/MD/PSD/GH e dos setores do GHT, fóvea). Carregar e salvar é sem perda e determinístico: a mesma
+  coorte produz os mesmos bytes. `perimetry report --normative db.json` usa esse banco (a grade tem de coincidir) e o
+  relatório registra `analyzedWith.normative` {id, status, origem, olhos, faixa etária} e `analysis.NormativeId/
+  NormativeStatus/NormativeSource/NormativePopulationEyes`; sem a opção, o provisório sintético continua valendo.
+
 
 ### 8.2 Mapas e índices
 
@@ -256,8 +284,8 @@ caso, o ZEST foveal parte do esperado do ponto mais central da grade e o relató
   probabilidade do PD (p<5% = 2, p<2% = 5, p<1% = 10, p<0,5% = 20); diferença superior − inferior por
   setor comparada aos percentis 97 e 99 dos normais. "Fora dos limites normais" se algum setor excede o
   P99; "Limítrofe" se excede o P97; "Sensibilidade geral reduzida" se GH < P0,5; "Anormalmente alta" se
-  GH > P99,5. **A composição dos setores é uma reconstrução e precisa ser validada contra a figura
-  original [DECISÃO PENDENTE]** (`config/ght.json`, status `TO_BE_VALIDATED`). Em grades com `ghtApplicable: false`
+  GH > P99,5. A composição dos setores é uma reconstrução da figura original, **validada pelo product owner em
+  2026-10-18** (`config/ght.json`, status `VALIDATED_2026-10-18`; figura de conferência enviada no projeto). Em grades com `ghtApplicable: false`
   (10-2) o resultado é "Não se aplica" (`analysis.GhtApplicable`), sem diferenças de setor.
 - **Escala de cinza:** 10 faixas sobre o valor HFA-eq: < 4 dB preto … ≥ 36 dB branco (limites a cada
   4 dB) **[APROVADO 2026-10-17]**.
@@ -446,6 +474,36 @@ diagonal), dentro do campo útil configurado (`usableHalfFieldDeg` 50°) e do ca
   - *Pedido de exame*: grade, monitor de fixação, limiar foveal e modo de resposta opcionais, escritos no
     `exam-order.json` só quando diferem do preset (contrato em `docs/SYNC_API.md`).
 
+### 12.1 Normativo próprio no portal e visão geral de progressão (Fase 6; aprovado em 2026-10-18)
+
+- **Voluntários:** no cadastro, a opção "Voluntário normal (normativo)" com observação livre (criptografada) marca os
+  pacientes cujos exames entram na coorte. É independente da autorização de pesquisa: o normativo é uso interno da
+  clínica e a coorte sai pseudonimizada (ID de estudo S-…, o mesmo da exportação para pesquisa), sem nome, nascimento,
+  ID interno ou código do headset. *(Padrão proposto; se o product owner preferir exigir a autorização de pesquisa,
+  basta filtrar por ela.)*
+- **Página "Normativo" (médico/administrador):** por grade (24-2, 30-2, 10-2, 24-2C), o portal monta a coorte com os
+  exames da grade dos voluntários (`sequenceForEye` pela data, idade na data do exame, limiares HFA-eq do relatório com
+  `null` na mancha cega; exame interrompido entra com todos os valores `null`, para o `/core` o recusar como
+  "interrompido") e chama `perimetry normative stats`. Mostra candidatos, olhos elegíveis (OD/OS, sujeitos, fóvea),
+  faixa etária, status que o banco teria (PROVISIONAL/MEASURED) e motivo, avisos, tabela por faixa etária e a tabela
+  dos excluídos com o motivo do `/core` e link ao exame. Nenhuma regra é aplicada no portal.
+- **Construir / ativar / reanalisar:** "Construir normativo" roda `perimetry normative build` e guarda o banco
+  (`perimetry-normative/1`) com o resumo, o hash da coorte e quem construiu; o id é `clinic-<grade>-<data>`. Um banco
+  só passa a valer depois de **ativado** (um ativo por grade; desativar volta ao provisório sintético). Os exames já
+  importados mantêm a análise anterior até "Reanalisar todos os exames desta grade" (ou "Reanalisar" num exame), que
+  reprocessa o arquivo original com `perimetry report --normative`. Toda importação nova usa o ativo da grade. Cada exame
+  guarda qual banco o analisou; o rodapé do laudo diz "normativo próprio <id> (N olhos, a–b anos[, provisório])" ou
+  "normativo provisório sintético", e os avisos do `/core` ("NORMATIVO PRÓPRIO PROVISÓRIO — N olhos (mínimo 100)",
+  "Idade fora da faixa do normativo") saem como notas de rodapé. Ações no log: `normative.view/export/build/activate/
+  deactivate/reanalyze`, `exam.reanalyze`.
+- **Visão geral de progressão (por olho):** os exames de limiar concluídos (sem rastreios nem interrompidos), em ordem
+  cronológica e agrupados por grade (grade mais recente primeiro, porque MD/VFI de grades diferentes não se comparam),
+  cada um com escala de cinza, mapa de probabilidade do desvio total, MD/PSD (com p), VFI, GHT, perdas de fixação, FP e FN
+  ("xx" acima do limite) e a marca de baixa confiabilidade; depois a tendência de MD e VFI (regressão linear simples,
+  inclinação/ano ± EP e p bicaudal a partir de 3 exames, §12 "Tendência"). O rodapé declara que é descritiva e **não é
+  análise por eventos (GPA)**, lista os exames fora da série e o normativo usado em cada análise. PDF em A4 paisagem pela
+  mesma página; acesso registrado como `patient.overview` / `patient.overview.print`.
+
 ## 12a. Sincronização e painel ao vivo (Fase 4)
 
 - O exame no headset continua **independente da rede**: gravação local primeiro (HMAC), envio depois; sem rede o
@@ -460,6 +518,30 @@ diagonal), dentro do campo útil configurado (`usableHalfFieldDeg` 50°) e do ca
   resultado é mostrado ao paciente.
 - Pedido de exame enviado ao headset: só o código pseudônimo, idade, correção, exame e semente; o operador confirma
   na tela de preparação. O exame importado pela rede traz a integridade **verificada** pela chave enviada no pareamento.
+
+## 12b. Segurança e LGPD (Fase 6)
+
+Sem impacto clínico; guia de operação em `portal/SECURITY.md`. Padrões propostos em 2026-10-18 (todos configuráveis
+ou documentados; nenhum número clínico envolvido):
+
+- **Contas:** senha com mínimo de 12 caracteres e rejeição de senhas triviais; bloqueio da conta por 15 min após
+  10 erros seguidos (gravado no banco, `User.failedLogins/lockedUntil`); teto de 50 tentativas de login por IP a cada
+  15 min; sessão nova a cada login, expira em 12 h ou após 60 min sem uso (`SESSION_IDLE_MINUTES`); troca de senha pelo
+  próprio usuário em "Minha conta", que encerra as outras sessões. Tudo no log (`login.failed/locked/ratelimited`,
+  `user.password`).
+- **Navegador:** Content-Security-Policy com nonce por requisição (`portal/src/middleware.ts`), `X-Frame-Options: DENY`,
+  `nosniff`, `Referrer-Policy`, `Permissions-Policy`; HSTS quando atrás de HTTPS (`PERIMETRY_SECURE_COOKIES=true`).
+- **Headset:** teto de 20 tentativas de pareamento por IP a cada 15 min; token de aparelho com validade opcional
+  (`DeviceToken.expiresAt`, respeitada na autenticação).
+- **Direitos do titular (LGPD art. 18):** exportação de todos os dados de um paciente em JSON
+  (`perimetry-patient-export/1`, log `patient.export`); **anonimização** em vez de exclusão (log `patient.anonymize`):
+  identificadores viram marcadores, autorização de pesquisa cai, pedidos abertos são cancelados, exames e laudos ficam
+  sob o código pseudônimo para auditoria e reanálise; o registro passa a ser só leitura. **Versão do texto de
+  consentimento** gravada por paciente (`consentVersion`, `portal/src/lib/consent-text.ts`), e data/usuário da
+  autorização de pesquisa (`researchConsentAt/ById`).
+- **Log de acesso:** exportável em CSV pelo administrador (`audit.export`).
+- **Chave e backup:** rotação de `PERIMETRY_DATA_KEY` por script em uma transação (`scripts/rotate-key.ts`,
+  simulação por padrão), `pg_dump` + chave guardada à parte; CI falha com aviso crítico em dependência de produção.
 
 ## 13. Referências
 
