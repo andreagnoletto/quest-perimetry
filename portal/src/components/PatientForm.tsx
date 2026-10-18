@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import type { FormState } from "@/app/(app)/patients/actions";
 import { CONSENT_TEXT, CONSENT_VERSION, RESEARCH_CONSENT_TEXT } from "@/lib/consent-text";
 
-export interface PatientDefaults { internalId?: string; name?: string; birthDate?: string; sex?: string | null; refraction?: string | null; diagnosis?: string | null; researchConsent?: boolean }
+export interface PatientDefaults { internalId?: string; name?: string; birthDate?: string; sex?: string | null; refraction?: string | null; diagnosis?: string | null; researchConsent?: boolean; normativeVolunteer?: boolean; normativeNote?: string | null }
 
 export function PatientForm({ action, defaults, isNew }: {
   action: (s: FormState, f: FormData) => Promise<FormState>;
@@ -38,6 +38,8 @@ export function PatientForm({ action, defaults, isNew }: {
         )}
         <p className="muted small" style={{ margin: 0 }}>{RESEARCH_CONSENT_TEXT}</p>
         <label className="check"><input type="checkbox" name="researchConsent" defaultChecked={d.researchConsent} /> Autoriza uso pseudonimizado dos exames em pesquisa</label>
+        <label className="check"><input type="checkbox" name="normativeVolunteer" defaultChecked={d.normativeVolunteer} /> Voluntário normal (normativo): olhos sadios, exames entram na coorte do normativo próprio da clínica</label>
+        <label>Observação sobre o voluntário (opcional)<input name="normativeNote" defaultValue={d.normativeNote ?? ""} maxLength={300} placeholder="critério de exclusão, exame oftalmológico normal em…" /></label>
       </div>
       <div className="actions"><button type="submit" disabled={pending}>{pending ? "Salvando…" : "Salvar"}</button></div>
       <p className="muted small">Nome, ID interno, nascimento, sexo, refração e diagnóstico são gravados criptografados. O headset recebe só o código pseudônimo.</p>

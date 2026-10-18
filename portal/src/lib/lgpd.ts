@@ -23,6 +23,8 @@ export function anonymizedFields(patientId: string, byUserId: string, at = new D
     diagnosisEnc: null,
     consentNote: null,
     researchConsent: false,
+    normativeVolunteer: false,
+    normativeNoteEnc: null,
     anonymizedAt: at,
     anonymizedById: byUserId,
   };

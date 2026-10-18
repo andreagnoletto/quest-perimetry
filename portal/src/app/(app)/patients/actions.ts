@@ -22,6 +22,9 @@ const patientSchema = z.object({
     return Number.isFinite(t) && t < Date.now() && t > Date.parse("1900-01-01");
   }, "Data de nascimento inválida"),
   sex: opt, refraction: opt, diagnosis: opt,
+  // Phase 6: healthy volunteer for the clinic's own normative (checkbox arrives as "on" or is absent)
+  normativeVolunteer: z.preprocess((v) => v === "on", z.boolean()),
+  normativeNote: opt,
 });
 
 const firstError = (e: z.ZodError) => e.issues[0]?.message ?? "Dados inválidos";
@@ -41,7 +44,7 @@ export async function createPatientAction(_: FormState, form: FormData): Promise
       researchConsent: form.get("researchConsent") === "on",
     }, user.id);
     id = p.id;
-    await audit(user.id, "patient.create", "patient", p.id, `consent v${CONSENT_VERSION}; research=${p.researchConsent}`);
+    await audit(user.id, "patient.create", "patient", p.id, `consent v${CONSENT_VERSION}; research=${p.researchConsent}; volunteer=${p.normativeVolunteer}`);
   } catch (e) {
     return { error: e instanceof Error && e.message.startsWith("Já existe") ? e.message : "Não foi possível salvar o paciente." };
   }
@@ -67,7 +70,7 @@ export async function updatePatientAction(id: string, _: FormState, form: FormDa
     where: { id },
     data: { researchConsent, ...(changed ? { researchConsentAt: researchConsent ? new Date() : null, researchConsentById: researchConsent ? user.id : null } : {}) },
   });
-  await audit(user.id, "patient.update", "patient", id, `research=${researchConsent}${changed ? " (changed)" : ""}`);
+  await audit(user.id, "patient.update", "patient", id, `research=${researchConsent}${changed ? " (changed)" : ""}; volunteer=${parsed.data.normativeVolunteer}`);
   redirect(`/patients/${id}`);
 }
 

@@ -1,4 +1,5 @@
-import { blindIndex, decrypt, decryptOpt } from "./crypto.ts";
+import { decrypt, decryptOpt } from "./crypto.ts";
+import { studyId } from "./normative.ts";
 import { db } from "./db.ts";
 import { ageAt } from "./patients.ts";
 import type { Report } from "./report-types.ts";
@@ -20,11 +21,11 @@ export async function researchRows(): Promise<ResearchRow[]> {
   const rows: ResearchRow[] = [];
   for (const p of patients) {
     if (!p.exams.length) continue;
-    const studyId = "S-" + blindIndex(p.id, "research").slice(0, 12);
+    const sid = studyId(p.id);
     const birth = decrypt(p.birthDateEnc);
     const t0 = p.exams[0].startedUtc.getTime();
     p.exams.forEach((e, i) => rows.push({
-      studyId, seq: i + 1, eye: e.eye, daysFromFirst: Math.round((e.startedUtc.getTime() - t0) / DAY),
+      studyId: sid, seq: i + 1, eye: e.eye, daysFromFirst: Math.round((e.startedUtc.getTime() - t0) / DAY),
       ageYears: Math.floor(ageAt(birth, e.startedUtc)), sex: decryptOpt(p.sexEnc) ?? "",
       report: e.report as unknown as Report, strategy: e.strategy, gridId: e.gridId, md: e.md, psd: e.psd, vfi: e.vfi, integrity: e.integrity,
     }));

@@ -74,6 +74,11 @@ model Patient {
   /// LGPD erasure request: identifying fields replaced by markers, exams kept under the pseudonymous code.
   anonymizedAt     DateTime?
   anonymizedById   String?
+  // --- Phase 6 (normative cohort): healthy volunteer for the clinic's own normative database ---
+  normativeVolunteer Boolean   @default(false)
+  /// Free text about the volunteer (e.g. exclusion reason), encrypted like the other free text.
+  normativeNoteEnc   String?
+  // --- end Phase 6 (normative cohort) ---
   createdAt        DateTime    @default(now())
   createdById      String
   exams            Exam[]
@@ -246,6 +251,10 @@ model Exam {
   /// Null when the headset uploaded the file itself (POST /api/headset/exams); the access log names the device.
   importedById     String?
   importedAt       DateTime        @default(now())
+  // --- Phase 6 (normative cohort): the clinic normative the report was analysed with (null = provisional synthetic) ---
+  normativeSetId   String?
+  normativeSet     NormativeSet?   @relation(fields: [normativeSetId], references: [id])
+  // --- end Phase 6 (normative cohort) ---
 
   @@unique([examId, startedUtc])
   @@index([patientId, eye, startedUtc])
@@ -265,3 +274,28 @@ model AccessLog {
   @@index([entityType, entityId])
   @@index([at])
 }
+
+// --- Phase 6 (normative cohort) ---
+/// A clinic normative database built by `perimetry normative build` from the volunteer cohort of one grid.
+/// `database` is the perimetry-normative/1 file passed to `perimetry report --normative`; `summary` the build summary.
+model NormativeSet {
+  id             String    @id @default(cuid())
+  gridId         String
+  label          String
+  status         String
+  statusReason   String?
+  populationEyes Int
+  ageMin         Float?
+  ageMax         Float?
+  cohortHash     String
+  summary        Json
+  database       Json
+  builtAt        DateTime  @default(now())
+  builtById      String
+  activatedAt    DateTime?
+  activatedById  String?
+  exams          Exam[]
+
+  @@index([gridId, activatedAt])
+}
+// --- end Phase 6 (normative cohort) ---

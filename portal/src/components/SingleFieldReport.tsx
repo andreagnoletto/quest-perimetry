@@ -1,6 +1,6 @@
 import type { Report } from "@/lib/report-types";
 import { dateBr, dateTimeBr, duration, eyeName, fmt, pct, pLabel, strategyName } from "@/lib/format";
-import { fixationLine, fixationTargetLine, fovealLine, gazeBar } from "@/lib/report-format";
+import { fixationLine, fixationTargetLine, fovealLine, gazeBar, normativeLine } from "@/lib/report-format";
 import { geometry, GrayscaleMap, NumericMap, ProbabilityLegend, ProbabilityMap, ScreeningMap } from "./FieldMaps";
 import { GazeTraceBar } from "./GazeTraceBar";
 
@@ -103,7 +103,7 @@ export function SingleFieldReport({ report, patient, device, integrity, footerNo
         <span className="sfa-disclaimer">{e.Disclaimer}</span>
         {footnotes(report.warnings, e.Disclaimer).map((w) => <span key={w} className="sfa-note">{w}</span>)}
         <span>
-          Exame {e.ExamId} · headset {e.SoftwareVersion}{deviceLine(device)} · análise {report.analyzedWith.software} · config {report.analyzedWith.configHash.slice(0, 12)}
+          Exame {e.ExamId} · headset {e.SoftwareVersion}{deviceLine(device)} · análise {report.analyzedWith.software} · config {report.analyzedWith.configHash.slice(0, 12)}{normativeLine(report) ? ` · ${normativeLine(report)}` : ""}
           {integrity ? ` · integridade: ${integrity === "verified" ? "verificada" : integrity === "failed" ? "FALHOU" : "não verificada"}` : ""}
           {footerNote ? ` · ${footerNote}` : ""}
         </span>

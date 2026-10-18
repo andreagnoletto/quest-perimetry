@@ -41,6 +41,11 @@ export interface AnalysisResult {
   GhtApplicable?: boolean;
   Calibrated: boolean;
   NormativeProvisional: boolean;
+  /** Phase 6 (absent in older reports). */
+  NormativeId?: string;
+  NormativeStatus?: "MEASURED" | "PROVISIONAL" | string;
+  NormativeSource?: "synthetic" | "cohort" | string;
+  NormativePopulationEyes?: number;
   HfaOffsetDb: number;
   // Phase 5: foveal threshold (HFA-equivalent dB) and its total deviation; absent/false when not tested.
   FovealTested?: boolean;
@@ -142,9 +147,12 @@ export interface ReportExam {
   PresentationCount: number;
 }
 
+/** Phase 6: the normative database the analysis used (null for an aborted exam; absent in older reports). */
+export interface NormativeUsed { id: string; status: "MEASURED" | "PROVISIONAL" | string; source: "synthetic" | "cohort" | string; populationEyes: number; ageMin: number | null; ageMax: number | null }
+
 export interface Report {
   schema: "perimetry-report/1";
-  analyzedWith: { software: string; configHash: string };
+  analyzedWith: { software: string; configHash: string; normative?: NormativeUsed | null };
   exam: ReportExam;
   analysis: AnalysisResult | null;
   text: { ght: string; ghtEn: string } | null;
