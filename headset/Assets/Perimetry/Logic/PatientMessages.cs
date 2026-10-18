@@ -18,6 +18,9 @@ namespace Perimetry.Headset.Logic
             [PtBr] = new Dictionary<string, string>
             {
                 ["welcome"] = "Bem-vindo(a) ao exame de campo visual.\n\nAperte o botão do controle para começar.",
+                ["setup.order"] = "Operador: pedido de exame\n\n{0}\n\nDirecional: alternar   ·   Segure: confirmar",
+                ["setup.order.item"] = "{0} · {1} · {2} anos",
+                ["setup.order.none"] = "sem pedido (manual)",
                 ["setup.preset"] = "Operador: escolha o exame\n\n{0}\n\nToque: próximo   ·   Segure: confirmar",
                 ["setup.age"] = "Operador: idade do paciente\n\n{0} anos\n\nDirecional: ajustar   ·   Segure: confirmar",
                 ["instructions"] = "Durante o exame, olhe SEMPRE para o losango amarelo no centro.\n\nPequenas luzes vão aparecer em vários lugares, algumas bem fracas.\nAperte o botão sempre que vir uma luz, sem tirar os olhos do centro.\n\nSe precisar descansar, segure o botão apertado.\n\nAperte para continuar.",
@@ -46,6 +49,9 @@ namespace Perimetry.Headset.Logic
             [EnUs] = new Dictionary<string, string>
             {
                 ["welcome"] = "Welcome to the visual field test.\n\nPress the controller button to start.",
+                ["setup.order"] = "Operator: exam order\n\n{0}\n\nThumbstick: switch   ·   Hold: confirm",
+                ["setup.order.item"] = "{0} · {1} · {2} years",
+                ["setup.order.none"] = "no order (manual)",
                 ["setup.preset"] = "Operator: choose the test\n\n{0}\n\nTap: next   ·   Hold: confirm",
                 ["setup.age"] = "Operator: patient age\n\n{0} years\n\nThumbstick: adjust   ·   Hold: confirm",
                 ["instructions"] = "During the test, ALWAYS look at the yellow diamond in the centre.\n\nSmall lights will appear in many places, some very dim.\nPress the button whenever you see a light, without moving your eyes from the centre.\n\nIf you need a rest, hold the button down.\n\nPress to continue.",
