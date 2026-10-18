@@ -69,6 +69,12 @@ Instantâneo da sessão em andamento, enviado a cada mudança de estado e no mí
    "last":{"x":9,"y":-3,"db":24,"seen":true,"kind":"Threshold","tMs":99000}},
  "ackCommandIds":["cmd1"]}
 ```
+- **Fase 5 (campos opcionais, aditivos):** no topo, `"gazeAvailable":false` e `"fixation":{"kind":"Central|Diamond4","x":0,"y":0}`
+  (posição do alvo em graus, visão do olho testado; fora de (0,0) só no modo oculocinético). Em `exam`:
+  `"fixationMode":"CentralHeijlKrakau|CentralEyeTracking|CentralUnmonitored|Oculokinetic"`, `"responseMode":"YesNo|ForcedChoice"`,
+  `"fovealThreshold":false`, `"foveal":null|{"db":31.2,"hfaEqDb":46.7,"censoredLow":false,"presentations":5}`,
+  em `reliability`: `"gazeTracked":false,"gazeRejectedPresentations":0,"gazeMeanErrorDeg":null|1.1`, e em `last`:
+  `"targetX":0,"targetY":0`. Portais antigos podem ignorá-los.
 - `exam` é nulo fora do exame (boas-vindas, treino, entre olhos). `locations` seguem a convenção do `ExamRecord`
   (OD; o portal espelha OS como no laudo). `db` é dB do aparelho; `hfaEqDb` = dB equivalente HFA calculado no
   headset pelo `/core` (o portal não calcula nada clínico). `last` está em coordenadas do olho testado (visão do paciente).

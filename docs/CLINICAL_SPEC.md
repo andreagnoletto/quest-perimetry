@@ -337,6 +337,48 @@ verificação de oclusão → treino (só no primeiro olho) → pronto → exame
 olhos → "Exame concluído. Aguarde o médico." Nenhum resultado é mostrado ao paciente (teste de mensagens).
 Interrupção pelo operador grava o olho em andamento com `Aborted = true`, e a análise recusa esse registro.
 
+**Fase 5 no headset (padrão proposto, aguardando confirmação do product owner).** Presets em `config/headset.json`
+para **30-2, 10-2 e 24-2C** (ZEST e ZEST rápido) e variantes opcionais do 24-2 rápido com fóvea, eye-tracking,
+oculocinético e escolha forçada; o primeiro preset (24-2 ZEST, modo A) continua o padrão. O 30-2 chega a 27° (38° na
+diagonal), dentro do campo útil configurado (`usableHalfFieldDeg` 50°) e do campo de visão do Quest 3 (≈ 55° horizontal
+/ 48° vertical de meio-ângulo), mas perto da borda da lente, onde a nitidez cai: verificar no aparelho.
+
+- **Limiar foveal:** com `fovealThreshold: true` no preset, a tela "pronto" já mostra o **diamante de 4 pontos**
+  (`FixationTargetKind.Diamond4`: pontos de `fixationTarget.diamondDotSizeDeg` = 0,4° a `foveal.diamondHalfSizeDeg` =
+  1,5° do centro, mesma cor e luminância do alvo) e explica ao paciente que a luz aparece no meio deles
+  (`exam.ready.foveal`). As apresentações foveais do `/core` vêm primeiro, com o diamante; ao terminar, o losango central
+  volta e o exame segue. Durante o exame não há texto (como sempre).
+- **Eye-tracking (Quest Pro):** `GazeTracking` lê o dispositivo *Eye Gaze* do OpenXR (`XR_EXT_eye_gaze_interaction`,
+  perfil *Eye Gaze Interaction* ligado por *Perimetry > Configure Project*) ou os `eyesData` do XR legado, leva a direção
+  ao espaço da câmera (mesmo espaço do rig preso à cabeça) e a converte em coordenadas de campo
+  (`AngularGeometry.FromDirection`). A cada quadro o fluxo passa ao `PresentationTimeline` o erro angular entre o olhar e
+  o alvo da apresentação; o resultado leva `GazeTracked`, o erro no quadro do início do estímulo (`GazeErrorDeg`) e o
+  máximo durante os quadros do estímulo (`GazeMaxErrorDeg`), e o `/core` aplica a regra do §5. O olhar conta como
+  disponível enquanto a última amostra tem menos de `oculokinetic.gazeStaleMs` = 500 ms; sem amostras (Quest 3) nada
+  muda e o log registra `gaze unavailable`. A permissão `com.oculus.permission.EYE_TRACKING` entra no manifesto no build
+  e só é pedida em tempo de execução quando existe um rastreador (nunca no Quest 3). Um preset `CentralEyeTracking` num
+  aparelho sem rastreador roda **sem monitoramento de fixação** e o log avisa.
+- **Modo B (oculocinético):** a cada apresentação o alvo já aparece na nova posição (`TargetX/TargetY`) no primeiro
+  quadro, com a **animação de travamento** (`fixationTarget.lockAnimation`: 1,6× maior e 60% da luminância, convergindo
+  linearmente ao alvo normal). Sem eye-tracking a fase de travamento dura `lockDelayMs` = 600 ms; com eye-tracking termina
+  quando o olhar fica ≤ `gazeConfirmDeg` = 3° do alvo por `gazeConfirmMs` = 300 ms, ou após
+  `lockDelayMs × gazeConfirmTimeoutFactor` = 3 s sem confirmação (a regra de rejeição no início do estímulo então
+  descarta a apresentação se o olho ainda estiver longe). **Depois** do travamento vem o ISI aleatório de sempre
+  (600–1200 ms) e então o estímulo, em `AngularGeometry.Compose(alvo, ponto)`; a regra de antecipação e a janela de
+  resposta são as do modo A. Os quatro pontos do diamante foveal, quando houver, também são compostos em torno do alvo.
+  Instruções próprias (`instructions.oculokinetic`, `exam.ready.oculokinetic`: "siga o losango").
+- **Escolha forçada (experimental):** após o ISI, cada intervalo começa com o **piscar do alvo** (o losango some por
+  `markerMs` = 100 ms) seguido do intervalo de `intervalMs` = 200 ms (quantizado em quadros; o estímulo só aparece no
+  intervalo sorteado pelo `/core`), com `gapMs` = 600 ms entre intervalos; a janela de resposta (1000 ms) conta do fim
+  do último intervalo. O aperto é atribuído ao intervalo em curso (do seu piscar até o piscar seguinte; a janela
+  pertence ao último intervalo) e o primeiro aperto decide `RespondedInterval`; sem aperto = sem resposta. Apertos antes
+  do primeiro piscar são `earlyPress`. Instruções próprias (`instructions.forcedChoice`, `exam.ready.forcedChoice`). A
+  simulação quadro a quadro do 24-2 rápido em escolha forçada termina com todos os pontos medidos, sem FP, sem
+  Heijl-Krakau e sem regra de antecipação (§6.4).
+- **Painel ao vivo:** o instantâneo ganha `gazeAvailable`, `fixation {kind, x, y}`, e em `exam`: `fixationMode`,
+  `responseMode`, `fovealThreshold`, `foveal {db, hfaEqDb, censoredLow, presentations}` (quando concluído),
+  `reliability.gazeTracked/gazeRejectedPresentations/gazeMeanErrorDeg` e `last.targetX/targetY` (`docs/SYNC_API.md`).
+
 | Item | Default | Status |
 |---|---|---|
 | Pausa ao segurar o botão | 1500 ms; apresentação em curso descartada | **[DECISÃO PENDENTE]** confirmar |
@@ -345,6 +387,10 @@ Interrupção pelo operador grava o olho em andamento com `Aborted = true`, e a 
 | Alvo de fixação | losango amarelo 0,8°, 30 cd/m² | **[DECISÃO PENDENTE]** |
 | Duração a 72 Hz | 194 ms (14 quadros) até o pedido de 90 Hz ser ligado | **[DECISÃO PENDENTE]** |
 | Idade sem pedido de exame | 50 anos, ajustada pelo operador (afeta o prior do ZEST e a análise) | default |
+| Diamante foveal | 4 pontos de 0,4° a 1,5° do centro, amarelos, 30 cd/m² | Fase 5, **padrão proposto** |
+| Travamento no modo B | 600 ms (ou olhar ≤ 3° por 300 ms; timeout 3 s), animação 1,6× / 60%; ISI depois do travamento | Fase 5, **padrão proposto** |
+| Marcador da escolha forçada | losango some por 100 ms antes de cada intervalo | Fase 5, **padrão proposto** |
+| Olhar "disponível" | última amostra há < 500 ms | Fase 5, default técnico |
 
 ## 12. Portal e relatório (Fase 3)
 

@@ -28,9 +28,10 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 - `tools/opi-crosscheck/` — compares C# ports with OPI in R. `tools/report/` — PNG report (matplotlib).
 - `headset/` — Unity 6 project (phase 2). `Assets/Perimetry/Logic` is pure C# (`PatientFlow` state machine,
   `PresentationTimeline`, `StimulusPlacement`, `Dither`, `ExamStorage`, `PatientMessages`, `PortalSync` sans-IO sync
-  client + `LiveSnapshot`, see `docs/SYNC_API.md`), tested by `headset/LogicTests`. `Runtime` (MonoBehaviours,
-  head-locked rig, `PortalSyncBehaviour` HTTP), `Resources/Perimetry` (monocular dithering
-  shaders), `Editor` (Configure Project, config sync), `Tests/EditMode`. `/core` is a local Unity package
+  client + `LiveSnapshot`, `FixationLayout`, `GazeMonitor`, see `docs/SYNC_API.md`), tested by `headset/LogicTests`.
+  `Runtime` (MonoBehaviours, head-locked rig, `GazeTracking` OpenXR eye gaze, `PortalSyncBehaviour` HTTP),
+  `Resources/Perimetry` (monocular dithering shaders), `Editor` (Configure Project, config sync, Android manifest
+  eye-tracking permission), `Tests/EditMode`. `/core` is a local Unity package
   (`core/Perimetry.Core/package.json`); build output goes to `/artifacts` (Directory.Build.props) so no bin/
   lands inside the package. `headset/UnityCompileCheck` compiles the Unity scripts against UnityEngine reference DLLs.
 - `portal/` — doctor portal (phase 3): Next.js 15 (App Router, server actions) + PostgreSQL via Prisma.
@@ -44,7 +45,7 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 ```bash
 dotnet build Perimetry.sln
 dotnet test core/Perimetry.Core.Tests                                   # 133 tests, ~5 s
-dotnet test headset/LogicTests                                           # 37 tests: headset flow, timing, geometry, dithering, portal sync
+dotnet test headset/LogicTests                                           # 51 tests: headset flow, timing, geometry, dithering, portal sync, phase 5 modes
 dotnet build headset/UnityCompileCheck                                   # Unity scripts vs UnityEngine API (no Unity needed)
 dotnet test core/Perimetry.Core.Tests --collect:"XPlat Code Coverage"   # coverage (cobertura xml)
 dotnet run --project core/Perimetry.Cli -c Release -- simulate --strategy ZestFast --defect SuperiorArcuate --seed 4 --out out/ex.json
@@ -90,6 +91,10 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 ## Headset conventions
 - Stimuli are placed on a sphere centred on the TESTED eye (not the head); never in pixels.
 - Clinical/presentation constants for the headset live in `config/headset.json`, `display.json`, `timing.json`.
+- Phase 5: `FlowView` carries the fixation target (kind Central/Diamond4, position, lock scale/luminance, marker);
+  `PresentationTimeline` runs the mode B lock (fixed delay or gaze confirmation), the forced-choice marker/interval/gap
+  sequence and the per-presentation gaze statistics; `GazeMonitor`/`Runtime/GazeTracking` feed OpenXR eye gaze (Quest Pro)
+  as absolute field coordinates; mode B stimuli are drawn at `AngularGeometry.Compose(target, point)`. Quest 3 = no gaze.
 - The flow never shows results to the patient. Unity layer only renders `FlowView` and feeds input edges + Tick.
 - Unity, the Meta XR Simulator and APK builds cannot run in the cloud container: verify those on the product
   owner's machine (or a Remote Control session).
