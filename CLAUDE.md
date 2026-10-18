@@ -22,7 +22,8 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
   pattern), `Exam` (`ExamSession` = OPI-style server, catch trials, blind spot, records), `Analysis`
   (normative builder, TD/PD/MD/PSD/VFI/GHT, grayscale), `Simulation` (synthetic fields, observer, runner).
 - `core/Perimetry.Core.Tests` — NUnit (net8.0); same tests can run in Unity Test Framework EditMode.
-- `core/Perimetry.Cli` — `perimetry` CLI: simulate / analyze / benchmark / crosscheck.
+- `core/Perimetry.Cli` — `perimetry` CLI: simulate / analyze / benchmark / crosscheck / report (strict JSON for the
+  portal) / check-calibration.
 - `config/` — clinical constants and grids. `config/normative/` — provisional synthetic normative model.
 - `tools/opi-crosscheck/` — compares C# ports with OPI in R. `tools/report/` — PNG report (matplotlib).
 - `headset/` — Unity 6 project (phase 2). `Assets/Perimetry/Logic` is pure C# (`PatientFlow` state machine,
@@ -31,7 +32,10 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
   shaders), `Editor` (Configure Project, config sync), `Tests/EditMode`. `/core` is a local Unity package
   (`core/Perimetry.Core/package.json`); build output goes to `/artifacts` (Directory.Build.props) so no bin/
   lands inside the package. `headset/UnityCompileCheck` compiles the Unity scripts against UnityEngine reference DLLs.
-- `portal/` (Next.js, phase 3) — not started.
+- `portal/` — doctor portal (phase 3): Next.js 15 (App Router, server actions) + PostgreSQL via Prisma.
+  `src/lib` (crypto/LGPD, auth, audit, importer, `perimetry.ts` = bridge to the CLI, pdf), `src/components`
+  (`SingleFieldReport`, SVG `FieldMaps`), `src/app/(app)` pages, `src/app/print` (bare report the PDF prints).
+  The portal never computes clinical numbers: every exam goes through `perimetry report` on import.
 
 ## Commands
 ```bash
@@ -44,10 +48,12 @@ dotnet run --project core/Perimetry.Cli -c Release -- simulate --strategy ZestFa
 dotnet run --project core/Perimetry.Cli -c Release -- benchmark --strategy ZestFast --runs 30
 python3 tools/report/render_report.py out/ex.analysis.json out/ex.png  # needs matplotlib
 bash tools/opi-crosscheck/run.sh                                         # needs R + jsonlite, python3
+cd portal && npm ci && npm run typecheck && npm test                     # portal unit tests (needs the Release CLI build)
+cd portal && npm run build && npm run e2e                                # Playwright e2e; needs PostgreSQL (E2E_DATABASE_URL)
 ```
 CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThreshold|FourTwo|Screening`,
 `--eye OD|OS`, `--defect Normal|SuperiorArcuate|InferiorArcuate|Hemianopia|CentralScotoma`, `--depth`,
-`--age`, `--seed`, `--fpr`, `--fnr`, `--fixloss`, `--fixation CentralHeijlKrakau|CentralEyeTracking|CentralUnmonitored`, `--config <dir>`.
+`--age`, `--seed`, `--fpr`, `--fnr`, `--fixloss`, `--patient-ref`, `--fixation CentralHeijlKrakau|CentralEyeTracking|CentralUnmonitored`, `--config <dir>`.
 
 ## Conventions
 - Field coordinates: degrees, patient's view, +x right, +y up; grids stored in OD convention, OS mirrors x.
@@ -79,6 +85,15 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 - The flow never shows results to the patient. Unity layer only renders `FlowView` and feeds input edges + Tick.
 - Unity, the Meta XR Simulator and APK builds cannot run in the cloud container: verify those on the product
   owner's machine (or a Remote Control session).
+
+## Portal conventions
+- Identifying patient fields are AES-256-GCM encrypted (`PERIMETRY_DATA_KEY`), searchable only by exact blind index.
+  Only the pseudonymous code (`P-XXXXXX`) leaves the portal (exam-order.json, research export uses a separate study ID).
+- Every page/route that reads patient data calls `requireUser` and writes an `audit()` entry.
+- Report shows thresholds in HFA-equivalent dB, "<NN" below the device floor; PDF is the same page printed by Chromium.
+- Use TrueType fonts and plain SVG geometry in the report: Chromium turns OTF fonts and SVG `<pattern>` fills into
+  megabytes of Type 3 fonts / raster images in the PDF.
+- Never run `prisma migrate reset` (or anything that drops data); e2e creates a new database per run.
 
 ## Open decisions (waiting for the product owner)
 Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,

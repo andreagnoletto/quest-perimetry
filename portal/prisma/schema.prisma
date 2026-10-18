@@ -1,0 +1,171 @@
+// Doctor portal data model (Phase 3). Fields ending in "Enc" are AES-256-GCM ciphertext (src/lib/crypto.ts);
+// fields ending in "Idx" are keyed blind indexes for exact-match lookup without decrypting.
+// Raw exam files are kept byte-for-byte (rawText) so their HMAC can be re-verified at any time.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  doctor
+  operator
+}
+
+enum Integrity {
+  verified
+  unverified
+  failed
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  name         String
+  role         Role        @default(doctor)
+  passwordHash String
+  active       Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  sessions     Session[]
+  accessLogs   AccessLog[]
+}
+
+model Session {
+  id        String   @id // SHA-256 of the cookie token
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([userId])
+}
+
+model Patient {
+  id               String      @id @default(cuid())
+  /// Pseudonymous code written to the headset (exam-order patientRef) and to research exports. Never a name.
+  code             String      @unique
+  internalIdEnc    String
+  internalIdIdx    String      @unique
+  nameEnc          String
+  nameIdx          String
+  birthDateEnc     String
+  sexEnc           String?
+  refractionEnc    String?
+  diagnosisEnc     String?
+  consentAt        DateTime?
+  consentById      String?
+  consentNote      String?
+  researchConsent  Boolean     @default(false)
+  createdAt        DateTime    @default(now())
+  createdById      String
+  exams            Exam[]
+  orders           ExamOrder[]
+
+  @@index([nameIdx])
+}
+
+model Device {
+  id           String        @id @default(cuid())
+  serial       String        @unique
+  model        String?
+  label        String?
+  /// Per-device HMAC key (base64, from device.key on the headset), encrypted at rest. Enables integrity checks.
+  hmacKeyEnc   String?
+  createdAt    DateTime      @default(now())
+  calibrations Calibration[]
+  sessions     HeadsetSession[]
+}
+
+model Calibration {
+  id           String    @id @default(cuid())
+  deviceId     String
+  device       Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  measuredAt   DateTime?
+  validUntil   DateTime?
+  photometer   String?
+  /// LuminanceCalibration JSON exactly as validated by the /core CLI.
+  json         String
+  summary      Json
+  uploadedById String
+  uploadedAt   DateTime  @default(now())
+  active       Boolean   @default(true)
+}
+
+model ExamOrder {
+  id          String    @id @default(cuid())
+  patientId   String
+  patient     Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  presetId    String
+  ageYears    Float
+  refraction  String?
+  seed        String?
+  createdById String
+  createdAt   DateTime  @default(now())
+  fulfilledAt DateTime?
+}
+
+model HeadsetSession {
+  id         String    @id @default(cuid())
+  sessionId  String    @unique
+  deviceId   String?
+  device     Device?   @relation(fields: [deviceId], references: [id])
+  startedUtc DateTime
+  outcome    String?
+  rawText    String
+  data       Json
+  integrity  Integrity @default(unverified)
+  importedAt DateTime  @default(now())
+  exams      Exam[]
+}
+
+model Exam {
+  id               String          @id @default(cuid())
+  examId           String
+  startedUtc       DateTime
+  patientId        String?
+  patient          Patient?        @relation(fields: [patientId], references: [id])
+  sessionId        String?
+  session          HeadsetSession? @relation(fields: [sessionId], references: [id])
+  eye              String
+  gridId           String
+  strategy         String
+  aborted          Boolean         @default(false)
+  configHash       String?
+  calibrated       Boolean         @default(false)
+  /// The headset file, byte-for-byte (may contain "NaN" strings).
+  rawText          String
+  rawHmac          String?
+  integrity        Integrity       @default(unverified)
+  /// Output of `perimetry report` (strict JSON): exam summary + Single Field Analysis from /core.
+  report           Json
+  analyzedConfig   String
+  md               Float?
+  vfi              Float?
+  psd              Float?
+  ght              String?
+  importedById     String
+  importedAt       DateTime        @default(now())
+
+  @@unique([examId, startedUtc])
+  @@index([patientId, eye, startedUtc])
+}
+
+model AccessLog {
+  id         String   @id @default(cuid())
+  at         DateTime @default(now())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  entityType String?
+  entityId   String?
+  detail     String?
+  ip         String?
+
+  @@index([entityType, entityId])
+  @@index([at])
+}

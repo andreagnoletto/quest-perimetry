@@ -22,20 +22,22 @@ namespace Perimetry.Cli
     ///   perimetry analyze   exam.json [--out analysis.json]
     ///   perimetry benchmark [--grid 24-2] [--strategy Zest] [--defect Normal] [--runs 50]
     ///   perimetry crosscheck scenarios.json out.json
+    ///   perimetry report exam.json [--out report.json]    (portal: strict JSON, see Report.cs)
+    ///   perimetry check-calibration calibration.json
     /// </summary>
     public static class Program
     {
         private static readonly JsonSerializerSettings Json = new JsonSerializerSettings
         {
             Formatting = Formatting.Indented,
-            FloatFormatHandling = FloatFormatHandling.Symbol,
+            FloatFormatHandling = FloatFormatHandling.String, // same as the headset; NaN as "NaN" keeps the file valid JSON
         };
 
         public static int Main(string[] args)
         {
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-            if (args.Length == 0) { Console.Error.WriteLine("usage: perimetry simulate|analyze|benchmark|crosscheck ..."); return 2; }
+            if (args.Length == 0) { Console.Error.WriteLine("usage: perimetry simulate|analyze|benchmark|crosscheck|report|check-calibration ..."); return 2; }
             var opt = ParseOptions(args.Skip(1).ToArray(), out var positional);
             var cfg = ClinicalConfig.LoadFromDirectory(opt.TryGetValue("config", out var c) ? c : ClinicalConfig.FindConfigDirectory(Directory.GetCurrentDirectory()));
             switch (args[0])
@@ -44,6 +46,8 @@ namespace Perimetry.Cli
                 case "analyze": return Analyze(cfg, positional[0], opt);
                 case "benchmark": return Benchmark(cfg, opt);
                 case "crosscheck": return CrossCheck.Run(positional[0], positional[1]);
+                case "report": return Report.Run(cfg, positional[0], Get(opt, "out", null));
+                case "check-calibration": return Report.CheckCalibration(positional[0]);
                 default: Console.Error.WriteLine("unknown command " + args[0]); return 2;
             }
         }
@@ -80,6 +84,7 @@ namespace Perimetry.Cli
                 FixationMode = (FixationMode)Enum.Parse(typeof(FixationMode), Get(o, "fixation", "CentralHeijlKrakau"), true),
                 AgeYears = double.Parse(Get(o, "age", "50")),
                 Seed = seed,
+                PatientRef = Get(o, "patient-ref", null),
             };
             var scale = DbScale.Nominal(cfg.Display);
             var grid = GridLibrary.Get(cfg, settings.GridId);
