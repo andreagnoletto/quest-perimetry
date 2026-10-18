@@ -1,5 +1,5 @@
 {
-  "_doc": "Headset patient flow (Phase 2). Read by headset/Perimetry.Headset.Logic, part of the config hash. Training levels are device dB (0 = device maximum). Field positions in degrees, OD convention (mirrored for OS).",
+  "_doc": "Headset patient flow (Phase 2) and presentation options (Phase 5). Read by headset/Perimetry.Headset.Logic, part of the config hash. Training levels are device dB (0 = device maximum). Field positions in degrees, OD convention (mirrored for OS).",
   "language": "pt-BR",
   "eyeOrder": [
     "OD",
@@ -10,7 +10,14 @@
     "color": "yellow",
     "_colorDoc": "HFA central fixation target is yellow; rendered at the luminance below, independent of the stimulus scale.",
     "luminanceCdm2": 30.0,
-    "sizeDeg": 0.8
+    "sizeDeg": 0.8,
+    "diamondDotSizeDeg": 0.4,
+    "_diamondDoc": "Foveal test (Phase 5): the four dots of the Diamond4 target (strategies.json foveal.diamondHalfSizeDeg from the centre) have this diameter, same colour and luminance as the central target.",
+    "lockAnimation": {
+      "_doc": "Oculokinetic mode B (Phase 5): after the target jumps it is drawn startScale times larger and startLuminanceFactor times dimmer, settling linearly to the normal target over the lock phase (reliability.json oculokinetic.lockDelayMs, or until gaze is confirmed).",
+      "startScale": 1.6,
+      "startLuminanceFactor": 0.6
+    }
   },
   "training": {
     "_doc": "3-5 practice presentations with feedback (SPEC §8). stimulusShown=false is a blank trial that teaches not to press without a light. Training responses are logged but never enter the exam.",
@@ -57,6 +64,7 @@
     "occlusionDiscDeg": 10.0
   },
   "menuHoldMs": 1500,
+  "_presetsDoc": "Phase 5: fovealThreshold (default false), responseMode YesNo|ForcedChoice (default YesNo) and fixationMode Oculokinetic/CentralEyeTracking are options; the first preset stays the default exam. 30-2 reaches 27° (38° on the diagonal): inside the Quest 3 field of view (about 55° horizontal / 48° vertical half-angles) but close to the lens edge, where sharpness drops; verify on the device.",
   "presets": [
     {
       "id": "24-2-zest",
@@ -103,6 +111,128 @@
       "eyes": [
         "OS"
       ]
+    },
+    {
+      "id": "30-2-zest",
+      "label": "30-2 ZEST",
+      "gridId": "30-2",
+      "strategy": "Zest",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ]
+    },
+    {
+      "id": "30-2-zest-fast",
+      "label": "30-2 ZEST rápido",
+      "gridId": "30-2",
+      "strategy": "ZestFast",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ]
+    },
+    {
+      "id": "10-2-zest",
+      "label": "10-2 ZEST",
+      "gridId": "10-2",
+      "strategy": "Zest",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ]
+    },
+    {
+      "id": "10-2-zest-fast",
+      "label": "10-2 ZEST rápido",
+      "gridId": "10-2",
+      "strategy": "ZestFast",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ]
+    },
+    {
+      "id": "24-2c-zest",
+      "label": "24-2C ZEST",
+      "gridId": "24-2C",
+      "strategy": "Zest",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ]
+    },
+    {
+      "id": "24-2c-zest-fast",
+      "label": "24-2C ZEST rápido",
+      "gridId": "24-2C",
+      "strategy": "ZestFast",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ]
+    },
+    {
+      "id": "24-2-zest-fast-foveal",
+      "label": "24-2 ZEST rápido + fóvea",
+      "gridId": "24-2",
+      "strategy": "ZestFast",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ],
+      "fovealThreshold": true
+    },
+    {
+      "id": "24-2-zest-fast-eyetracking",
+      "label": "24-2 ZEST rápido eye-tracking (Quest Pro)",
+      "gridId": "24-2",
+      "strategy": "ZestFast",
+      "fixationMode": "CentralEyeTracking",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ]
+    },
+    {
+      "id": "24-2-zest-fast-oculokinetic",
+      "label": "24-2 ZEST rápido oculocinético (modo B)",
+      "gridId": "24-2",
+      "strategy": "ZestFast",
+      "fixationMode": "Oculokinetic",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ]
+    },
+    {
+      "id": "24-2-zest-fast-forced-choice",
+      "label": "24-2 ZEST rápido escolha forçada (experimental)",
+      "gridId": "24-2",
+      "strategy": "ZestFast",
+      "fixationMode": "CentralHeijlKrakau",
+      "stimulusSize": "III",
+      "eyes": [
+        "OD",
+        "OS"
+      ],
+      "responseMode": "ForcedChoice"
     }
   ],
   "defaultAgeYears": 50,
@@ -127,5 +257,10 @@
       60000
     ],
     "maxFilesPerUpload": 10
+  },
+  "oculokinetic": {
+    "_doc": "Phase 5, headset side of mode B. With eye tracking the stimulus waits for gaze within gazeConfirmDeg for gazeConfirmMs (reliability.json); if that never happens the lock ends after lockDelayMs * gazeConfirmTimeoutFactor and the presentation goes on (the gaze rule at onset then rejects it if the eye is still away). gazeStaleMs: gaze counts as unavailable when no sample arrived for this long (Quest 3 has no eye tracker: always unavailable).",
+    "gazeConfirmTimeoutFactor": 5.0,
+    "gazeStaleMs": 500
   }
 }

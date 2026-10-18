@@ -8,19 +8,23 @@ export interface LoadedExam {
   exam: Exam;
   report: Report;
   patient: { id: string; name: string; internalId: string; birthDate: string; code: string } | null;
+  /** Headset that recorded the exam (model and serial, from the session it was uploaded with). */
+  device: { model: string | null; serial: string; label: string | null } | null;
 }
 
 /** Loads one exam with its decrypted patient header and writes the access-log entry. */
 export async function loadExam(id: string, userId: string, action: string): Promise<LoadedExam | null> {
-  const exam = await db.exam.findUnique({ where: { id }, include: { patient: true } });
+  const exam = await db.exam.findUnique({ where: { id }, include: { patient: true, session: { include: { device: true } } } });
   if (!exam) return null;
   await audit(userId, action, "exam", id, exam.patient ? `patient ${exam.patient.code}` : "no patient");
-  const { patient, ...rest } = exam;
+  const { patient, session, ...rest } = exam;
+  const d = session?.device;
   const p = patient ? view(patient) : null;
   return {
     exam: rest,
     report: exam.report as unknown as Report,
     patient: p ? { id: p.id, name: p.name, internalId: p.internalId, birthDate: p.birthDate, code: p.code } : null,
+    device: d ? { model: d.model, serial: d.serial, label: d.label } : null,
   };
 }
 

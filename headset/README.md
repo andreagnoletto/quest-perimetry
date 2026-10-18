@@ -4,6 +4,8 @@
 
 MVP da Fase 2: fluxo completo do paciente, 24-2 ZEST monocular com fixação central + Heijl-Krakau,
 resposta pelo gatilho do controle (ou clicker Bluetooth), gravação local em JSON com HMAC.
+Fase 5 (padrões propostos, aguardando o product owner): presets 30-2 / 10-2 / 24-2C, teste foveal opcional,
+eye-tracking do Quest Pro, fixação oculocinética (modo B) e escolha forçada experimental; veja *Fase 5* abaixo.
 
 ## Estrutura
 
@@ -12,9 +14,9 @@ resposta pelo gatilho do controle (ou clicker Bluetooth), gravação local em JS
 | `Assets/Perimetry/Logic` | Fluxo do paciente, tempo das apresentações, geometria angular, dithering, gravação, cliente de sincronização com o portal (`PortalSync`, `LiveSnapshot`). C# puro (`noEngineReferences`). | Unity e `dotnet` (testes em `LogicTests/`) |
 | `Assets/Perimetry/Runtime` | `PerimetryApp` (bootstrap), `HeadsetRig` (cena presa à cabeça), `HeadTracking`, `ResponseInput`, `ConfigLoader`, `PortalSyncBehaviour` (HTTP via UnityWebRequest). | Unity (checagem de compilação em `UnityCompileCheck/`) |
 | `Assets/Perimetry/Resources/Perimetry` | Shaders `Perimetry/MonocularUnlit` e `Perimetry/MonocularText` (roteamento por olho + dithering). | Unity |
-| `Assets/Perimetry/Editor` | `Perimetry > Configure Project`, `Perimetry > Sync Config` (copia `config/` para Resources antes de cada build). | Unity |
+| `Assets/Perimetry/Editor` | `Perimetry > Configure Project`, `Perimetry > Sync Config` (copia `config/` para Resources antes de cada build), `AndroidManifestPatch` (permissão de eye-tracking no manifesto). | Unity |
 | `Assets/Perimetry/Tests/EditMode` | Teste de tamanho angular pelo rig real, hash da config, shaders presentes. | Unity Test Runner |
-| `LogicTests/` | 37 testes NUnit da lógica, incluindo exames completos simulados quadro a quadro e a sincronização contra um portal simulado. | `dotnet test headset/LogicTests` |
+| `LogicTests/` | 51 testes NUnit da lógica, incluindo exames completos simulados quadro a quadro (também foveal, oculocinético, eye-tracking simulado e escolha forçada) e a sincronização contra um portal simulado. | `dotnet test headset/LogicTests` |
 
 A biblioteca `/core` entra como pacote local (`Packages/manifest.json` → `file:../../core/Perimetry.Core`),
 então o headset roda exatamente o mesmo código psicofísico testado na Fase 1. As constantes clínicas vêm
@@ -87,6 +89,29 @@ depois; sem `portal.json`/`portal-token.json` o comportamento é exatamente o da
 - Configuração em `config/headset.json` → `sync` (`enabled`, `liveIntervalMs`, `requestTimeoutMs`, `retryBackoffMs`,
   `maxFilesPerUpload`). O token em claro numa LAN HTTP é um risco aceito nesta fase; use HTTPS (proxy reverso) quando possível.
 
+## Fase 5: grades, fóvea, eye-tracking, modo B e escolha forçada
+
+Tudo opcional e escolhido pelo preset (`config/headset.json › presets`); o padrão continua **24-2 ZEST, modo A**.
+Detalhes clínicos em [`docs/CLINICAL_SPEC.md`](../docs/CLINICAL_SPEC.md) §4, §5, §6.4 e §11.
+
+| Preset | O quê |
+|---|---|
+| `30-2-zest`, `30-2-zest-fast` | Grade 30-2 (até 27°, 38° na diagonal). Perto da borda da lente do Quest 3: confira a nitidez dos pontos externos no aparelho. |
+| `10-2-zest`, `10-2-zest-fast` | Grade 10-2 (passo 2°). O laudo não calcula GHT nesta grade. |
+| `24-2c-zest`, `24-2c-zest-fast` | 24-2C (24-2 + 10 pontos maculares). |
+| `24-2-zest-fast-foveal` | `fovealThreshold: true`: antes da mancha cega, o alvo vira um **diamante de 4 pontos** (0,4° cada, a 1,5° do centro) e o paciente aperta quando vê a luz no meio; depois o losango volta. |
+| `24-2-zest-fast-eyetracking` | `CentralEyeTracking`: no **Quest Pro**, o olhar é o monitor de fixação (sem Heijl-Krakau): apresentação com olhar a > 3° do alvo no início do estímulo é descartada e repetida; o traçado vai para o laudo. No Quest 3 não há rastreador: a fixação fica **sem monitoramento** (o log avisa). |
+| `24-2-zest-fast-oculokinetic` | Modo B: o losango salta para uma posição aleatória (±10°) antes de cada estímulo, com animação de "travamento" (600 ms; com eye-tracking, até o olhar ficar 300 ms no alvo), depois o ISI e o estímulo **em relação ao alvo**. Heijl-Krakau continua. |
+| `24-2-zest-fast-forced-choice` | Experimental: o losango pisca duas vezes (100 ms), cada piscar abre um intervalo de 200 ms (600 ms entre eles); a luz aparece num deles e o paciente aperta na piscada em que a viu. Sem falsos positivos nem Heijl-Krakau; o exame fica ~3× mais longo. |
+
+**Eye-tracking (Quest Pro).** Requisitos: (1) *Perimetry > Configure Project* liga o perfil OpenXR **Eye Gaze
+Interaction** (Android e Standalone); (2) no build, `AndroidManifestPatch` acrescenta `com.oculus.permission.EYE_TRACKING`
+e `<uses-feature android:name="oculus.software.eye_tracking" android:required="false"/>`; (3) no aparelho, o app pede a
+permissão **só se existir um rastreador** (o Quest 3 nunca vê o pedido) e o paciente precisa ter feito a calibração de
+olhar do sistema; (4) `Active Input Handling = Both` (já configurado), pois o dispositivo *Eye Gaze* chega pelo Input
+System (`Runtime/GazeTracking.cs`, com fallback para `eyesData` do XR legado). A origem do olhar fica no log da sessão
+(`gazeSource`, `gaze available/unavailable`) e na linha de depuração da janela do desktop.
+
 ## Controles
 
 - **Paciente**: qualquer gatilho (ou clicker). Toque = resposta/avançar. Segurar 1,5 s durante o exame = pausa.
@@ -105,3 +130,7 @@ depois; sem `portal.json`/`portal-token.json` o comportamento é exatamente o da
 - Sincronização: os pedidos do portal só aparecem se chegarem enquanto a tela de boas-vindas está aberta; o endereço
   do portal entra por arquivo (`portal.json` via adb), não há teclado no headset; `UnityWebRequest` e o pareamento
   precisam ser verificados no Quest real (aqui só a lógica e a compilação contra a API do UnityEngine).
+- Fase 5: o eye-tracking só foi validado com um rastreador simulado (testes); a leitura do dispositivo *Eye Gaze* do
+  OpenXR (`#if ENABLE_INPUT_SYSTEM`, não coberto pela checagem de compilação sem Unity), a permissão no manifesto e a
+  calibração de olhar precisam ser verificados num **Quest Pro**. O diamante foveal, a animação de travamento, o piscar
+  da escolha forçada e a nitidez dos pontos externos do 30-2 precisam ser vistos no Quest 3 (ou no Meta XR Simulator).

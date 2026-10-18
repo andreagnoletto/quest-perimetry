@@ -25,6 +25,10 @@ export interface LiveReliability {
   blindSpotFound: boolean;
   blindSpotRemaps: number;
   durationMs: number;
+  /** Phase 5 (optional): eye-tracking in use and presentations rejected for gaze error. */
+  gazeTracked?: boolean;
+  gazeRejectedPresentations?: number;
+  gazeMeanErrorDeg?: number | null;
 }
 
 export interface LiveLast { x: number; y: number; db: number | null; seen: boolean; kind: string; tMs: number }
@@ -39,6 +43,12 @@ export interface LiveExam {
   locations: LiveLocation[];
   reliability: LiveReliability;
   last: LiveLast | null;
+  /** Phase 5 (all optional, older headsets omit them). */
+  fixationMode?: string;
+  responseMode?: string;
+  /** Foveal test requested; `foveal` is null while it runs and carries the result once finished. */
+  fovealThreshold?: boolean;
+  foveal?: { db: number; hfaEqDb: number; censoredLow: boolean; presentations: number } | null;
 }
 
 export interface LiveSnapshot {
@@ -87,6 +97,7 @@ export function isLiveSnapshot(v: unknown): v is LiveSnapshot {
 /** pt-BR label of a headset flow state for the live panel. */
 export const liveStateName: Record<string, string> = {
   Welcome: "Boas-vindas", SetupOrder: "Operador: pedido", SetupPreset: "Operador: exame", SetupAge: "Operador: idade",
+  Foveal: "Limiar foveal", FovealTest: "Limiar foveal",
   Instructions: "Instruções", EyeIntro: "Introdução do olho", SharpnessCheck: "Verificação de nitidez",
   OcclusionIntro: "Verificação de oclusão", OcclusionWindow: "Verificação de oclusão", OcclusionFailed: "Oclusão FALHOU",
   TrainingIntro: "Treino", TrainingTrial: "Treino", TrainingFeedback: "Treino", TrainingRepeat: "Treino (repetição)",

@@ -19,6 +19,8 @@ namespace Perimetry.Cli
     /// <summary>
     /// Phase 1 command line: simulate exams, analyse exam JSON, benchmark strategies, OPI cross-check.
     ///   perimetry simulate  [--grid 24-2] [--strategy Zest] [--eye OD] [--defect Normal] [--depth 15] [--age 50] [--seed 1] [--out exam.json]
+    ///                       [--fixation CentralHeijlKrakau|CentralEyeTracking|CentralUnmonitored|Oculokinetic] [--foveal true]
+    ///                       [--response YesNo|ForcedChoice] [--gaze <tracker noise sd deg, 0 = none>] [--fixloss 0.1]
     ///   perimetry analyze   exam.json [--out analysis.json]
     ///   perimetry benchmark [--grid 24-2] [--strategy Zest] [--defect Normal] [--runs 50]
     ///   perimetry crosscheck scenarios.json out.json
@@ -85,6 +87,8 @@ namespace Perimetry.Cli
                 AgeYears = double.Parse(Get(o, "age", "50")),
                 Seed = seed,
                 PatientRef = Get(o, "patient-ref", null),
+                FovealThreshold = bool.Parse(Get(o, "foveal", "false")),
+                ResponseMode = (ResponseMode)Enum.Parse(typeof(ResponseMode), Get(o, "response", "YesNo"), true),
             };
             var scale = DbScale.Nominal(cfg.Display);
             var grid = GridLibrary.Get(cfg, settings.GridId);
@@ -97,6 +101,7 @@ namespace Perimetry.Cli
                 FalsePositiveRate = double.Parse(Get(o, "fpr", "0.03")),
                 FalseNegativeRate = double.Parse(Get(o, "fnr", "0.01")),
                 FixationLossRate = double.Parse(Get(o, "fixloss", "0")),
+                GazeNoiseSdDeg = double.Parse(Get(o, "gaze", "0")),
             }, rng.Fork());
             var session = new ExamSession(settings, cfg, norm, scale);
             var exam = ExamSimulator.Run(session, obs);
@@ -175,6 +180,10 @@ namespace Perimetry.Cli
             foreach (var w in a.Warnings) Console.WriteLine("!! " + w);
             Console.WriteLine($"{Strings.Get("fixationLosses")}: {rel.FixationLosses}   {Strings.Get("falsePositives")}: {rel.FalsePositives} ({rel.FalsePositives.Rate:P0})   {Strings.Get("falseNegatives")}: {rel.FalseNegatives} ({rel.FalseNegatives.Rate:P0})");
             Console.WriteLine($"{Strings.Get("duration")}: {TimeSpan.FromMilliseconds(rel.DurationMs):mm\\:ss}   apresentações: {rel.TotalPresentations}   offset HFA: {exam.HfaOffsetDb:0.0} dB");
+            Console.WriteLine($"Fixação: {exam.Settings.FixationMode}   resposta: {exam.Settings.ResponseMode}" +
+                              (rel.GazeTracked ? $"   olhar: erro médio {rel.GazeMeanErrorDeg:0.0}°, {rel.GazeRejectedPresentations} rejeitadas" : ""));
+            if (a.FovealTested)
+                Console.WriteLine($"Limiar foveal: {(a.FovealCensoredLow ? "<" : "")}{a.FovealHfaDb:0} dB HFA-eq (esperado {a.FovealExpectedHfaDb:0.0}, TD {a.FovealTd:+0.0;-0.0}) {PStr(a.FovealTdP)}");
             Console.WriteLine();
             if (exam.Settings.Strategy == StrategyKind.Screening)
             {

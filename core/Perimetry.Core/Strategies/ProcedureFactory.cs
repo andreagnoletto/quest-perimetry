@@ -15,13 +15,20 @@ namespace Perimetry.Core.Strategies
         private ZestConfig Zest => Kind == StrategyKind.ZestFast ? _cfg.ZestFast : _cfg.Zest;
         private double[] _zestDomain;
         private double[,] _zestLikelihood;
+        /// <summary>Lower asymptote of the ZEST likelihood: the configured false-positive rate, or the chance level 1/N in forced choice.</summary>
+        public double GuessRate { get; }
 
-        public ProcedureFactory(StrategyKind kind, StrategiesConfig cfg, DbScale scale)
+        /// <summary>
+        /// <paramref name="guessRate"/> (phase 5, forced choice): replaces the false-positive rate as the lower asymptote of the
+        /// ZEST likelihood (a patient who did not see the stimulus is right 1/N of the time). Null = yes/no, OPI default.
+        /// </summary>
+        public ProcedureFactory(StrategyKind kind, StrategiesConfig cfg, DbScale scale, double? guessRate = null)
         {
             Kind = kind; _cfg = cfg; _scale = scale;
             if (IsZest)
             {
                 var z = Zest;
+                GuessRate = guessRate ?? z.FalsePositiveRate;
                 _zestDomain = ZestProcedure.MakeDomain(z.DomainMinDb, z.DomainMaxDb, z.DomainStepDb);
                 Func<double, double> sd;
                 if (string.Equals(z.LikelihoodSd.Type, "henson", StringComparison.OrdinalIgnoreCase))
@@ -35,7 +42,7 @@ namespace Perimetry.Core.Strategies
                     double fixedSd = z.LikelihoodSd.Sd;
                     sd = _ => fixedSd;
                 }
-                _zestLikelihood = ZestProcedure.GaussianLikelihood(_zestDomain, z.FalsePositiveRate, z.FalseNegativeRate, sd);
+                _zestLikelihood = ZestProcedure.GaussianLikelihood(_zestDomain, GuessRate, z.FalseNegativeRate, sd);
             }
         }
 

@@ -25,6 +25,7 @@ namespace Perimetry.Headset.Logic
         public List<ExamPreset> Presets { get; set; } = new List<ExamPreset>();
         public PresentationConfig Presentation { get; set; } = new PresentationConfig();
         public SyncConfig Sync { get; set; } = new SyncConfig();
+        public OculokineticHeadsetConfig Oculokinetic { get; set; } = new OculokineticHeadsetConfig();
 
         public static HeadsetConfig From(ClinicalConfig cfg)
         {
@@ -51,6 +52,10 @@ namespace Perimetry.Headset.Logic
                 if (p.Eyes == null || p.Eyes.Count == 0) throw new FormatException("preset " + p.Id + " has no eyes");
             if (Sync.LiveIntervalMs < 100 || Sync.RequestTimeoutMs < 1000 || Sync.MaxFilesPerUpload < 1 || Sync.RetryBackoffMs.Count == 0)
                 throw new FormatException("sync settings out of range");
+            if (FixationTarget.DiamondDotSizeDeg <= 0 || FixationTarget.LockAnimation.StartScale <= 0 || FixationTarget.LockAnimation.StartLuminanceFactor <= 0)
+                throw new FormatException("fixation target settings out of range");
+            if (Oculokinetic.GazeConfirmTimeoutFactor < 1 || Oculokinetic.GazeStaleMs < 50)
+                throw new FormatException("oculokinetic headset settings out of range");
         }
 
         public ExamPreset Preset(string id) =>
@@ -63,6 +68,29 @@ namespace Perimetry.Headset.Logic
         public string Color { get; set; } = "yellow";
         public double LuminanceCdm2 { get; set; } = 30;
         public double SizeDeg { get; set; } = 0.8;
+        /// <summary>Diameter of each of the four dots of the Diamond4 (foveal) target. Phase 5.</summary>
+        public double DiamondDotSizeDeg { get; set; } = 0.4;
+        public LockAnimationConfig LockAnimation { get; set; } = new LockAnimationConfig();
+    }
+
+    /// <summary>
+    /// Oculokinetic "lock" animation (Phase 5): the target appears at its new position enlarged and dimmer and
+    /// settles linearly to the normal target while the lock phase runs, so the patient sees where to look and
+    /// when the target is "locked". Nothing clinical: the stimulus comes after the lock and the random ISI.
+    /// </summary>
+    public sealed class LockAnimationConfig
+    {
+        public double StartScale { get; set; } = 1.6;
+        public double StartLuminanceFactor { get; set; } = 0.6;
+    }
+
+    /// <summary>Headset-side constants of mode B (Phase 5); the clinical ones are in config/reliability.json › oculokinetic.</summary>
+    public sealed class OculokineticHeadsetConfig
+    {
+        /// <summary>With eye tracking, the lock phase gives up after lockDelayMs × this factor and the presentation goes on.</summary>
+        public double GazeConfirmTimeoutFactor { get; set; } = 5;
+        /// <summary>Gaze is "available" while the last sample is younger than this (ms).</summary>
+        public int GazeStaleMs { get; set; } = 500;
     }
 
     public sealed class PresentationConfig
@@ -122,6 +150,11 @@ namespace Perimetry.Headset.Logic
         public GoldmannSize StimulusSize { get; set; } = GoldmannSize.III;
         [JsonProperty(ItemConverterType = typeof(StringEnumConverter))]
         public List<Eye> Eyes { get; set; } = new List<Eye>();
+        /// <summary>Foveal threshold before the test (Phase 5, HFA "Fovea: ON"). Default off.</summary>
+        public bool FovealThreshold { get; set; }
+        /// <summary>Yes/no (HFA) or forced choice (Phase 5, experimental). Default YesNo.</summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ResponseMode ResponseMode { get; set; } = ResponseMode.YesNo;
     }
 
     /// <summary>
@@ -138,6 +171,28 @@ namespace Perimetry.Headset.Logic
         public string PresetId { get; set; }
         /// <summary>Seed for the exam PRNG; recorded in the exam so it can be replayed. Null = derived from the clock.</summary>
         public ulong? Seed { get; set; }
+        /// <summary>Phase 5 options chosen on the portal order form; each one, when present, overrides the preset (docs/SYNC_API.md).</summary>
+        public string Grid { get; set; }
+        public FixationMode? FixationMode { get; set; }
+        public bool? FovealThreshold { get; set; }
+        public ResponseMode? ResponseMode { get; set; }
+
+        /// <summary>The preset with this order's overrides applied (a copy; the preset list is never modified).</summary>
+        public ExamPreset ApplyTo(ExamPreset preset)
+        {
+            if (Grid == null && FixationMode == null && FovealThreshold == null && ResponseMode == null) return preset;
+            return new ExamPreset
+            {
+                Id = preset.Id, Label = preset.Label,
+                GridId = Grid ?? preset.GridId,
+                Strategy = preset.Strategy,
+                FixationMode = FixationMode ?? preset.FixationMode,
+                StimulusSize = preset.StimulusSize,
+                Eyes = preset.Eyes,
+                FovealThreshold = FovealThreshold ?? preset.FovealThreshold,
+                ResponseMode = ResponseMode ?? preset.ResponseMode,
+            };
+        }
 
         public static ExamOrder Parse(string json) => JsonConvert.DeserializeObject<ExamOrder>(json) ?? new ExamOrder();
     }

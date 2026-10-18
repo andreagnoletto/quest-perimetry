@@ -18,7 +18,10 @@ namespace Perimetry.Headset.Logic
         Done, Aborted, SaveError,
     }
 
-    /// <summary>A stimulus to draw this frame, in the tested eye's field coordinates (patient's view, degrees).</summary>
+    /// <summary>
+    /// A stimulus to draw this frame, in the tested eye's field coordinates (patient's view, degrees, from straight
+    /// ahead). In oculokinetic mode this is already the composed direction (target ⊕ retinal offset).
+    /// </summary>
     public sealed class StimulusDraw
     {
         public Eye Eye;
@@ -36,6 +39,18 @@ namespace Perimetry.Headset.Logic
         public bool ShowFixation;
         public double FixationLuminanceCdm2;
         public double FixationSizeDeg;
+        /// <summary>Central point or the four-dot diamond of the foveal test (Phase 5).</summary>
+        public FixationTargetKind FixationTarget = FixationTargetKind.Central;
+        /// <summary>Target direction from straight ahead (degrees, tested eye's view); (0, 0) except in oculokinetic mode.</summary>
+        public double FixationX, FixationY;
+        /// <summary>Scale and luminance factor of the target during the oculokinetic lock animation (1 otherwise).</summary>
+        public double FixationScale = 1, FixationLuminanceFactor = 1;
+        /// <summary>Diamond4: distance from the centre to each dot, and the dot diameter.</summary>
+        public double DiamondHalfSizeDeg, DiamondDotSizeDeg;
+        /// <summary>Forced choice: the target is blinked off on this frame to mark an interval.</summary>
+        public bool FixationMarker;
+        /// <summary>Eye tracking data is arriving (Quest Pro); false on Quest 3.</summary>
+        public bool GazeAvailable;
         public string MessageKey;
         public string Message;
         public StimulusDraw Stimulus;
@@ -68,7 +83,7 @@ namespace Perimetry.Headset.Logic
     /// </summary>
     public sealed class PatientFlow
     {
-        public const string Version = "0.2.0-phase2";
+        public const string Version = "0.3.0-phase5";
 
         private readonly ClinicalConfig _cfg;
         private readonly HeadsetConfig _h;
@@ -101,10 +116,13 @@ namespace Perimetry.Headset.Logic
         private string _feedbackKey;
 
         private ExamSession _session;
+        private ExamSettings _examSettings;
         private double _examStart;
         private double _pauseStart;
         private string _pauseReason;
         private string _lastMessageKey, _pendingCue;
+        private readonly GazeMonitor _gaze;
+        private bool _gazeWasAvailable;
 
         public PatientFlow(ClinicalConfig cfg, HeadsetConfig headset, LuminanceMapper luminance, IExamSink sink,
             ExamOrder order = null, FlowEnvironment env = null)
@@ -120,6 +138,7 @@ namespace Perimetry.Headset.Logic
             Seed = _order.Seed ?? (ulong)_env.UtcNow().Ticks;
             _examSeed = Seed;
             _trainingRng = new Rng(Seed ^ 0x5EED_7EA1UL);
+            _gaze = new GazeMonitor(headset.Oculokinetic.GazeStaleMs);
             Log = new SessionLog
             {
                 SoftwareVersion = ExamSession.Version + "/" + Version,
@@ -142,10 +161,15 @@ namespace Perimetry.Headset.Logic
         public FlowView View { get; private set; }
         public SessionLog Log { get; }
         public ulong Seed { get; }
-        public ExamPreset Preset => _h.Presets[_presetIndex];
+        /// <summary>The selected preset with the order's Phase 5 overrides (grid, fixation, foveal, response mode) applied.</summary>
+        public ExamPreset Preset => _order.ApplyTo(_h.Presets[_presetIndex]);
+        /// <summary>The preset as configured in headset.json, without order overrides.</summary>
+        public ExamPreset BasePreset => _h.Presets[_presetIndex];
         public double AgeYears => _age;
         public Eye? CurrentEye => _eyes != null && _eyeIndex < _eyes.Count ? _eyes[_eyeIndex] : (Eye?)null;
         public ExamSession CurrentSession => _session;
+        /// <summary>Settings of the exam in progress (null outside the exam).</summary>
+        public ExamSettings CurrentSettings => _session != null ? _examSettings : null;
         /// <summary>The order in effect: from exam-order.json, chosen on the <see cref="FlowState.SetupOrder"/> screen, or empty (manual setup).</summary>
         public ExamOrder ActiveOrder => _order;
         /// <summary>Orders offered on the SetupOrder screen (from the portal); the extra last option is "manual".</summary>
@@ -178,6 +202,20 @@ namespace Perimetry.Headset.Logic
         /// <summary>Records a fact observed by the presentation layer (eye-position source, IPD, device state).</summary>
         public void Note(string type, string detail) => Event(type, detail);
 
+        /// <summary>
+        /// Eye tracker sample (Phase 5): gaze direction of the tested eye as absolute field coordinates (degrees from
+        /// straight ahead, patient's view). Call once per frame before <see cref="Tick"/>; on a headset without an eye
+        /// tracker never call it and nothing changes.
+        /// </summary>
+        public void GazeSample(double tMs, double fieldX, double fieldY)
+        {
+            Clock(tMs);
+            _gaze.Sample(tMs, new FieldPoint(fieldX, fieldY));
+        }
+
+        /// <summary>True while gaze samples keep arriving (headset.json oculokinetic.gazeStaleMs).</summary>
+        public bool GazeAvailable => _gaze.Available(_now);
+
         public bool IsFinished => State == FlowState.Done || State == FlowState.Aborted || State == FlowState.SaveError;
 
         /// <summary>
@@ -193,6 +231,7 @@ namespace Perimetry.Headset.Logic
             {
                 if (o == null) continue;
                 if (o.PresetId != null && _h.Presets.FindIndex(p => p.Id == o.PresetId) < 0) { Event("order", "skipped " + o.Id + ": unknown preset " + o.PresetId); continue; }
+                if (o.Grid != null && !_cfg.Grids.ContainsKey(o.Grid)) { Event("order", "skipped " + o.Id + ": unknown grid " + o.Grid); continue; }
                 _pendingOrders.Add(o);
             }
             _orderIndex = 0;
@@ -305,6 +344,13 @@ namespace Perimetry.Headset.Logic
             {
                 _holdFired = true;
                 Hold();
+            }
+            bool gazeNow = _gaze.Available(nowMs);
+            if (gazeNow != _gazeWasAvailable) { _gazeWasAvailable = gazeNow; Event("gaze", gazeNow ? "available" : "unavailable"); }
+            if (_timeline != null)
+            {
+                var r = _timeline.Request;
+                _timeline.Gaze(nowMs, _gaze.ErrorDeg(nowMs, new FieldPoint(r.TargetX, r.TargetY)));
             }
 
             switch (State)
@@ -553,12 +599,34 @@ namespace Perimetry.Headset.Logic
                 Seed = _examSeed + (ulong)_eyeIndex,
                 PatientRef = _order.PatientRef,
                 RefractiveCorrection = _order.RefractiveCorrection,
+                FovealThreshold = Preset.FovealThreshold,
+                ResponseMode = Preset.ResponseMode,
             };
             _session = new ExamSession(settings, _cfg, _env.Normative(_cfg, grid), _lum.ScaleFor(eye), _lum.CalibrationRef);
+            _examSettings = settings;
             _examStart = t;
-            Event("examStart", $"{eye} {Preset.GridId} {Preset.Strategy} seed {settings.Seed}");
+            Event("examStart", $"{eye} {Preset.GridId} {Preset.Strategy} {settings.FixationMode} {settings.ResponseMode}" +
+                $"{(settings.FovealThreshold ? " foveal" : "")} seed {settings.Seed} gaze {(_gaze.Available(t) ? "available" : "unavailable")}");
+            if (settings.FixationMode == FixationMode.CentralEyeTracking && !_gaze.Available(t))
+                Event("gaze", "CentralEyeTracking without eye tracking data: fixation is unmonitored for this eye");
             Go(FlowState.Exam);
             _timeline = null;
+        }
+
+        /// <summary>Headset-side timing options for the next presentation (mode B lock, gaze confirmation).</summary>
+        private TimelineOptions OptionsFor(PresentationRequest req)
+        {
+            var o = _cfg.Reliability.Oculokinetic;
+            bool oculokinetic = _examSettings.FixationMode == FixationMode.Oculokinetic && req.Kind != PresentationKind.Foveal;
+            return new TimelineOptions
+            {
+                Oculokinetic = oculokinetic,
+                LockDelayMs = o.LockDelayMs,
+                GazeAvailable = _gaze.Available(_now),
+                GazeConfirmMs = o.GazeConfirmMs,
+                GazeConfirmDeg = o.GazeConfirmDeg,
+                GazeConfirmTimeoutMs = o.LockDelayMs * _h.Oculokinetic.GazeConfirmTimeoutFactor,
+            };
         }
 
         private void TickExam()
@@ -577,7 +645,7 @@ namespace Perimetry.Headset.Logic
         {
             var req = _session.Next();
             if (req == null) { FinishEye(); return false; }
-            _timeline = new PresentationTimeline(req, _now, RefreshRateHz);
+            _timeline = new PresentationTimeline(req, _now, RefreshRateHz, OptionsFor(req));
             return true;
         }
 
@@ -649,7 +717,6 @@ namespace Perimetry.Headset.Logic
                 case FlowState.SetupOrder: return "setup.order";
                 case FlowState.SetupPreset: return "setup.preset";
                 case FlowState.SetupAge: return "setup.age";
-                case FlowState.Instructions: return "instructions";
                 case FlowState.EyeIntro: return "eye.intro";
                 case FlowState.SharpnessCheck: return "check.sharpness";
                 case FlowState.OcclusionIntro: return "check.occlusion.intro";
@@ -657,7 +724,13 @@ namespace Perimetry.Headset.Logic
                 case FlowState.TrainingIntro: return "training.intro";
                 case FlowState.TrainingFeedback: return _feedbackKey;
                 case FlowState.TrainingRepeat: return "training.repeat";
-                case FlowState.ExamReady: return "exam.ready";
+                case FlowState.ExamReady:
+                    return Preset.ResponseMode == ResponseMode.ForcedChoice ? "exam.ready.forcedChoice"
+                        : Preset.FixationMode == FixationMode.Oculokinetic ? "exam.ready.oculokinetic"
+                        : Preset.FovealThreshold ? "exam.ready.foveal" : "exam.ready";
+                case FlowState.Instructions:
+                    return Preset.ResponseMode == ResponseMode.ForcedChoice ? "instructions.forcedChoice"
+                        : Preset.FixationMode == FixationMode.Oculokinetic ? "instructions.oculokinetic" : "instructions";
                 case FlowState.Paused: return _pauseReason == "headsetRemoved" ? "pause.headsetRemoved" : "pause";
                 case FlowState.Resuming: return null;
                 case FlowState.BetweenEyes: return "betweenEyes";
@@ -705,12 +778,34 @@ namespace Perimetry.Headset.Logic
                 ShowFixation = ShowsFixation(s),
                 FixationLuminanceCdm2 = _h.FixationTarget.LuminanceCdm2,
                 FixationSizeDeg = _h.FixationTarget.SizeDeg,
+                DiamondHalfSizeDeg = _cfg.Strategies.Foveal.DiamondHalfSizeDeg,
+                DiamondDotSizeDeg = _h.FixationTarget.DiamondDotSizeDeg,
+                GazeAvailable = _gaze.Available(_now),
                 MessageKey = key,
                 Message = text,
             };
             if (key != _lastMessageKey) { _pendingCue = key; _lastMessageKey = key; }
             v.AudioCue = _pendingCue;
             if (consumeCue) _pendingCue = null;
+
+            // Fixation target of the presentation in progress (Phase 5): kind, position (mode B), lock animation, marker.
+            var examTimeline = s == FlowState.Exam ? _timeline : null;
+            if (examTimeline != null)
+            {
+                var r = examTimeline.Request;
+                v.FixationTarget = r.FixationTarget;
+                v.FixationX = r.TargetX;
+                v.FixationY = r.TargetY;
+                v.FixationScale = FixationLayout.LockScale(examTimeline.LockProgress, _h.FixationTarget.LockAnimation);
+                v.FixationLuminanceFactor = FixationLayout.LockLuminanceFactor(examTimeline.LockProgress, _h.FixationTarget.LockAnimation);
+                v.FixationMarker = examTimeline.FixationMarker;
+                if (v.FixationMarker) v.ShowFixation = false;
+            }
+            else if (s == FlowState.ExamReady && Preset.FovealThreshold)
+            {
+                // The foveal test comes first: show the diamond the patient is being told about.
+                v.FixationTarget = FixationTargetKind.Diamond4;
+            }
 
             if (s == FlowState.OcclusionWindow)
             {
@@ -724,9 +819,11 @@ namespace Perimetry.Headset.Logic
             else if (_timeline != null && _timeline.StimulusVisible && (s == FlowState.Exam || s == FlowState.TrainingTrial))
             {
                 var r = _timeline.Request;
+                // Mode B: FieldX/FieldY are retinal offsets from the target; the drawn direction is their composition.
+                var abs = AngularGeometry.Compose(new FieldPoint(r.TargetX, r.TargetY), new FieldPoint(r.FieldX, r.FieldY));
                 v.Stimulus = new StimulusDraw
                 {
-                    Eye = CurrentEye.Value, FieldX = r.FieldX, FieldY = r.FieldY, DiameterDeg = r.SizeDeg, LuminanceCdm2 = r.LuminanceCdm2,
+                    Eye = CurrentEye.Value, FieldX = abs.X, FieldY = abs.Y, DiameterDeg = r.SizeDeg, LuminanceCdm2 = r.LuminanceCdm2,
                 };
             }
             return v;

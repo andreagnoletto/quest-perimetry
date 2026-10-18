@@ -64,5 +64,19 @@
       "abnormalSdDb": 6.0,
       "floor": 0.001
     }
+  },
+  "foveal": {
+    "_doc": "Fase 5 (padrão proposto, aguardando confirmação). Limiar foveal opcional antes do teste (ExamSettings.FovealThreshold, default desligado): alvo de fixação em diamante de 4 pontos, estímulo no centro, mesma estratégia do exame ('exam') ou Zest/ZestFast/FullThreshold/FourTwo. Relatório: 'Limiar foveal'.",
+    "fixationTarget": "Diamond4",
+    "diamondHalfSizeDeg": 1.5,
+    "strategy": "exam"
+  },
+  "forcedChoice": {
+    "_doc": "Fase 5, experimental (SPEC §5.4), desligado por padrão (ExamSettings.ResponseMode = YesNo). O paciente indica em qual dos N intervalos o estímulo apareceu; cada intervalo começa com um piscar do alvo (markerMs). Acerto = visto. No ZEST o piso da verossimilhança passa a ser 1/N (nível do acaso) e não há tentativas de falso positivo.",
+    "intervals": 2,
+    "intervalMs": 200,
+    "gapMs": 600,
+    "markerMs": 100,
+    "zestGuessRate": true
   }
 }

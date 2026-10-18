@@ -21,5 +21,7 @@
   "measurementSd": {
     "interceptDb": 1.3,
     "perDegDb": 0.02
-  }
+  },
+  "_fovealDoc": "Fase 5: sensibilidade foveal esperada = modelo em excentricidade 0 + fovealExtraDb (pico da colina de visão; no HFA a fóvea costuma medir 1-3 dB acima dos pontos a 3°). Valor proposto, aguardando confirmação.",
+  "fovealExtraDb": 1.5
 }

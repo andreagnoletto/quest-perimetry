@@ -44,6 +44,27 @@ O headset mostra o pedido ao operador na tela de preparação (código pseudôni
 direcional alterna entre eles e a última opção é "sem pedido" (fluxo manual). O pedido escolhido vai em `orderId` no
 painel ao vivo e no log de sessão (`SessionLog.Order`).
 
+**Opções da Fase 5 (padrão proposto, aguardando confirmação do product owner).** Tanto o `exam-order.json` quanto cada
+item de `orders` podem trazer, **só quando o médico as escolheu**, as chaves opcionais abaixo; ausentes, vale o preset
+(`config/headset.json`) e o padrão do núcleo. Nomes e valores são os do `/core`:
+
+| Chave | Valores | Efeito |
+|---|---|---|
+| `grid` | `"24-2"`, `"30-2"`, `"10-2"`, `"24-2C"` (ids de `config/grids/*.json`) | substitui a grade do preset |
+| `fixationMode` | `"CentralHeijlKrakau"`, `"CentralEyeTracking"`, `"CentralUnmonitored"`, `"Oculokinetic"` | substitui o monitor de fixação do preset; eye-tracking exige headset com rastreamento (Quest Pro) |
+| `fovealThreshold` | `true` | liga o teste de limiar foveal antes da mancha cega (`ExamSettings.FovealThreshold`) |
+| `responseMode` | `"ForcedChoice"` | escolha forçada experimental (`ExamSettings.ResponseMode`); `YesNo` nunca é escrito |
+
+Exemplo: `{"patientRef":"P-7K3M9Q","ageYears":63,"refractiveCorrection":null,"presetId":"24-2-zest","grid":"10-2","fovealThreshold":true}`.
+O portal guarda as opções no pedido (`ExamOrder.gridId/fixationMode/fovealThreshold/responseMode`) e as mostra na lista.
+No headset, `ExamOrder.ApplyTo(preset)` aplica as chaves presentes sobre o preset (a estratégia, o tamanho do estímulo e a
+ordem dos olhos vêm sempre do preset); um pedido com grade desconhecida é ignorado e registrado no log da sessão.
+
+**Instantâneo ao vivo (Fase 5, opcional):** `exam` pode trazer `fixationMode`, `responseMode`, `fovealThreshold` (bool) e
+`foveal` (`null` enquanto o teste foveal corre; depois `{db, hfaEqDb, censoredLow, presentations}`), e `exam.reliability` pode trazer
+`gazeTracked`, `gazeRejectedPresentations` e `gazeMeanErrorDeg` (ver o `POST /api/headset/live` abaixo); o painel mostra o que vier e ignora o que faltar. Estados novos do fluxo (ex.: `Foveal`) aparecem com o
+nome em pt-BR quando conhecidos e com o nome bruto caso contrário.
+
 ### `POST /api/headset/exams`
 Envio dos arquivos de uma sessão (ou de sessões antigas ainda sem `.sent`), texto bruto + HMAC, exatamente como estão
 no disco:
@@ -69,6 +90,12 @@ Instantâneo da sessão em andamento, enviado a cada mudança de estado e no mí
    "last":{"x":9,"y":-3,"db":24,"seen":true,"kind":"Threshold","tMs":99000}},
  "ackCommandIds":["cmd1"]}
 ```
+- **Fase 5 (campos opcionais, aditivos):** no topo, `"gazeAvailable":false` e `"fixation":{"kind":"Central|Diamond4","x":0,"y":0}`
+  (posição do alvo em graus, visão do olho testado; fora de (0,0) só no modo oculocinético). Em `exam`:
+  `"fixationMode":"CentralHeijlKrakau|CentralEyeTracking|CentralUnmonitored|Oculokinetic"`, `"responseMode":"YesNo|ForcedChoice"`,
+  `"fovealThreshold":false`, `"foveal":null|{"db":31.2,"hfaEqDb":46.7,"censoredLow":false,"presentations":5}`,
+  em `reliability`: `"gazeTracked":false,"gazeRejectedPresentations":0,"gazeMeanErrorDeg":null|1.1`, e em `last`:
+  `"targetX":0,"targetY":0`. Portais antigos podem ignorá-los.
 - `exam` é nulo fora do exame (boas-vindas, treino, entre olhos). `locations` seguem a convenção do `ExamRecord`
   (OD; o portal espelha OS como no laudo). `db` é dB do aparelho; `hfaEqDb` = dB equivalente HFA calculado no
   headset pelo `/core` (o portal não calcula nada clínico). `last` está em coordenadas do olho testado (visão do paciente).

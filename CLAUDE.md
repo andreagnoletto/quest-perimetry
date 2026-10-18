@@ -28,9 +28,10 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 - `tools/opi-crosscheck/` — compares C# ports with OPI in R. `tools/report/` — PNG report (matplotlib).
 - `headset/` — Unity 6 project (phase 2). `Assets/Perimetry/Logic` is pure C# (`PatientFlow` state machine,
   `PresentationTimeline`, `StimulusPlacement`, `Dither`, `ExamStorage`, `PatientMessages`, `PortalSync` sans-IO sync
-  client + `LiveSnapshot`, see `docs/SYNC_API.md`), tested by `headset/LogicTests`. `Runtime` (MonoBehaviours,
-  head-locked rig, `PortalSyncBehaviour` HTTP), `Resources/Perimetry` (monocular dithering
-  shaders), `Editor` (Configure Project, config sync), `Tests/EditMode`. `/core` is a local Unity package
+  client + `LiveSnapshot`, `FixationLayout`, `GazeMonitor`, see `docs/SYNC_API.md`), tested by `headset/LogicTests`.
+  `Runtime` (MonoBehaviours, head-locked rig, `GazeTracking` OpenXR eye gaze, `PortalSyncBehaviour` HTTP),
+  `Resources/Perimetry` (monocular dithering shaders), `Editor` (Configure Project, config sync, Android manifest
+  eye-tracking permission), `Tests/EditMode`. `/core` is a local Unity package
   (`core/Perimetry.Core/package.json`); build output goes to `/artifacts` (Directory.Build.props) so no bin/
   lands inside the package. `headset/UnityCompileCheck` compiles the Unity scripts against UnityEngine reference DLLs.
 - `portal/` — doctor portal (phase 3): Next.js 15 (App Router, server actions) + PostgreSQL via Prisma.
@@ -43,20 +44,21 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 ## Commands
 ```bash
 dotnet build Perimetry.sln
-dotnet test core/Perimetry.Core.Tests                                   # 122 tests, ~5 s
-dotnet test headset/LogicTests                                           # 37 tests: headset flow, timing, geometry, dithering, portal sync
+dotnet test core/Perimetry.Core.Tests                                   # 133 tests, ~5 s
+dotnet test headset/LogicTests                                           # 53 tests: headset flow, timing, geometry, dithering, portal sync, phase 5 modes
 dotnet build headset/UnityCompileCheck                                   # Unity scripts vs UnityEngine API (no Unity needed)
 dotnet test core/Perimetry.Core.Tests --collect:"XPlat Code Coverage"   # coverage (cobertura xml)
 dotnet run --project core/Perimetry.Cli -c Release -- simulate --strategy ZestFast --defect SuperiorArcuate --seed 4 --out out/ex.json
 dotnet run --project core/Perimetry.Cli -c Release -- benchmark --strategy ZestFast --runs 30
 python3 tools/report/render_report.py out/ex.analysis.json out/ex.png  # needs matplotlib
 bash tools/opi-crosscheck/run.sh                                         # needs R + jsonlite, python3
-cd portal && npm ci && npm run typecheck && npm test                     # portal unit tests (needs the Release CLI build)
-cd portal && npm run build && npm run e2e                                # Playwright e2e; needs PostgreSQL (E2E_DATABASE_URL)
+cd portal && npm ci && npm run typecheck && npm test                     # 39 portal unit tests (needs the Release CLI build)
+cd portal && npm run build && npm run e2e                                # 3 Playwright specs; needs PostgreSQL (E2E_DATABASE_URL)
 ```
 CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThreshold|FourTwo|Screening`,
 `--eye OD|OS`, `--defect Normal|SuperiorArcuate|InferiorArcuate|Hemianopia|CentralScotoma`, `--depth`,
-`--age`, `--seed`, `--fpr`, `--fnr`, `--fixloss`, `--patient-ref`, `--fixation CentralHeijlKrakau|CentralEyeTracking|CentralUnmonitored`, `--config <dir>`.
+`--age`, `--seed`, `--fpr`, `--fnr`, `--fixloss`, `--patient-ref`, `--fixation CentralHeijlKrakau|CentralEyeTracking|CentralUnmonitored|Oculokinetic`,
+`--foveal true`, `--response YesNo|ForcedChoice`, `--gaze <simulated tracker noise sd in deg, 0 = none>`, `--config <dir>`.
 
 ## Conventions
 - Field coordinates: degrees, patient's view, +x right, +y up; grids stored in OD convention, OS mirrors x.
@@ -77,6 +79,10 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 | Full Threshold | 4-2, last seen, re-test if > 4 dB from start |
 | Screening | 6 dB brighter than age-expected, re-test not seen |
 | Fixation | Mode A + Heijl-Krakau; blind spot (15°, −1.5°), remapped after 2 consecutive fixation losses |
+| Eye tracking (phase 5, proposed) | reject threshold presentations with gaze > 3° from target at onset, retest; gaze trace recorded (modes CentralEyeTracking, Oculokinetic) |
+| Oculokinetic mode B (phase 5, proposed) | target jumps uniformly in ±10°, stimulus at `AngularGeometry.Compose(target, point)`, absolute eccentricity ≤ 45°, lock 600 ms (no ET) / gaze within 3° for 300 ms (ET), HK on |
+| Foveal threshold (phase 5, proposed) | optional, OFF by default; diamond-4 target (half-size 1.5°), exam strategy, before the blind-spot search; report "Limiar foveal" |
+| Forced choice (phase 5, experimental) | OFF by default; 2 intervals × 200 ms, gap 600 ms, marker 100 ms; ZEST guess rate 1/N; no FP catch trials, no Heijl-Krakau; ~3× longer |
 | Catch trials | FP 1/30, HK 1/30, FN 1/40 (threshold − 9 dB) |
 | Alerts | FL > 20%, FP > 15%, FN > 33% |
 | Indices | MD inverse-variance (Heijl 1987), PSD (Heijl 1987), GH = 85th pct, VFI (Bengtsson 2008), GHT (Åsman & Heijl 1992) |
@@ -85,6 +91,10 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 ## Headset conventions
 - Stimuli are placed on a sphere centred on the TESTED eye (not the head); never in pixels.
 - Clinical/presentation constants for the headset live in `config/headset.json`, `display.json`, `timing.json`.
+- Phase 5: `FlowView` carries the fixation target (kind Central/Diamond4, position, lock scale/luminance, marker);
+  `PresentationTimeline` runs the mode B lock (fixed delay or gaze confirmation), the forced-choice marker/interval/gap
+  sequence and the per-presentation gaze statistics; `GazeMonitor`/`Runtime/GazeTracking` feed OpenXR eye gaze (Quest Pro)
+  as absolute field coordinates; mode B stimuli are drawn at `AngularGeometry.Compose(target, point)`. Quest 3 = no gaze.
 - The flow never shows results to the patient. Unity layer only renders `FlowView` and feeds input edges + Tick.
 - Unity, the Meta XR Simulator and APK builds cannot run in the cloud container: verify those on the product
   owner's machine (or a Remote Control session).
@@ -101,8 +111,15 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 - Headset sync (phase 4): bearer token per device (SHA-256 stored), pairing code shown once; every `/api/headset/*`
   call is audited as `headset.*`. Live state is in-process (`next start` = one process) plus the `LiveSession` row;
   headset → portal is POST at 1 Hz with commands in the response, browser ← portal is Server-Sent Events.
+- Phase 5 in the portal: report lines come from `src/lib/report-format.ts` (foveal line, fixation/target lines, gaze bar
+  data) and `GazeTraceBar.tsx`; map geometry (`FieldMaps.geometry`) derives the lattice step per grid (6° / 2°) and a
+  per-point cell so the 24-2C macular extras draw small. Exam orders carry optional `grid` / `fixationMode` /
+  `fovealThreshold` / `responseMode` (docs/SYNC_API.md), written only when they differ from the preset.
 
 ## Open decisions (waiting for the product owner)
 Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,
-status TO_BE_VALIDATED); headset pause, training, fixation target, 72 Hz duration (§11). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
-grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening. Approved on 2026-10-18: headset occlusion check before each eye (optional, off by default); blind spot remap after 2 consecutive fixation losses; VFI shown with one decimal.
+status TO_BE_VALIDATED); headset pause, training, fixation target, 72 Hz duration (§11); phase 5 proposed defaults
+(foveal diamond target and `fovealExtraDb`, gaze limit 3°, oculokinetic ±10° / 600 ms / 300 ms, forced-choice N and stop
+rule, §4–§6.4). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
+grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening. Approved on 2026-10-18: headset occlusion check before each eye (optional, off by default); blind spot remap after 2 consecutive fixation losses; VFI shown with one decimal; forced choice stays a doctor-selected
+option on the order (for repeating unreliable exams), off by default; patient demo page deferred to phase 6.

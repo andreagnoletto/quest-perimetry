@@ -77,5 +77,20 @@
     ],
     "presentationsPerCandidate": 2,
     "stimulusDb": 0.0
+  },
+  "gaze": {
+    "_doc": "Fase 5 (padrão proposto, aguardando confirmação). Eye-tracking nativo (Quest Pro): apresentação de limiar com olhar a mais de maxErrorDeg do alvo no início do estímulo é rejeitada (disposição gazeRejected) e o ponto é retestado. Vale nos modos CentralEyeTracking e Oculokinetic.",
+    "maxErrorDeg": 3.0,
+    "retestRejected": true,
+    "recordTrace": true
+  },
+  "oculokinetic": {
+    "_doc": "Fase 5 (padrão proposto, aguardando confirmação). Modo B: antes de cada apresentação o alvo salta para uma posição sorteada em [-targetRangeDeg, +targetRangeDeg]; o estímulo é colocado em relação ao alvo (AngularGeometry.Compose) e a excentricidade absoluta fica <= maxEccentricityDeg. Sem eye-tracking: lockDelayMs com animação de travamento; com eye-tracking: olhar dentro de gazeConfirmDeg por gazeConfirmMs.",
+    "targetRangeDeg": 10.0,
+    "maxEccentricityDeg": 45.0,
+    "lockDelayMs": 600,
+    "gazeConfirmMs": 300,
+    "gazeConfirmDeg": 3.0,
+    "heijlKrakau": true
   }
 }

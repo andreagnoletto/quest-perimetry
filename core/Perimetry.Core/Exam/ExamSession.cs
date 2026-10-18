@@ -15,10 +15,12 @@ namespace Perimetry.Core.Exam
     /// response, independent of how stimuli are rendered. Usage: loop { req = Next(); show it; Submit(result); }
     /// until <see cref="IsFinished"/>. Everything is logged in <see cref="BuildRecord"/>.
     /// Deterministic for a given seed and response sequence.
+    /// Order of an exam: optional foveal threshold (diamond target) → blind-spot search (Heijl-Krakau
+    /// modes) → threshold test with interleaved catch trials.
     /// </summary>
     public sealed class ExamSession
     {
-        public const string Version = "0.2.0-phase2";
+        public const string Version = "0.3.0-phase5";
 
         private readonly ExamSettings _s;
         private readonly ClinicalConfig _cfg;
@@ -31,6 +33,15 @@ namespace Perimetry.Core.Exam
         private readonly ExamRecord _record;
         private readonly double _sizeDeg;
 
+        // Phase 5
+        private readonly bool _forcedChoice;
+        private readonly bool _oculokinetic;
+        private readonly bool _gazeRejects;
+        private readonly ILocationProcedure _foveal;
+        private readonly double _fovealStart;
+        private readonly string _fovealStrategy;
+        private double _gazeErrorSum;
+
         private PresentationRequest _pending;
         private int _seq;
         private int _toFp, _toFn, _toFl;
@@ -40,6 +51,8 @@ namespace Perimetry.Core.Exam
 
         public TestGrid Grid => _grid;
         public ThresholdStrategy Strategy => _strategy;
+        /// <summary>Procedure of the optional foveal threshold (null when off).</summary>
+        public ILocationProcedure FovealProcedure => _foveal;
 
         public ExamSession(ExamSettings settings, ClinicalConfig cfg, INormativeDatabase normative, DbScale scale, string calibrationRef = null)
         {
@@ -49,12 +62,38 @@ namespace Perimetry.Core.Exam
             if (normative.GridId != _grid.Id) throw new ArgumentException($"normative is for grid {normative.GridId}, exam uses {_grid.Id}");
             _sizeDeg = Stimulus.DiameterDeg(cfg.Stimulus, settings.StimulusSize);
 
+            _forcedChoice = settings.ResponseMode == ResponseMode.ForcedChoice;
+            if (_forcedChoice && cfg.Strategies.ForcedChoice.Intervals < 2) throw new ArgumentException("forcedChoice.intervals must be >= 2");
+            _oculokinetic = settings.FixationMode == FixationMode.Oculokinetic;
+            _gazeRejects = cfg.Reliability.Gaze.RetestRejected &&
+                           (settings.FixationMode == FixationMode.CentralEyeTracking || _oculokinetic);
+            double? guess = _forcedChoice && cfg.Strategies.ForcedChoice.ZestGuessRate ? 1.0 / cfg.Strategies.ForcedChoice.Intervals : (double?)null;
+
             var expected = _grid.Locations.Select(l => scale.FromHfaEquivalent(normative.ExpectedHfa(l.Index, settings.AgeYears))).ToList();
-            var factory = new ProcedureFactory(settings.Strategy, cfg.Strategies, scale);
+            var factory = new ProcedureFactory(settings.Strategy, cfg.Strategies, scale, guess);
             _strategy = new ThresholdStrategy(_grid, factory, expected, cfg.Strategies.Growth.UseNeighbourSeeding, _rng.Fork());
 
-            if (settings.FixationMode == FixationMode.CentralHeijlKrakau)
-                _bsLocator = new BlindSpotLocator(cfg.Reliability.BlindSpot);
+            if (settings.FovealThreshold)
+            {
+                var kind = FovealStrategyKind(settings.Strategy, cfg.Strategies.Foveal.Strategy);
+                _fovealStrategy = kind.ToString();
+                var ff = kind == settings.Strategy ? factory : new ProcedureFactory(kind, cfg.Strategies, scale, guess);
+                double expHfa = normative.ExpectedFovealHfa(settings.AgeYears);
+                if (double.IsNaN(expHfa))
+                {
+                    // No foveal normative: start from the expected value of the grid point closest to the centre.
+                    var nearest = _grid.Locations.OrderBy(l => l.Point.Eccentricity).First();
+                    expHfa = normative.ExpectedHfa(nearest.Index, settings.AgeYears);
+                }
+                _fovealStart = scale.FromHfaEquivalent(expHfa);
+                _foveal = ff.Create(_fovealStart);
+            }
+
+            // Heijl-Krakau needs a "no response" to mean "not seen"; in forced choice a guess is right 1/N of the
+            // time, so neither the blind-spot search nor the catch trials are meaningful: fixation is then
+            // monitored only by eye tracking (see FieldAnalysis warning).
+            bool heijlKrakau = HeijlKrakauActive(settings, cfg);
+            if (heijlKrakau) _bsLocator = new BlindSpotLocator(cfg.Reliability.BlindSpot);
 
             var r = cfg.Reliability;
             _toFp = Draw(r.FalsePositive);
@@ -81,20 +120,41 @@ namespace Perimetry.Core.Exam
             _record.Reliability.FixationLosses.AlertLimit = r.FixationLoss.AlertLimit;
         }
 
+        /// <summary>Whether Heijl-Krakau blind-spot monitoring runs for these settings (modes CentralHeijlKrakau and Oculokinetic, never in forced choice).</summary>
+        public static bool HeijlKrakauActive(ExamSettings settings, ClinicalConfig cfg) =>
+            settings.ResponseMode != ResponseMode.ForcedChoice &&
+            (settings.FixationMode == FixationMode.CentralHeijlKrakau
+             || (settings.FixationMode == FixationMode.Oculokinetic && cfg.Reliability.Oculokinetic.HeijlKrakau));
+
+        /// <summary>"exam" = the exam's strategy (ZEST when the exam is a screening, which has no threshold procedure).</summary>
+        public static StrategyKind FovealStrategyKind(StrategyKind examStrategy, string configured)
+        {
+            if (string.IsNullOrEmpty(configured) || string.Equals(configured, "exam", StringComparison.OrdinalIgnoreCase))
+                return examStrategy == StrategyKind.Screening ? StrategyKind.Zest : examStrategy;
+            var k = (StrategyKind)Enum.Parse(typeof(StrategyKind), configured, true);
+            if (k == StrategyKind.Screening) throw new ArgumentException("foveal.strategy cannot be Screening");
+            return k;
+        }
+
         private int Draw(CatchTrialConfig c) => Math.Max(1, c.EveryN + _rng.NextInt(-c.Jitter, c.Jitter + 1));
 
-        public bool IsFinished => _pending == null && (_bsLocator == null || _bsLocator.IsFinished) && _strategy.IsFinished;
+        public bool IsFinished => _pending == null && (_foveal == null || _foveal.IsFinished)
+                                  && (_bsLocator == null || _bsLocator.IsFinished) && _strategy.IsFinished;
 
         public PresentationRequest Next()
         {
             if (_pending != null) throw new InvalidOperationException("Submit the pending presentation first");
             if (IsFinished) return null;
 
+            if (_foveal != null && !_foveal.IsFinished)
+                return Issue(PresentationKind.Foveal, -1, new FieldPoint(0, 0), _foveal.NextStimulusDb());
+
             if (_bsLocator != null && !_bsLocator.IsFinished)
                 return Issue(PresentationKind.BlindSpotMapping, -1, _bsLocator.Current, _bsLocator.StimulusDb);
 
             var rel = _cfg.Reliability;
-            if (_s.FalsePositiveCatchTrials && _toFp <= 0)
+            // Forced choice has no "no stimulus" trial: the patient must always pick an interval.
+            if (_s.FalsePositiveCatchTrials && !_forcedChoice && _toFp <= 0)
             {
                 _toFp = Draw(rel.FalsePositive);
                 return Issue(PresentationKind.FalsePositiveCatch, -1, new FieldPoint(0, 0), double.NaN);
@@ -131,6 +191,9 @@ namespace Perimetry.Core.Exam
             bool shown = kind != PresentationKind.FalsePositiveCatch;
             var p = odPoint.ForEye(_s.Eye);
             var t = _cfg.Timing;
+            var fc = _cfg.Strategies.ForcedChoice;
+            // The foveal stimulus is shown with the central target still: the diamond's centre is the test point.
+            var target = _oculokinetic && kind != PresentationKind.Foveal ? DrawTarget(p) : new FieldPoint(0, 0);
             _pending = new PresentationRequest
             {
                 Sequence = ++_seq,
@@ -144,12 +207,44 @@ namespace Perimetry.Core.Exam
                 LuminanceCdm2 = shown ? _scale.DbToStimulusLuminance(db) : _scale.BackgroundCdm2,
                 Size = _s.StimulusSize,
                 SizeDeg = _sizeDeg,
-                DurationMs = _cfg.Stimulus.DurationMs,
+                DurationMs = _forcedChoice ? fc.IntervalMs : _cfg.Stimulus.DurationMs,
                 ResponseWindowMs = t.ResponseWindowMs,
                 PreStimulusDelayMs = _rng.NextInt(t.IsiMinMs, t.IsiMaxMs + 1),
+                FixationTarget = kind == PresentationKind.Foveal && string.Equals(_cfg.Strategies.Foveal.FixationTarget, "Diamond4", StringComparison.OrdinalIgnoreCase)
+                    ? FixationTargetKind.Diamond4 : FixationTargetKind.Central,
+                TargetX = target.X,
+                TargetY = target.Y,
             };
+            if (_forcedChoice)
+            {
+                _pending.Intervals = fc.Intervals;
+                _pending.StimulusInterval = shown ? _rng.NextInt(1, fc.Intervals + 1) : 0;
+                _pending.IntervalMs = fc.IntervalMs;
+                _pending.IntervalGapMs = fc.GapMs;
+                _pending.MarkerMs = fc.MarkerMs;
+            }
             return _pending;
         }
+
+        /// <summary>
+        /// Oculokinetic target: uniform in ±targetRangeDeg on both axes, redrawn while the composed stimulus
+        /// direction would exceed maxEccentricityDeg; straight ahead if no draw fits.
+        /// </summary>
+        private FieldPoint DrawTarget(FieldPoint relativeEyePoint)
+        {
+            var o = _cfg.Reliability.Oculokinetic;
+            for (int i = 0; i < 20; i++)
+            {
+                var target = new FieldPoint(_rng.Uniform(-o.TargetRangeDeg, o.TargetRangeDeg), _rng.Uniform(-o.TargetRangeDeg, o.TargetRangeDeg));
+                var abs = AngularGeometry.Compose(target, relativeEyePoint);
+                if (AngularGeometry.Eccentricity(abs) <= o.MaxEccentricityDeg) return target;
+            }
+            return new FieldPoint(0, 0);
+        }
+
+        /// <summary>Total time of the stimulus part of a presentation (0 for yes/no; all intervals and gaps in forced choice).</summary>
+        public static double StimulusSpanMs(PresentationRequest req) =>
+            req.Intervals > 0 ? req.Intervals * req.IntervalMs + (req.Intervals - 1) * req.IntervalGapMs : 0;
 
         public void Submit(PresentationResult result)
         {
@@ -169,14 +264,33 @@ namespace Perimetry.Core.Exam
                 else if (req.Kind == PresentationKind.BlindSpotCatch) _toFl = 0;
                 return;
             }
-            bool anticipated = result.Responded && result.LatencyMs.HasValue && result.LatencyMs.Value < t.MinValidLatencyMs;
-            bool inWindow = result.Responded && (!result.LatencyMs.HasValue || result.LatencyMs.Value <= t.ResponseWindowMs);
-            bool seen = inWindow && !anticipated;
+
+            bool anticipated, seen, responded;
+            if (req.Intervals > 0)
+            {
+                // Forced choice: the answer is an interval; correct interval = seen. There is no anticipation rule,
+                // the choice is made after the last interval.
+                responded = result.RespondedInterval.HasValue;
+                seen = responded && result.RespondedInterval.Value == req.StimulusInterval;
+                anticipated = false;
+            }
+            else
+            {
+                anticipated = result.Responded && result.LatencyMs.HasValue && result.LatencyMs.Value < t.MinValidLatencyMs;
+                bool inWindow = result.Responded && (!result.LatencyMs.HasValue || result.LatencyMs.Value <= t.ResponseWindowMs);
+                responded = result.Responded;
+                seen = inWindow && !anticipated;
+            }
             var rel = _record.Reliability;
             string disposition;
 
             switch (req.Kind)
             {
+                case PresentationKind.Foveal:
+                    if (anticipated) { rel.AnticipatedResponses++; disposition = "anticipated"; }
+                    else if (GazeRejected(req, result, out _)) { rel.GazeRejectedPresentations++; disposition = "gazeRejected"; }
+                    else { _foveal.Update(req.Db, seen); disposition = "foveal"; }
+                    break;
                 case PresentationKind.BlindSpotMapping:
                     _bsLocator.Update(seen);
                     disposition = rel.BlindSpotRemaps > 0 ? "remapping" : "mapping";
@@ -190,7 +304,7 @@ namespace Perimetry.Core.Exam
                     break;
                 case PresentationKind.FalsePositiveCatch:
                     rel.FalsePositives.Trials++;
-                    if (result.Responded && !anticipated) rel.FalsePositives.Errors++;
+                    if (responded && !anticipated) rel.FalsePositives.Errors++;
                     disposition = "catch";
                     break;
                 case PresentationKind.FalseNegativeCatch:
@@ -215,8 +329,11 @@ namespace Perimetry.Core.Exam
                     }
                     break;
                 default:
+                    bool rejectedByGaze = GazeRejected(req, result, out double? gazeErr);
+                    if (result.GazeTracked && gazeErr.HasValue) RecordGaze(req, result, gazeErr.Value, rejectedByGaze || !result.FixationOk);
                     if (anticipated) { rel.AnticipatedResponses++; disposition = "anticipated"; }
                     else if (!result.FixationOk) { rel.GazeRejectedPresentations++; disposition = "fixationLost"; }
+                    else if (rejectedByGaze) { rel.GazeRejectedPresentations++; disposition = "gazeRejected"; }
                     else
                     {
                         _strategy.Update(req.LocationIndex, req.Db, seen);
@@ -227,9 +344,27 @@ namespace Perimetry.Core.Exam
             }
 
             rel.TotalPresentations++;
-            double end = result.OnsetMs + (seen && result.LatencyMs.HasValue ? result.LatencyMs.Value : t.ResponseWindowMs);
+            double end = result.OnsetMs + StimulusSpanMs(req) + (seen && result.LatencyMs.HasValue ? result.LatencyMs.Value : t.ResponseWindowMs);
             rel.DurationMs = Math.Max(rel.DurationMs, end);
             _record.Presentations.Add(new PresentationLogEntry { Request = req, Result = result, Disposition = disposition });
+        }
+
+        /// <summary>Eye-tracking rule (phase 5): gaze farther than reliability.gaze.maxErrorDeg from the target at onset rejects the presentation.</summary>
+        private bool GazeRejected(PresentationRequest req, PresentationResult result, out double? error)
+        {
+            error = result.GazeTracked ? (result.GazeErrorDeg ?? result.GazeMaxErrorDeg) : null;
+            return _gazeRejects && error.HasValue && error.Value > _cfg.Reliability.Gaze.MaxErrorDeg;
+        }
+
+        private void RecordGaze(PresentationRequest req, PresentationResult result, double error, bool rejected)
+        {
+            var rel = _record.Reliability;
+            rel.GazeTracked = true;
+            rel.GazeSamples++;
+            _gazeErrorSum += error;
+            rel.GazeMeanErrorDeg = _gazeErrorSum / rel.GazeSamples;
+            if (_cfg.Reliability.Gaze.RecordTrace)
+                rel.GazeTrace.Add(new GazeSample { Sequence = req.Sequence, OnsetMs = result.OnsetMs, ErrorDeg = error, Rejected = rejected });
         }
 
         /// <summary>Records a pause (no presentation may be pending). Times are ms since exam start.</summary>
@@ -260,6 +395,17 @@ namespace Perimetry.Core.Exam
                     ScreeningOutcome = (p as ScreeningProcedure)?.Outcome.ToString(),
                 };
             }).ToList();
+            if (_foveal != null)
+                _record.Foveal = new FovealResult
+                {
+                    ThresholdDb = _foveal.FinalDb,
+                    CensoredLow = _foveal.IsCensoredLow,
+                    CensoredHigh = _foveal.IsCensoredHigh,
+                    StopReason = _foveal.StopReason,
+                    Presentations = _foveal.NumPresentations,
+                    StartValueDb = _fovealStart,
+                    Strategy = _fovealStrategy,
+                };
             return _record;
         }
     }

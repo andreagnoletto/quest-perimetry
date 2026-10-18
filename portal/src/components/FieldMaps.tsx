@@ -9,31 +9,61 @@ const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 /** Anything with a grid position (report points or live locations). */
 export interface MapPoint { Index: number; X: number; Y: number }
 
-export interface MapGeometry<P extends MapPoint = PointAnalysis> { points: (P & { dx: number })[]; lim: number; spacing: number }
+/**
+ * `spacing` is the main lattice step (6° on 24-2 / 30-2 / 24-2C, 2° on 10-2); `cell` per point is the square it
+ * owns: the main step for lattice points, the fine step (`fine`, 2° on the 24-2C) for the extra macular points.
+ */
+export interface MapGeometry<P extends MapPoint = PointAnalysis> { points: (P & { dx: number; cell: number })[]; lim: number; spacing: number; fine: number }
+
+/** Main lattice step: the largest gap between sorted coordinates that occurs at least three times (else the smallest). */
+export function latticeStep(values: number[]): number {
+  const xs = [...new Set(values.map((v) => Math.round(v * 1000) / 1000))].sort((a, b) => a - b);
+  const gaps = xs.slice(1).map((x, i) => Math.round((x - xs[i]) * 1000) / 1000).filter((g) => g > 1e-6);
+  if (!gaps.length) return 6;
+  const count = new Map<number, number>();
+  for (const g of gaps) count.set(g, (count.get(g) ?? 0) + 1);
+  const frequent = [...count.entries()].filter(([, n]) => n >= 3).map(([g]) => g);
+  return frequent.length ? Math.max(...frequent) : Math.min(...gaps);
+}
 
 export function geometry<P extends MapPoint>(points: P[], eye: Eye): MapGeometry<P> {
-  const pts = points.map((p) => ({ ...p, dx: eye === "OS" ? -p.X : p.X }));
-  const xs = [...new Set(pts.map((p) => p.dx))].sort((a, b) => a - b);
+  const mirrored = points.map((p) => ({ ...p, dx: eye === "OS" ? -p.X : p.X }));
+  const spacing = latticeStep(mirrored.flatMap((p) => [p.dx, p.Y]));
+  const xs = [...new Set(mirrored.map((p) => p.dx))].sort((a, b) => a - b);
   const gaps = xs.slice(1).map((x, i) => x - xs[i]).filter((g) => g > 1e-6);
-  const spacing = gaps.length ? Math.min(...gaps) : 6;
+  const fine = gaps.length ? Math.min(...gaps) : spacing;
+  // lattice points sit at odd multiples of half the step (±3, ±9 … for 6°; ±1, ±3 … for 2°)
+  const onLattice = (v: number) => Math.abs(((Math.abs(v) + spacing / 2) % spacing) - 0) < 1e-6 || Math.abs(((Math.abs(v) + spacing / 2) % spacing) - spacing) < 1e-6;
+  const pts = mirrored.map((p) => ({ ...p, cell: onLattice(p.dx) && onLattice(p.Y) ? spacing : fine }));
   const lim = Math.max(...pts.map((p) => Math.max(Math.abs(p.dx), Math.abs(p.Y)))) + spacing / 2 + 1;
-  return { points: pts, lim, spacing };
+  return { points: pts, lim, spacing, fine };
+}
+
+/** Font / symbol scale of a point: the main step for lattice points, smaller for the crowded macular extras. */
+function cellScale(g: MapGeometry<MapPoint>, p: { cell: number }): number {
+  return p.cell === g.spacing ? g.spacing : Math.max(g.fine * 0.75, g.spacing * 0.25);
+}
+
+/** Axis tick step: every 10° on the 24-2 / 30-2 / 24-2C frames, every 5° on the macular 10-2 frame. */
+export function tickStep(lim: number): number {
+  return lim <= 15 ? 5 : 10;
 }
 
 export function Frame({ g, children, title, id }: { g: MapGeometry<MapPoint>; children: React.ReactNode; title: string; id: string }) {
   const L = g.lim;
+  const step = tickStep(L);
   const ticks: number[] = [];
-  for (let t = -30; t <= 30; t += 10) if (t !== 0 && Math.abs(t) < L) ticks.push(t);
+  for (let t = -40; t <= 40; t += step) if (t !== 0 && Math.abs(t) < L) ticks.push(t);
   return (
     <figure className="map" aria-label={title} data-map={id}>
       <figcaption>{title}</figcaption>
       <svg viewBox={`${-L} ${-L} ${2 * L} ${2 * L}`} role="img">
-        <line x1={-L} y1={0} x2={L} y2={0} className="axis" />
-        <line x1={0} y1={-L} x2={0} y2={L} className="axis" />
+        <line x1={-L} y1={0} x2={L} y2={0} className="axis" strokeWidth={L / 200} />
+        <line x1={0} y1={-L} x2={0} y2={L} className="axis" strokeWidth={L / 200} />
         {ticks.map((t) => (
           <g key={t}>
-            <line x1={t} y1={-0.6} x2={t} y2={0.6} className="axis" />
-            <line x1={-0.6} y1={-t} x2={0.6} y2={-t} className="axis" />
+            <line x1={t} y1={-L / 50} x2={t} y2={L / 50} className="axis" strokeWidth={L / 200} />
+            <line x1={-L / 50} y1={-t} x2={L / 50} y2={-t} className="axis" strokeWidth={L / 200} />
           </g>
         ))}
         {children}
@@ -43,13 +73,12 @@ export function Frame({ g, children, title, id }: { g: MapGeometry<MapPoint>; ch
 }
 
 export function NumericMap<P extends MapPoint>({ g, title, id, value }: { g: MapGeometry<P>; title: string; id: string; value: (p: P) => string }) {
-  const fs = g.spacing * 0.42;
   return (
     <Frame g={g} title={title} id={id}>
       {g.points.map((p) => {
         const v = value(p);
         return v === "" ? null : (
-          <text key={p.Index} x={p.dx} y={-p.Y} fontSize={fs} textAnchor="middle" dominantBaseline="central" className="num">{v}</text>
+          <text key={p.Index} x={p.dx} y={-p.Y} fontSize={cellScale(g, p) * 0.42} textAnchor="middle" dominantBaseline="central" className="num">{v}</text>
         );
       })}
     </Frame>
@@ -57,14 +86,15 @@ export function NumericMap<P extends MapPoint>({ g, title, id, value }: { g: Map
 }
 
 /**
- * Ordered-dither fill of one cell, as a single path of black runs on a global 0.3° lattice (adjacent cells
- * continue the same Bayer pattern, like the HFA printout). Band 9 is white, band 0 black. Drawn as geometry
- * rather than SVG <pattern>: Chromium's PDF output expands patterns into megabytes.
+ * Ordered-dither fill of one cell, as a single path of black runs on a global lattice of size/20 (0.3° on the
+ * 6° grids, 0.1° on the 2° cells of the 10-2), so adjacent cells continue the same Bayer pattern like the HFA
+ * printout. Band 9 is white, band 0 black. Drawn as geometry rather than SVG <pattern>: Chromium's PDF output
+ * expands patterns into megabytes.
  */
 export function ditherPath(x0: number, y0: number, size: number, band: number): string {
   const k = Math.round(((9 - band) / 9) * 16);
   if (k === 0) return "";
-  const q = 0.3, n = Math.round(size / q), i0 = Math.round(x0 / q), j0 = Math.round(y0 / q);
+  const q = Math.round((size / 20) * 1000) / 1000, n = Math.round(size / q), i0 = Math.round(x0 / q), j0 = Math.round(y0 / q);
   const r = (v: number) => Math.round(v * 100) / 100;
   let d = "";
   for (let j = j0; j < j0 + n; j++) {
@@ -79,12 +109,20 @@ export function ditherPath(x0: number, y0: number, size: number, band: number): 
 }
 
 export function GrayscaleMap({ g, title, id }: { g: MapGeometry; title: string; id: string }) {
-  const s = g.spacing;
+  // main lattice cells first, then the fine (macular) cells on top of them
+  const ordered = [...g.points].sort((a, b) => b.cell - a.cell);
   return (
     <Frame g={g} title={title} id={id}>
-      {g.points.map((p) => (
-        <path key={p.Index} d={ditherPath(p.dx - s / 2, -p.Y - s / 2, s, p.GrayBand) || "M0 0"} fill="#000" data-band={p.GrayBand} />
-      ))}
+      {ordered.map((p) => {
+        const s = p.cell;
+        const fine = s !== g.spacing;
+        return (
+          <g key={p.Index}>
+            {fine && <rect x={p.dx - s / 2} y={-p.Y - s / 2} width={s} height={s} fill="#fff" />}
+            <path d={ditherPath(p.dx - s / 2, -p.Y - s / 2, s, p.GrayBand) || "M0 0"} fill="#000" data-band={p.GrayBand} />
+          </g>
+        );
+      })}
     </Frame>
   );
 }
@@ -123,14 +161,13 @@ export function ProbSymbol({ level, x, y, size, prefix }: { level: ProbLevel; x:
 }
 
 export function ProbabilityMap({ g, title, id, value }: { g: MapGeometry; title: string; id: string; value: (p: PointAnalysis) => number | null }) {
-  const size = g.spacing * 0.62;
   return (
     <Frame g={g} title={title} id={id}>
       <ProbPatterns prefix={id} />
       {g.points.map((p) => {
         if (p.IsBlindSpot) return null;
         const lv = probLevel(value(p));
-        return lv ? <ProbSymbol key={p.Index} level={lv} x={p.dx} y={-p.Y} size={size} prefix={id} /> : null;
+        return lv ? <ProbSymbol key={p.Index} level={lv} x={p.dx} y={-p.Y} size={cellScale(g, p) * 0.62} prefix={id} /> : null;
       })}
     </Frame>
   );
@@ -154,10 +191,10 @@ export function ProbabilityLegend({ id = "legend" }: { id?: string }) {
 }
 
 export function ScreeningMap({ g, title, id }: { g: MapGeometry; title: string; id: string }) {
-  const s = g.spacing * 0.5;
   return (
     <Frame g={g} title={title} id={id}>
       {g.points.map((p) => {
+        const s = cellScale(g, p) * 0.5;
         const o = p.ScreeningOutcome;
         if (o === "NotSeen") return <rect key={p.Index} x={p.dx - s / 2} y={-p.Y - s / 2} width={s} height={s} fill="#000" />;
         if (o === "SeenOnRetest") return <text key={p.Index} x={p.dx} y={-p.Y} fontSize={s} textAnchor="middle" dominantBaseline="central">r</text>;
