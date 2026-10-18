@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { env } from "./env.ts";
@@ -33,16 +33,90 @@ async function withTempFile<T>(content: string, fn: (p: string) => Promise<T>): 
 
 export class PerimetryError extends Error {}
 
-/** Runs the Single Field Analysis on a headset exam file (raw text, exactly as exported). */
-export async function analyzeExam(rawText: string): Promise<Report> {
-  return withTempFile(rawText, async (p) => {
-    const r = await run(["report", p]);
-    let doc: unknown;
-    try { doc = JSON.parse(r.stdout); } catch { throw new PerimetryError("análise falhou: " + (r.stderr || r.stdout).slice(0, 500)); }
-    const d = doc as { error?: string; schema?: string };
-    if (d.error) throw new PerimetryError(d.error);
-    if (d.schema !== "perimetry-report/1") throw new PerimetryError("resposta inesperada do /core");
-    return doc as Report;
+async function withTempDir<T>(fn: (dir: string) => Promise<T>): Promise<T> {
+  const dir = await mkdtemp(path.join(tmpdir(), "perimetry-"));
+  try { return await fn(dir); } finally { await rm(dir, { recursive: true, force: true }); }
+}
+
+function parseStrict<T>(r: { stdout: string; stderr: string }, schema: string): T {
+  let doc: unknown;
+  try { doc = JSON.parse(r.stdout); } catch { throw new PerimetryError("análise falhou: " + (r.stderr || r.stdout).slice(0, 500)); }
+  const d = doc as { error?: string; schema?: string };
+  if (d.error) throw new PerimetryError(d.error);
+  if (d.schema !== schema) throw new PerimetryError("resposta inesperada do /core");
+  return doc as T;
+}
+
+/**
+ * Runs the Single Field Analysis on a headset exam file (raw text, exactly as exported).
+ * `normativeJson` (Phase 6) is a perimetry-normative/1 database: the clinic's own normative instead of the
+ * provisional synthetic one.
+ */
+export async function analyzeExam(rawText: string, normativeJson?: string | null): Promise<Report> {
+  return withTempDir(async (dir) => {
+    const p = path.join(dir, "input.json");
+    await writeFile(p, rawText, "utf8");
+    const args = ["report", p];
+    if (normativeJson) {
+      const n = path.join(dir, "normative.json");
+      await writeFile(n, normativeJson, "utf8");
+      args.push("--normative", n);
+    }
+    return parseStrict<Report>(await run(args), "perimetry-report/1");
+  });
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Phase 6: the clinic's own normative database. The portal only writes the cohort file (lib/normative.ts);
+// every inclusion rule and statistic comes from `perimetry normative` (config/normative/cohort.json).
+
+export interface CohortExclusion { SubjectId: string; ExamId: string; Eye: string; Reason: string; Detail: string | null }
+export interface AgeBandStats { Band: string; MinAge: number; MaxAge: number; Eyes: number; Subjects: number; MeanAge: number; MeanSensitivityHfaDb: number | null; SdSensitivityHfaDb: number | null; EyesWithFovea: number }
+export interface NormativeDatabaseMeta {
+  path: string; id: string; gridId: string; status: "MEASURED" | "PROVISIONAL"; statusReason: string | null; source: string;
+  cohortHash: string; builder: string; builtUtc: string; populationEyes: number; minEyesForMeasured: number; ageRange: [number | null, number | null];
+  locations: number; foveal: { fromCohort: boolean; populationEyes: number; hasData: boolean };
+}
+/** Output of `perimetry normative stats|build` (schema perimetry-normative-build/1). */
+export interface NormativeSummary {
+  schema: "perimetry-normative-build/1";
+  gridId: string;
+  cohortHash: string;
+  rules: Record<string, unknown>;
+  configHash: string;
+  candidates: number;
+  included: number;
+  includedExams: { SubjectId: string; Eye: string; ExamId: string; SequenceForEye: number; AgeYears: number; HasFovea: boolean }[];
+  excluded: CohortExclusion[];
+  exclusionsByReason: { Reason: string; Count: number }[];
+  subjects: number;
+  eyesOd: number;
+  eyesOs: number;
+  eyesWithFovea: number;
+  ageRange: [number | null, number | null];
+  eyesByBand: AgeBandStats[];
+  status: "MEASURED" | "PROVISIONAL";
+  statusReason: string | null;
+  warnings: string[];
+  database: NormativeDatabaseMeta | null;
+}
+
+/** `perimetry normative stats`: who would be included / excluded and why, without building anything. */
+export async function normativeStats(cohortJson: string, gridId: string): Promise<NormativeSummary> {
+  return withTempDir(async (dir) => {
+    const c = path.join(dir, "cohort.json");
+    await writeFile(c, cohortJson, "utf8");
+    return parseStrict<NormativeSummary>(await run(["normative", "stats", "--cohort", c, "--grid", gridId], 120_000), "perimetry-normative-build/1");
+  });
+}
+
+/** `perimetry normative build`: the summary plus the database file text (perimetry-normative/1) to store. */
+export async function normativeBuild(cohortJson: string, gridId: string, id: string): Promise<{ summary: NormativeSummary; databaseJson: string }> {
+  return withTempDir(async (dir) => {
+    const c = path.join(dir, "cohort.json"), out = path.join(dir, "db.json");
+    await writeFile(c, cohortJson, "utf8");
+    const summary = parseStrict<NormativeSummary>(await run(["normative", "build", "--cohort", c, "--grid", gridId, "--id", id, "--out", out], 300_000), "perimetry-normative-build/1");
+    return { summary, databaseJson: await readFile(out, "utf8") };
   });
 }
 
