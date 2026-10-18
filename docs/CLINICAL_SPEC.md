@@ -239,7 +239,7 @@ idênticos aos da Fase 1). `NormativeBuilder` ajusta a mesma regressão por idad
 modelo foveal é o sintético (o arquivo registra `foveal.fromCohort = false`) e o relatório continua mostrando o limiar com p
 do modelo sintético.
 
-**Normativo PRÓPRIO (Fase 6, padrão proposto, aguardando confirmação do product owner).** O portal marca voluntários
+**Normativo PRÓPRIO (Fase 6; regras da coorte aprovadas pelo product owner em 2026-10-18: idade ≥ 18, limites de confiabilidade dos alertas, descarte do primeiro exame de cada olho, um exame por olho, mínimo de 100 olhos para MEASURED).** O portal marca voluntários
 normais e exporta os exames candidatos num arquivo de coorte (`perimetry-cohort/1`: grade, e por exame `subjectId`
 pseudônimo, `eye`, `examId`, `sequenceForEye`, `ageYears`, `aborted`, `strategy`, taxas de confiabilidade e os limiares em
 dB HFA-eq na convenção OD da grade, mais `fovealHfaDb`). Toda regra e toda estatística ficam no `/core`
@@ -474,7 +474,7 @@ diagonal), dentro do campo útil configurado (`usableHalfFieldDeg` 50°) e do ca
   - *Pedido de exame*: grade, monitor de fixação, limiar foveal e modo de resposta opcionais, escritos no
     `exam-order.json` só quando diferem do preset (contrato em `docs/SYNC_API.md`).
 
-### 12.1 Normativo próprio no portal e visão geral de progressão (Fase 6, padrão proposto, aguardando confirmação)
+### 12.1 Normativo próprio no portal e visão geral de progressão (Fase 6; aprovado em 2026-10-18)
 
 - **Voluntários:** no cadastro, a opção "Voluntário normal (normativo)" com observação livre (criptografada) marca os
   pacientes cujos exames entram na coorte. É independente da autorização de pesquisa: o normativo é uso interno da

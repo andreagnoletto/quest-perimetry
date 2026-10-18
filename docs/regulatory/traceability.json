@@ -140,7 +140,7 @@
   "REQ-ANA-013": {"title": "Funções estatísticas (CDF/quantil normal, quantil tipo 7) conferidas contra o R", "status": "implemented",
     "impl": ["core/Perimetry.Core/MathUtil/NormalDistribution.cs", "core/Perimetry.Core/MathUtil/Stats.cs"],
     "tests": ["StandardCdf_MatchesR", "Quantile_MatchesR", "QuantileEdges", "Stats_QuantileType7_MatchesR"]},
-  "REQ-ANA-014": {"title": "Ferramenta de coleta do normativo próprio (coorte de voluntários saudáveis, exclusões, estatística por faixa etária, export) e troca do normativo provisório pelo medido", "status": "proposed",
+  "REQ-ANA-014": {"title": "Ferramenta de coleta do normativo próprio (coorte de voluntários saudáveis, exclusões, estatística por faixa etária, export) e troca do normativo provisório pelo medido", "status": "implemented",
     "impl": ["core/Perimetry.Core/Analysis/Cohort.cs#CohortFilter", "core/Perimetry.Core/Analysis/NormativeDatabase.cs#NormativeBuilder", "core/Perimetry.Cli/Normative.cs", "config/normative/cohort.json", "portal/src/lib/normative.ts", "portal/src/app/(app)/normative/page.tsx", "portal/src/lib/importer.ts#analyzeWithActiveNormative"],
     "tests": ["Filter_ExcludesEveryRule_WithItsReason", "Build_StatusFollowsMinimum_AndWarningsFollowStatus", "Cli_StatsBuildInspectAndReportWithNormative_EndToEnd", "numbers each eye's exams chronologically, copies HFA-eq thresholds with null at the blind spot, and is pseudonymous", "is accepted by `perimetry normative stats` and `build`, and the built database drives `report --normative`", "clinic normative and progression overview"]},
 

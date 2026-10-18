@@ -72,8 +72,8 @@ esperado após a Fase 6.
    exige a tabela de calibração por dispositivo. O rótulo é o único controle até lá.
 2. **Normativo provisório** (HAZ-011): probabilidades e índices sem validade clínica até o normativo
    próprio (Fase 6) atingir a população mínima.
-3. **Tráfego do headset em HTTP na LAN** (HAZ-007/HAZ-009): aceito até REQ-SEC-010; a rede da clínica
-   deve ser isolada.
+3. **Tráfego do headset em HTTP na LAN** (HAZ-007/HAZ-009): risco residual **aceito pelo product owner em
+   2026-10-18** ("comunicação simples neste momento"); a rede da clínica deve ser isolada; TLS fica para uma fase futura.
 4. **Fixação no Quest 3** (HAZ-004): só Heijl-Krakau; sem eye-tracking o olhar não é medido.
 
 ## 5. Rastreabilidade

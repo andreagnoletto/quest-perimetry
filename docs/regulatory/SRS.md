@@ -104,7 +104,7 @@ máxima do display (~100 cd/m²) restringe a faixa mensurável a cerca de 15,5 d
 | REQ-ANA-011 | O limiar foveal é comparado ao esperado foveal para a idade (TD e p) e não entra em MD, PSD, VFI nem GHT. | C§4, C§8.1 | proposto | `normative/provisional-synthetic.json › fovealExtraDb` |
 | REQ-ANA-012 | A tendência é a regressão linear de MD e VFI contra o tempo (inclinação/ano, erro-padrão, p pela t com n−2 gl), excluindo exames interrompidos e rastreios; não há análise por eventos (GPA). | S§7, C§12 | implementado | — |
 | REQ-ANA-013 | As funções estatísticas (CDF e quantil da normal, quantil tipo 7) reproduzem o R. | S§10 | implementado | — |
-| REQ-ANA-014 | O portal oferece ferramenta para coletar o normativo próprio (coorte de voluntários saudáveis, critérios de exclusão, estatística por faixa etária, export) e substituir o provisório pelo medido: toda regra e estatística no `/core`, um normativo ativo por grade, reanálise registrada no log, relatório com o normativo usado. | S§7, S§9, C§8.1, C§12 | proposto (Fase 6) | `normative/cohort.json` |
+| REQ-ANA-014 | O portal oferece ferramenta para coletar o normativo próprio (coorte de voluntários saudáveis, critérios de exclusão, estatística por faixa etária, export) e substituir o provisório pelo medido: toda regra e estatística no `/core`, um normativo ativo por grade, reanálise registrada no log, relatório com o normativo usado. | S§7, S§9, C§8.1, C§12 | implementado (regras aprovadas em 2026-10-18) | `normative/cohort.json` |
 
 ### 3.5 REC — registros, auditoria e exportação
 
