@@ -132,7 +132,7 @@ def main(analysis_path, out_png, exam_path=None):
         legend(fig.add_axes([0.05, 0.005, 0.2, 0.07]))
         p = lambda v: "" if num(v) >= 1 else "  p < " + f"{100 * num(v):g}".replace(".", ",") + "%"
         idx = [f"GHT: {GHT_PT[a['Ght']]}",
-               f"VFI: {num(a['Vfi']):.0f}%",
+               f"VFI: {num(a['Vfi']):.1f}%".replace(".", ","),
                f"MD: {num(a['Md']):.2f} dB{p(a['MdP'])}".replace(".", ",", 1),
                f"PSD: {num(a['Psd']):.2f} dB{p(a['PsdP'])}".replace(".", ",", 1)]
         for i, t in enumerate(idx):

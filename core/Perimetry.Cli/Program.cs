@@ -185,7 +185,7 @@ namespace Perimetry.Cli
             PrintMap(exam.Settings.Eye, a.Points, p => p.IsBlindSpot ? "  ." : $"{p.Pd,3:0}");
             Console.WriteLine("Probabilidade PD (. ns, 5 = p<5%, 2, 1, 0 = p<0,5%):");
             PrintMap(exam.Settings.Eye, a.Points, p => p.IsBlindSpot ? "  ." : "  " + Sym(p.PdP));
-            Console.WriteLine($"MD {a.Md:0.00} dB {PStr(a.MdP)}   PSD {a.Psd:0.00} dB {PStr(a.PsdP)}   VFI {a.Vfi:0}%   GH {a.GeneralHeight:0.0}");
+            Console.WriteLine($"MD {a.Md:0.00} dB {PStr(a.MdP)}   PSD {a.Psd:0.00} dB {PStr(a.PsdP)}   VFI {a.Vfi:0.0}%   GH {a.GeneralHeight:0.0}");
             Console.WriteLine($"GHT: {Strings.Ght(a.Ght)}  [setores: {string.Join(" ", a.GhtSectorDifferences.Select(d => d.ToString("0")))}]");
         }
 
