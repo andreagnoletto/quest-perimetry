@@ -6,6 +6,9 @@ using UnityEngine.XR;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 #endif
+// Both UnityEngine.XR and UnityEngine.InputSystem define these; the legacy XR ones are meant here.
+using InputDevice = UnityEngine.XR.InputDevice;
+using CommonUsages = UnityEngine.XR.CommonUsages;
 
 namespace Perimetry.Headset
 {
