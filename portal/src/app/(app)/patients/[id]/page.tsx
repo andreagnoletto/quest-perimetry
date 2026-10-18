@@ -45,6 +45,7 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
           <div><span className="muted">Diagnóstico / observações</span><br />{p.diagnosis ?? "—"}</div>
           <div><span className="muted">Consentimento</span><br />{p.consentAt ? `registrado em ${dateTimeBr(p.consentAt)}` : <span className="alert">não registrado</span>}{p.consentNote ? ` (${p.consentNote})` : ""}</div>
           <div><span className="muted">Pesquisa</span><br />{p.researchConsent ? "autorizada (pseudonimizada)" : "não autorizada"}</div>
+          <div><span className="muted">Normativo</span><br />{p.normativeVolunteer ? <>voluntário normal{p.normativeNote ? ` (${p.normativeNote})` : ""} · <Link href="/normative">coorte</Link></> : "não é voluntário"}</div>
         </div>
         <div className="actions"><Link className="button secondary" href={`/patients/${id}/edit`}>Editar</Link></div>
       </div>
@@ -82,7 +83,7 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
         const vfi = usable.map((e) => ({ date: e.startedUtc, value: e.vfi }));
         return (
           <section key={eye}>
-            <h2>{eyeName(eye)}</h2>
+            <h2>{eyeName(eye)} {usable.length > 0 && <Link className="button secondary small" href={`/patients/${id}/overview?eye=${eye}`}>Visão geral (progressão)</Link>}</h2>
             <div className="table-wrap">
               <table>
                 <thead><tr><th>Data</th><th>Programa</th><th className="num">MD (dB)</th><th className="num">PSD (dB)</th><th className="num">VFI</th><th>GHT</th><th>Integridade</th></tr></thead>

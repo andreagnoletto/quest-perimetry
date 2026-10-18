@@ -15,6 +15,9 @@ export interface PatientView {
   consentAt: Date | null;
   consentNote: string | null;
   researchConsent: boolean;
+  /** Phase 6: healthy volunteer for the clinic's own normative database, and a free note (e.g. why excluded). */
+  normativeVolunteer: boolean;
+  normativeNote: string | null;
   createdAt: Date;
 }
 
@@ -31,6 +34,8 @@ export function view(p: Patient): PatientView {
     consentAt: p.consentAt,
     consentNote: p.consentNote,
     researchConsent: p.researchConsent,
+    normativeVolunteer: p.normativeVolunteer,
+    normativeNote: decryptOpt(p.normativeNoteEnc),
     createdAt: p.createdAt,
   };
 }
@@ -45,6 +50,8 @@ export interface PatientInput {
   consent: boolean;
   consentNote?: string | null;
   researchConsent: boolean;
+  normativeVolunteer?: boolean;
+  normativeNote?: string | null;
 }
 
 export async function createPatient(input: PatientInput, userId: string): Promise<Patient> {
@@ -65,6 +72,8 @@ export async function createPatient(input: PatientInput, userId: string): Promis
           consentById: input.consent ? userId : null,
           consentNote: input.consentNote || null,
           researchConsent: input.researchConsent,
+          normativeVolunteer: !!input.normativeVolunteer,
+          normativeNoteEnc: encryptOpt(input.normativeNote),
           createdById: userId,
         },
       });
@@ -82,6 +91,8 @@ export async function updatePatient(id: string, input: Omit<PatientInput, "conse
   return db.patient.update({
     where: { id },
     data: {
+      normativeVolunteer: !!input.normativeVolunteer,
+      normativeNoteEnc: encryptOpt(input.normativeNote),
       internalIdEnc: encrypt(input.internalId.trim()),
       internalIdIdx: blindIndex(input.internalId, "internalId"),
       nameEnc: encrypt(input.name.trim()),
