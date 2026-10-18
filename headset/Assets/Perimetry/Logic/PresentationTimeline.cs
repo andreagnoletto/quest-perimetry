@@ -70,6 +70,7 @@ namespace Perimetry.Headset.Logic
             if (_opt.Oculokinetic)
             {
                 Current = Phase.Lock;
+                LockProgress = 0;
                 _phaseUntil = startMs + (_opt.GazeAvailable ? _opt.GazeConfirmTimeoutMs : _opt.LockDelayMs);
             }
             else

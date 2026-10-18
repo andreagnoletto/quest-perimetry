@@ -45,6 +45,14 @@ namespace Perimetry.Headset.Logic.Tests
         /// <summary>When false the simulated patient does not tap on the pause screen (remote-resume tests).</summary>
         public bool AutoResume = true;
         public int MaxStimulusFramesSeen;
+        /// <summary>
+        /// Simulated eye tracker (Phase 5): when set, called every frame with the current fixation target and returns the
+        /// gaze direction fed to <see cref="PatientFlow.GazeSample"/> (null = no sample this frame).
+        /// </summary>
+        public Func<FlowDriver, FieldPoint, FieldPoint?> Gaze;
+        /// <summary>Forced choice (Phase 5): interval the simulated patient will answer in the presentation in progress.</summary>
+        private int? _chosenInterval;
+        private PresentationTimeline _choiceFor;
 
         private readonly Rng _rng;
         private double? _pressAt, _releaseAt;
@@ -80,6 +88,12 @@ namespace Perimetry.Headset.Logic.Tests
             Now += 1000.0 / Hz;
             if (_pressAt.HasValue && Now >= _pressAt.Value) { Flow.ButtonDown(Now); _pressAt = null; }
             if (_releaseAt.HasValue && _pressAt == null && Now >= _releaseAt.Value) { Flow.ButtonUp(Now); _releaseAt = null; }
+            if (Gaze != null)
+            {
+                var v = Flow.View;
+                var g = Gaze(this, new FieldPoint(v.FixationX, v.FixationY));
+                if (g.HasValue) Flow.GazeSample(Now, g.Value.X, g.Value.Y);
+            }
             Flow.Tick(Now);
             if (Flow.State != _lastState) { _lastState = Flow.State; _stateSince = Now; }
             Patient();
@@ -91,6 +105,21 @@ namespace Perimetry.Headset.Logic.Tests
         {
             var s = Flow.State;
             var tl = Flow.CurrentPresentation;
+            if (s == FlowState.Exam && tl != null && tl.ForcedChoice)
+            {
+                // Forced choice: decide once per presentation, then press while the chosen interval is running.
+                if (tl != _choiceFor)
+                {
+                    _choiceFor = tl;
+                    var r = Observers[Flow.CurrentEye.Value].Respond(tl.Request, 0);
+                    _chosenInterval = r.RespondedInterval;
+                }
+                if (_chosenInterval.HasValue && tl.CurrentInterval == _chosenInterval.Value && tl.Current != PresentationTimeline.Phase.Marker
+                    && !tl.ResponseMs.HasValue && !Busy)
+                    Press();
+                if (Flow.View.Stimulus != null) MaxStimulusFramesSeen = Math.Max(MaxStimulusFramesSeen, tl.FramesShown);
+                return;
+            }
             if ((s == FlowState.Exam || s == FlowState.TrainingTrial) && tl != null && tl.OnsetMs.HasValue && tl != _answered)
             {
                 _answered = tl;
