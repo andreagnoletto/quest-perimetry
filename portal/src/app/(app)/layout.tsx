@@ -17,6 +17,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link href="/patients">Pacientes</Link>
             <Link href="/exams/import">Importar exames</Link>
             <Link href="/exams">Exames</Link>
+            <Link href="/live">Ao vivo</Link>
             <Link href="/devices">Headsets e calibração</Link>
             {user.role === "admin" && <Link href="/research">Exportação para pesquisa</Link>}
             {user.role === "admin" && <Link href="/audit">Log de acesso</Link>}

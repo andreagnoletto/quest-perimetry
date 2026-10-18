@@ -1,10 +1,12 @@
-# portal — Fase 3 (Next.js + PostgreSQL)
+# portal — Fases 3 e 4 (Next.js + PostgreSQL)
 
 > Protótipo para pesquisa/uso sob supervisão médica — não registrado na ANVISA
 
 Portal do médico: cadastro de pacientes, pedido de exame para o headset, importação dos arquivos do headset,
 relatório **Single Field Analysis** no layout HFA (tela e PDF A4), série de escala de cinza e tendência de MD/VFI,
-calibração fotométrica por headset, exportação pseudonimizada para pesquisa e log de acesso.
+calibração fotométrica por headset, exportação pseudonimizada para pesquisa e log de acesso. Na Fase 4, o headset
+pareado recebe os pedidos pela rede local, envia os exames sozinho e transmite o exame **ao vivo** (`/live`), com
+pausar/retomar/encerrar pelo portal (contrato em `docs/SYNC_API.md`).
 
 O portal **não calcula nada clínico**: limiares, TD/PD, probabilidades, MD/PSD/VFI/GHT e avisos vêm do CLI do `/core`
 (`perimetry report`), o mesmo código que roda no headset. O portal só guarda, mostra e imprime.
@@ -32,13 +34,19 @@ do Playwright (`npx playwright install chromium`) ou o indicado em `PERIMETRY_CH
 
 1. **Paciente** → cadastrar com consentimento (obrigatório) e, se ele quiser, autorização de pesquisa. O portal gera
    um código pseudônimo (`P-XXXXXX`), o único dado do paciente que vai para o headset.
-2. **Pedido de exame** → escolher o exame (presets de `config/headset.json`) e baixar `exam-order.json`; copiar
-   para a pasta do app no headset (ver `headset/README.md`).
-3. **Headset e calibração** → cadastrar o headset com o conteúdo de `device.key` (para verificar a assinatura dos
-   exames) e enviar a calibração fotométrica; o portal valida com o `/core` e oferece o `calibration.json`.
-4. **Importar** → enviar `exam_*.json`, `session_*.json` e os `.hmac`. Cada exame é analisado, vinculado ao paciente
+2. **Pedido de exame** → escolher o exame (presets de `config/headset.json`) e **enviar ao headset pareado** (aparece
+   na tela do operador na próxima abertura do app) ou baixar `exam-order.json` e copiar para a pasta do app
+   (ver `headset/README.md`).
+3. **Headsets e calibração** → *Parear headset* gera um código de uso único (15 min) e o `portal.json` para copiar
+   ao headset (`adb push`); na próxima abertura o app troca o código por um token e envia a chave `device.key`.
+   Sem rede, cadastre o headset à mão com o conteúdo de `device.key`. Enviar a calibração fotométrica; o portal
+   valida com o `/core` e oferece o `calibration.json`. Tokens podem ser revogados na mesma página.
+4. **Ao vivo** → com o headset pareado, cada sessão aparece em *Ao vivo*: estado, mapa de limiares preenchendo
+   (dB equiv. HFA), último estímulo, perdas de fixação/FP/FN e os botões *Pausar / Retomar / Encerrar*, que o
+   headset aplica em até 1 s (uma pausa remota é idêntica à pausa pelo botão do paciente).
+5. **Importar** → automático pelo headset pareado (arquivos chegam assinados e já verificados) ou manual: enviar `exam_*.json`, `session_*.json` e os `.hmac`. Cada exame é analisado, vinculado ao paciente
    pelo código e marcado como integridade *verificada*, *não verificada* (sem chave/assinatura) ou *FALHOU*.
-5. **Relatório** → tela, PDF A4 (uma página por olho), CSV dos pontos, JSON da análise e arquivo original.
+6. **Relatório** → tela, PDF A4 (uma página por olho), CSV dos pontos, JSON da análise e arquivo original.
 
 ## Perfis
 
@@ -56,13 +64,16 @@ do Playwright (`npx playwright install chromium`) ou o indicado em `PERIMETRY_CH
 - Exportação de pesquisa só de pacientes que autorizaram, com ID de estudo, idade em anos e dias desde o primeiro
   exame; sem nome, ID, nascimento, código, diagnóstico ou datas.
 - O arquivo bruto do headset é guardado byte a byte para reanálise e reverificação da assinatura.
+- Headset: token por aparelho (só o hash fica no banco), revogável; só o código pseudônimo trafega para ele. Em rede
+  local sem HTTPS o token trafega em claro — use um proxy reverso com TLS quando possível (`PERIMETRY_SECURE_COOKIES`).
+- Chamadas do headset entram no log de acesso como `headset.*`, com o serial do aparelho.
 
 ## Testes
 
 ```bash
 npm run typecheck
 npm test                      # unitários (vitest), inclui integração com o CLI do /core
-npm run build && npm run e2e  # Playwright: login → paciente → pedido → importação → relatório → PDF → auditoria
+npm run build && npm run e2e  # Playwright: fluxo do médico (flow.spec) e sincronização/ao vivo (sync.spec)
 ```
 
 O e2e cria um banco novo a cada execução (`E2E_DATABASE_URL` + sufixo de data) com `prisma migrate deploy`; nada
@@ -70,5 +81,6 @@ existente é apagado. Bancos `perimetry_e2e_*` antigos podem ser removidos à m�
 
 ## Fora desta fase
 
-Tokens de headset e envio direto pela rede (Fase 4), análise de progressão por eventos (GPA), redefinição de senha
-pela interface (hoje via `npm run create-user`).
+Análise de progressão por eventos (GPA), redefinição de senha pela interface (hoje via `npm run create-user`),
+WebSocket (o ao vivo usa POST a 1 Hz + Server-Sent Events; ver `docs/SYNC_API.md`), vários processos do portal
+(o estado ao vivo fica em memória de um processo).

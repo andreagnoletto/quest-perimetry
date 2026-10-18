@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { db } from "./db.ts";
 import { env } from "./env.ts";
 
 /** Exam presets the headset knows (config/headset.json). The portal only offers what the headset can run. */
@@ -19,4 +20,10 @@ export function examOrderFile(o: { code: string; ageYears: number; refraction: s
     presetId: o.presetId,
     ...(o.seed ? { seed: Number(o.seed) } : {}),
   };
+}
+
+/** Headsets with an active sync token (docs/SYNC_API.md), for the "send to headset" choice on an order. */
+export async function pairedDevices(): Promise<{ id: string; label: string }[]> {
+  const rows = await db.device.findMany({ where: { tokens: { some: { revokedAt: null } } }, orderBy: { createdAt: "asc" } });
+  return rows.map((d) => ({ id: d.id, label: d.label ?? d.model ?? d.serial }));
 }

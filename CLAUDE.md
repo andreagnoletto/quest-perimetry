@@ -33,8 +33,10 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
   (`core/Perimetry.Core/package.json`); build output goes to `/artifacts` (Directory.Build.props) so no bin/
   lands inside the package. `headset/UnityCompileCheck` compiles the Unity scripts against UnityEngine reference DLLs.
 - `portal/` — doctor portal (phase 3): Next.js 15 (App Router, server actions) + PostgreSQL via Prisma.
-  `src/lib` (crypto/LGPD, auth, audit, importer, `perimetry.ts` = bridge to the CLI, pdf), `src/components`
-  (`SingleFieldReport`, SVG `FieldMaps`), `src/app/(app)` pages, `src/app/print` (bare report the PDF prints).
+  `src/lib` (crypto/LGPD, auth, audit, importer, `perimetry.ts` = bridge to the CLI, pdf, `headset-auth.ts` device
+  tokens/pairing, `live.ts` in-process live store), `src/components` (`SingleFieldReport`, SVG `FieldMaps`),
+  `src/app/(app)` pages (`live/` operator panel), `src/app/api/headset/*` (phase 4 sync API, contract in
+  `docs/SYNC_API.md`), `src/app/api/live/*` (SSE), `src/app/print` (bare report the PDF prints).
   The portal never computes clinical numbers: every exam goes through `perimetry report` on import.
 
 ## Commands
@@ -93,7 +95,11 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 - Report shows thresholds in HFA-equivalent dB, "<NN" below the device floor; PDF is the same page printed by Chromium.
 - Use TrueType fonts and plain SVG geometry in the report: Chromium turns OTF fonts and SVG `<pattern>` fills into
   megabytes of Type 3 fonts / raster images in the PDF.
-- Never run `prisma migrate reset` (or anything that drops data); e2e creates a new database per run.
+- Never run `prisma migrate reset` (or anything that drops data); e2e creates a new database per run. New migrations:
+  `prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --shadow-database-url <empty db> --script`.
+- Headset sync (phase 4): bearer token per device (SHA-256 stored), pairing code shown once; every `/api/headset/*`
+  call is audited as `headset.*`. Live state is in-process (`next start` = one process) plus the `LiveSession` row;
+  headset → portal is POST at 1 Hz with commands in the response, browser ← portal is Server-Sent Events.
 
 ## Open decisions (waiting for the product owner)
 Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,

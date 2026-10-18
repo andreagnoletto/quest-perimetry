@@ -4,7 +4,7 @@ import { requireUser } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { db } from "@/lib/db";
 import { dateBr, dateTimeBr, eyeName, fmt, strategyName } from "@/lib/format";
-import { presets } from "@/lib/headset";
+import { pairedDevices, presets } from "@/lib/headset";
 import { ageAt, view } from "@/lib/patients";
 import { trend } from "@/lib/progression";
 import type { Report } from "@/lib/report-types";
@@ -12,7 +12,7 @@ import { geometry, GrayscaleMap } from "@/components/FieldMaps";
 import { IntegrityBadge } from "@/components/ExamTable";
 import { OrderForm } from "@/components/OrderForm";
 import { TrendChart } from "@/components/TrendChart";
-import { createOrderAction } from "../actions";
+import { cancelOrderAction, createOrderAction } from "../actions";
 
 const sexName: Record<string, string> = { F: "feminino", M: "masculino", O: "outro" };
 
@@ -21,12 +21,13 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const row = await db.patient.findUnique({
     where: { id },
-    include: { exams: { orderBy: { startedUtc: "asc" } }, orders: { orderBy: { createdAt: "desc" }, take: 10 } },
+    include: { exams: { orderBy: { startedUtc: "asc" } }, orders: { orderBy: { createdAt: "desc" }, take: 10, include: { device: { select: { label: true, model: true, serial: true } } } } },
   });
   if (!row) notFound();
   const p = view(row);
   await audit(user.id, "patient.view", "patient", id);
   const ps = presets();
+  const devices = await pairedDevices();
   const presetLabel = (pid: string) => ps.find((x) => x.id === pid)?.label ?? pid;
 
   return (
@@ -48,20 +49,21 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
 
       <h2>Pedido de exame para o headset</h2>
       <div className="card">
-        <OrderForm action={createOrderAction.bind(null, id)} presets={ps.map((x) => ({ id: x.id, label: x.label }))} refraction={p.refraction} />
-        <p className="muted small">Copie o arquivo baixado para a pasta do app no headset com o nome <code>exam-order.json</code>. Ele leva só o código {p.code}, a idade, a correção e o exame, nunca o nome.</p>
+        <OrderForm action={createOrderAction.bind(null, id)} presets={ps.map((x) => ({ id: x.id, label: x.label }))} refraction={p.refraction} devices={devices} />
+        <p className="muted small">Enviado ao headset pareado, o pedido aparece na tela do operador; sem headset pareado, copie o arquivo baixado para a pasta do app com o nome <code>exam-order.json</code>. Em ambos os casos vai só o código {p.code}, a idade, a correção e o exame, nunca o nome.</p>
         {row.orders.length > 0 && (
           <div className="table-wrap">
             <table>
-              <thead><tr><th>Criado</th><th>Exame</th><th className="num">Idade</th><th>Situação</th><th></th></tr></thead>
+              <thead><tr><th>Criado</th><th>Exame</th><th className="num">Idade</th><th>Headset</th><th>Situação</th><th></th></tr></thead>
               <tbody>
                 {row.orders.map((o) => (
                   <tr key={o.id}>
                     <td>{dateTimeBr(o.createdAt)}</td>
                     <td>{presetLabel(o.presetId)}</td>
                     <td className="num">{fmt(o.ageYears, 1)}</td>
-                    <td>{o.fulfilledAt ? `realizado (importado ${dateBr(o.fulfilledAt)})` : "aguardando"}</td>
-                    <td><a href={`/patients/${id}/orders/${o.id}`} download="exam-order.json">Baixar exam-order.json</a></td>
+                    <td>{o.device ? o.device.label ?? o.device.model ?? o.device.serial : "—"}</td>
+                    <td>{o.fulfilledAt ? `realizado (importado ${dateBr(o.fulfilledAt)})` : o.cancelledAt ? "cancelado" : o.deviceId ? "enviado ao headset, aguardando" : "aguardando"}</td>
+                    <td><a href={`/patients/${id}/orders/${o.id}`} download="exam-order.json">Baixar exam-order.json</a>{!o.fulfilledAt && !o.cancelledAt && <form action={cancelOrderAction.bind(null, id, o.id)} style={{ display: "inline" }}> · <button className="link" type="submit">cancelar</button></form>}</td>
                   </tr>
                 ))}
               </tbody>

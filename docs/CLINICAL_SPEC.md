@@ -304,6 +304,21 @@ Interrupção pelo operador grava o olho em andamento com `Aborted = true`, e a 
   n − 2 gl), sem exames interrompidos nem rastreios. Descritiva; análise por eventos (GPA) fica para depois.
 - **PDF:** A4, uma página por olho, impresso pelo Chromium a partir da mesma página da tela.
 
+## 12a. Sincronização e painel ao vivo (Fase 4)
+
+- O exame no headset continua **independente da rede**: gravação local primeiro (HMAC), envio depois; sem rede o
+  fluxo é o da Fase 2. Contrato completo em `docs/SYNC_API.md`.
+- **Painel ao vivo** (equivalente à tela do operador do HFA): estado do fluxo, mapa de limiares preenchendo com os
+  pontos já terminados (dB equivalente HFA calculado no headset pelo `/core`; "<NN" abaixo do mínimo mensurável),
+  pontos em teste, último estímulo (posição, intensidade, visto/não visto), perdas de fixação, FP e FN com "xx"
+  acima do limite do `config/`, mancha cega, duração. Nenhum número é calculado no portal.
+- **Pausar / Retomar / Encerrar** pelo portal: chegam ao headset no envio seguinte (≤ 1 s). A pausa remota é
+  idêntica à pausa pelo botão do paciente (apresentação em curso descartada, intervalo registrado em
+  `Reliability.Pauses` com motivo `operator`); encerrar salva o olho em andamento com `Aborted: true`. Nenhum
+  resultado é mostrado ao paciente.
+- Pedido de exame enviado ao headset: só o código pseudônimo, idade, correção, exame e semente; o operador confirma
+  na tela de preparação. O exame importado pela rede traz a integridade **verificada** pela chave enviada no pareamento.
+
 ## 13. Referências
 
 1. Heijl A, Lindgren G, Olsson J. A package for the statistical analysis of visual fields. *Doc Ophthalmol Proc Ser* 1987;49:153–168. (MD, PSD)

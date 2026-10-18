@@ -79,6 +79,37 @@ model Device {
   createdAt    DateTime      @default(now())
   calibrations Calibration[]
   sessions     HeadsetSession[]
+  tokens       DeviceToken[]
+  pairingCodes PairingCode[]
+  orders       ExamOrder[]
+  liveSessions LiveSession[]
+}
+
+/// Short code the doctor generates on the Headsets page; the headset exchanges it once for a token (docs/SYNC_API.md).
+model PairingCode {
+  id          String    @id @default(cuid())
+  /// SHA-256 of the normalised code (no hyphens, upper case); the code itself is shown once.
+  codeHash    String    @unique
+  createdById String
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+  attempts    Int       @default(0)
+  usedAt      DateTime?
+  deviceId    String?
+  device      Device?   @relation(fields: [deviceId], references: [id])
+}
+
+/// Bearer token of a paired headset. id = SHA-256 of the token; the token itself is never stored.
+model DeviceToken {
+  id         String    @id
+  deviceId   String
+  device     Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  software   String?
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+
+  @@index([deviceId])
 }
 
 model Calibration {
@@ -107,6 +138,47 @@ model ExamOrder {
   createdById String
   createdAt   DateTime  @default(now())
   fulfilledAt DateTime?
+  /// Headset the order was sent to (GET /api/headset/orders); null = download only.
+  deviceId    String?
+  device      Device?   @relation(fields: [deviceId], references: [id])
+  sentAt      DateTime?
+  cancelledAt DateTime?
+
+  @@index([deviceId, fulfilledAt, cancelledAt])
+}
+
+/// Latest live snapshot of a headset session (POST /api/headset/live); the in-memory copy feeds the panel.
+model LiveSession {
+  id          String        @id @default(cuid())
+  sessionId   String        @unique
+  deviceId    String?
+  device      Device?       @relation(fields: [deviceId], references: [id])
+  patientRef  String?
+  orderId     String?
+  startedUtc  DateTime
+  lastSeenUtc DateTime
+  state       String
+  finished    Boolean       @default(false)
+  outcome     String?
+  seq         Int           @default(0)
+  snapshot    Json
+  commands    LiveCommand[]
+
+  @@index([lastSeenUtc])
+}
+
+/// pause / resume / abort sent by a doctor to a running session; acked by the headset.
+model LiveCommand {
+  id            String      @id @default(cuid())
+  liveSessionId String
+  liveSession   LiveSession @relation(fields: [liveSessionId], references: [id], onDelete: Cascade)
+  type          String
+  issuedById    String
+  issuedAt      DateTime    @default(now())
+  deliveredAt   DateTime?
+  ackedAt       DateTime?
+
+  @@index([liveSessionId, ackedAt])
 }
 
 model HeadsetSession {
@@ -148,7 +220,8 @@ model Exam {
   vfi              Float?
   psd              Float?
   ght              String?
-  importedById     String
+  /// Null when the headset uploaded the file itself (POST /api/headset/exams); the access log names the device.
+  importedById     String?
   importedAt       DateTime        @default(now())
 
   @@unique([examId, startedUtc])
