@@ -37,7 +37,7 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 ```bash
 dotnet build Perimetry.sln
 dotnet test core/Perimetry.Core.Tests                                   # 121 tests, ~5 s
-dotnet test headset/LogicTests                                           # 25 tests: headset flow, timing, geometry, dithering
+dotnet test headset/LogicTests                                           # 26 tests: headset flow, timing, geometry, dithering
 dotnet build headset/UnityCompileCheck                                   # Unity scripts vs UnityEngine API (no Unity needed)
 dotnet test core/Perimetry.Core.Tests --collect:"XPlat Code Coverage"   # coverage (cobertura xml)
 dotnet run --project core/Perimetry.Cli -c Release -- simulate --strategy ZestFast --defect SuperiorArcuate --seed 4 --out out/ex.json
@@ -82,5 +82,5 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 
 ## Open decisions (waiting for the product owner)
 Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,
-status TO_BE_VALIDATED); headset pause, training, occlusion check, fixation target, 72 Hz duration (§11). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
-grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening.
+status TO_BE_VALIDATED); headset pause, training, fixation target, 72 Hz duration (§11). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
+grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening. Approved on 2026-10-18: headset occlusion check before each eye (on).

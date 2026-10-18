@@ -38,10 +38,9 @@ namespace Perimetry.Headset.Logic.Tests
             Assert.That(flow.View.Message, Is.EqualTo("Exame concluído. Aguarde o médico."));
             Assert.That(otherEyeEverLit, Is.False);
             Assert.That(seenStates, Is.SupersetOf(new[] { FlowState.Welcome, FlowState.Instructions, FlowState.EyeIntro, FlowState.SharpnessCheck,
-                FlowState.TrainingTrial, FlowState.TrainingFeedback, FlowState.ExamReady,
+                FlowState.OcclusionIntro, FlowState.OcclusionWindow, FlowState.TrainingTrial, FlowState.TrainingFeedback, FlowState.ExamReady,
                 FlowState.Exam, FlowState.BetweenEyes }));
             Assert.That(seenStates, Does.Not.Contain(FlowState.SetupPreset), "the exam order supplied preset and age");
-            Assert.That(seenStates, Does.Not.Contain(FlowState.OcclusionIntro), "occlusion check is off by default");
 
             Assert.That(sink.Exams.Select(e => e.Settings.Eye).ToList(), Is.EqualTo(new[] { Eye.OD, Eye.OS }));
             Assert.That(sink.Logs, Has.Count.EqualTo(1));
@@ -152,7 +151,6 @@ namespace Perimetry.Headset.Logic.Tests
         {
             var sink = new MemorySink();
             var h = Env.Headset;
-            h.Checks.OcclusionCheckEnabled = true;
             var flow = new PatientFlow(Env.Config, h, Env.Lum, sink, new ExamOrder { PresetId = "24-2-zest-od", AgeYears = 50, Seed = 2 });
             var d = new FlowDriver(flow, 2);
             int windows = 0;
@@ -224,6 +222,18 @@ namespace Perimetry.Headset.Logic.Tests
             Assert.That(flow.State, Is.EqualTo(FlowState.SaveError));
             Assert.That(flow.View.MessageKey, Is.EqualTo("error.save"));
             Assert.That(flow.CompletedExams, Has.Count.EqualTo(1), "the record is still kept in memory");
+        }
+
+        [Test]
+        public void OcclusionCheck_CanBeDisabledInConfig()
+        {
+            var h = Env.Headset;
+            h.Checks.OcclusionCheckEnabled = false;
+            var flow = new PatientFlow(Env.Config, h, Env.Lum, new MemorySink(), new ExamOrder { PresetId = "24-2-zest-od", AgeYears = 50, Seed = 12 });
+            var d = new FlowDriver(flow, 12);
+            bool sawOcclusion = false;
+            d.RunUntil(() => { sawOcclusion |= flow.State == FlowState.OcclusionIntro; return flow.State == FlowState.TrainingIntro; });
+            Assert.That(sawOcclusion, Is.False);
         }
 
         [Test]

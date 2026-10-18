@@ -90,8 +90,8 @@ namespace Perimetry.Headset.Logic
 
     public sealed class ChecksConfig
     {
-        /// <summary>Patient-facing occlusion check before each eye. Off by default: eye routing is a device property checked in maintenance.</summary>
-        public bool OcclusionCheckEnabled { get; set; }
+        /// <summary>Occlusion check before each eye (5 s, tested eye closed). Product owner kept it on (2026-10-18).</summary>
+        public bool OcclusionCheckEnabled { get; set; } = true;
         public int OcclusionWindowMs { get; set; } = 5000;
         public double OcclusionDiscDeg { get; set; } = 10;
     }
