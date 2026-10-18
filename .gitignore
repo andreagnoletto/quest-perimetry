@@ -12,6 +12,7 @@ headset/[Tt]emp/
 headset/[Oo]bj/
 headset/[Bb]uild*/
 headset/[Ll]ogs/
+headset/.utmp/
 headset/[Uu]ser[Ss]ettings/
 # Portal (phase 3)
 portal/node_modules/
@@ -22,3 +23,4 @@ core/**/*.meta
 headset/*.csproj
 headset/*.sln
 headset/Assets/Resources/PerimetryConfig*
+headset/Assets/Resources/PerformanceTestRun*

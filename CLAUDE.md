@@ -40,7 +40,7 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
 ## Commands
 ```bash
 dotnet build Perimetry.sln
-dotnet test core/Perimetry.Core.Tests                                   # 121 tests, ~5 s
+dotnet test core/Perimetry.Core.Tests                                   # 122 tests, ~5 s
 dotnet test headset/LogicTests                                           # 26 tests: headset flow, timing, geometry, dithering
 dotnet build headset/UnityCompileCheck                                   # Unity scripts vs UnityEngine API (no Unity needed)
 dotnet test core/Perimetry.Core.Tests --collect:"XPlat Code Coverage"   # coverage (cobertura xml)
@@ -73,7 +73,7 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 | ZEST | domain −5..35 dB, fpr=fnr=0.03, σ=1, bimodal prior 4:1, stop SD < 1.5 dB (fast: 2.0 dB) |
 | Full Threshold | 4-2, last seen, re-test if > 4 dB from start |
 | Screening | 6 dB brighter than age-expected, re-test not seen |
-| Fixation | Mode A + Heijl-Krakau; blind spot (15°, −1.5°) |
+| Fixation | Mode A + Heijl-Krakau; blind spot (15°, −1.5°), remapped after 2 consecutive fixation losses |
 | Catch trials | FP 1/30, HK 1/30, FN 1/40 (threshold − 9 dB) |
 | Alerts | FL > 20%, FP > 15%, FN > 33% |
 | Indices | MD inverse-variance (Heijl 1987), PSD (Heijl 1987), GH = 85th pct, VFI (Bengtsson 2008), GHT (Åsman & Heijl 1992) |

@@ -60,6 +60,8 @@ namespace Perimetry.Core.Config
         public List<double[]> SearchOffsetsDeg { get; set; }
         public int PresentationsPerCandidate { get; set; }
         public double StimulusDb { get; set; }
+        /// <summary>Re-run the blind-spot search after this many consecutive fixation losses (0 = never). Product owner, 2026-10-18.</summary>
+        public int RemapAfterConsecutiveLosses { get; set; }
     }
 
     public sealed class ReliabilityConfig

@@ -17,6 +17,8 @@
     "alertLimit": 0.2
   },
   "blindSpot": {
+    "_remapDoc": "A seen Heijl-Krakau stimulus is a fixation loss. After remapAfterConsecutiveLosses consecutive losses the blind spot is searched again (the catch point may sit on its edge); 0 disables. Product owner decision 2026-10-18.",
+    "remapAfterConsecutiveLosses": 2,
     "nominalX": 15.0,
     "nominalY": -1.5,
     "searchOffsetsDeg": [
