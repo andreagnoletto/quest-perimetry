@@ -30,6 +30,8 @@ namespace Perimetry.Headset
         private LuminanceMapper _lum;
         private PatientFlow _flow;
         private HeadTracking _head;
+        private GazeTracking _gazeTracking;
+        private bool _gazeLogged;
         private HeadsetRig _rig;
         private ResponseInput _input;
         private VoicePlayer _voice;
@@ -87,6 +89,7 @@ namespace Perimetry.Headset
             cam.transform.SetParent(null, false);
             cam.transform.localScale = Vector3.one;
             _head = new HeadTracking(cam, (float)(_h.Presentation.FallbackIpdMm / 1000.0));
+            _gazeTracking = new GazeTracking(cam);
             _rig = new HeadsetRig(cam, _head, _lum, _h, _cfg.Display.VirtualStimulusDistanceM);
             _input = new ResponseInput();
             _voice = new VoicePlayer(gameObject, _h.Language);
@@ -100,6 +103,8 @@ namespace Perimetry.Headset
             _flow.Note("calibration", calNote);
             if (order != null) _flow.Note("examOrder", "loaded from " + OrderFile);
             RefreshRate.TryRequest(_cfg.Display.RefreshRateHz, n => _flow.Note("refreshRateRequest", n));
+            // Eye tracking (Phase 5): only a device that has an eye tracker is asked for the permission (never the Quest 3).
+            if (_gazeTracking.DevicePresent) _flow.Note("gazePermission", GazeTracking.RequestPermission());
             if (_h.Sync.Enabled)
             {
                 _sync = new PortalSync(_cfg, _h, new SyncPaths(data), new SyncFiles(), new SyncIdentity
@@ -154,6 +159,13 @@ namespace Perimetry.Headset
             bool present = _head.UserPresent();
             if (present != _wasPresent) { _flow.SetUserPresent(present, now); _wasPresent = present; }
 
+            if (_gazeTracking.TryGetGazeDirection(out Vector3 gazeDir))
+            {
+                var g = GazeTracking.ToField(gazeDir);
+                _flow.GazeSample(now, g.X, g.Y);
+                if (!_gazeLogged) { _gazeLogged = true; _flow.Note("gazeSource", _gazeTracking.Source); }
+            }
+
             _flow.Tick(now);
             _rig.Render(_flow.View);
             if (_flow.View.AudioCue != null) _voice.Play(_flow.View.AudioCue);
@@ -186,13 +198,14 @@ namespace Perimetry.Headset
             if (_fatal != null) { GUI.Label(new Rect(10, 10, 1200, 40), "Perimetry: " + _fatal); return; }
             if (_flow == null) return;
             GUI.Label(new Rect(10, 10, 1200, 22), $"{_flow.State}  eye {_flow.CurrentEye}  preset {_flow.Preset.Id}  " +
-                $"{(_lum.IsCalibrated ? "calibrated" : "NÃO CALIBRADO")}  {_flow.RefreshRateHz:F0} Hz  eyes {_head.EyeSource}");
+                $"{(_lum.IsCalibrated ? "calibrated" : "NÃO CALIBRADO")}  {_flow.RefreshRateHz:F0} Hz  eyes {_head.EyeSource}  gaze {(_flow.GazeAvailable ? _gazeTracking.Source : "none")}");
             var s = _flow.CurrentSession;
             if (s != null)
             {
                 var r = s.BuildRecord().Reliability;
                 GUI.Label(new Rect(10, 32, 1200, 22), $"presentations {r.TotalPresentations}  FL {r.FixationLosses.Errors}/{r.FixationLosses.Trials}  " +
-                    $"FP {r.FalsePositives.Errors}/{r.FalsePositives.Trials}  FN {r.FalseNegatives.Errors}/{r.FalseNegatives.Trials}");
+                    $"FP {r.FalsePositives.Errors}/{r.FalsePositives.Trials}  FN {r.FalseNegatives.Errors}/{r.FalseNegatives.Trials}" +
+                    (r.GazeTracked ? $"  gaze rejected {r.GazeRejectedPresentations}" : ""));
             }
             GUI.Label(new Rect(10, 54, 1200, 22), Perimetry.Core.Exam.Disclaimers.Research);
             if (_sync != null) GUI.Label(new Rect(10, 76, 1200, 22), _sync.Status + (_sync.Events.Count > 0 ? "  —  " + _sync.Events[_sync.Events.Count - 1] : ""));

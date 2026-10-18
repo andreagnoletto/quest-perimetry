@@ -1,3 +1,4 @@
+using Perimetry.Core.Exam;
 using Perimetry.Core.Geometry;
 using Perimetry.Headset.Logic;
 using UnityEngine;
@@ -32,9 +33,12 @@ namespace Perimetry.Headset
 
         private readonly Transform _root;
         private readonly Material _bgMat, _stimMat, _fixMat, _textMat;
-        private readonly Transform _stim, _fix;
+        private readonly Transform _stim;
         private readonly TextMesh _text;
-        private readonly Renderer _stimRenderer, _fixRenderer, _textRenderer;
+        private readonly Renderer _stimRenderer, _textRenderer;
+        // Fixation target: one diamond in mode A, four dots for the foveal Diamond4 target (Phase 5).
+        private readonly Transform[] _fix = new Transform[4];
+        private readonly Renderer[] _fixRenderer = new Renderer[4];
         private int _frame;
 
         public HeadsetRig(Camera camera, HeadTracking head, LuminanceMapper lum, HeadsetConfig headset, double stimulusDistanceM)
@@ -61,8 +65,13 @@ namespace Perimetry.Headset
 
             _stim = MakeObject("StimulusDisc", MeshFactory.Disc(64), _stimMat);
             _stimRenderer = _stim.GetComponent<Renderer>();
-            _fix = MakeObject("FixationDiamond", MeshFactory.Diamond(), _fixMat);
-            _fixRenderer = _fix.GetComponent<Renderer>();
+            var diamond = MeshFactory.Diamond();
+            for (int i = 0; i < _fix.Length; i++)
+            {
+                _fix[i] = MakeObject(i == 0 ? "FixationDiamond" : "FixationDot" + i, diamond, _fixMat);
+                _fixRenderer[i] = _fix[i].GetComponent<Renderer>();
+                _fixRenderer[i].enabled = false;
+            }
 
             var textGo = new GameObject("Message");
             textGo.transform.SetParent(_root, false);
@@ -87,6 +96,13 @@ namespace Perimetry.Headset
         public Transform Root => _root;
         public Transform StimulusTransform => _stim;
         public bool StimulusVisible => _stimRenderer.enabled;
+        /// <summary>The central fixation diamond (mode A) or the first dot of the Diamond4 target.</summary>
+        public Transform FixationTransform => _fix[0];
+        /// <summary>Number of fixation points drawn this frame (0, 1 or 4).</summary>
+        public int FixationPointsVisible
+        {
+            get { int n = 0; foreach (var r in _fixRenderer) if (r.enabled) n++; return n; }
+        }
 
         private Transform MakeObject(string name, Mesh mesh, Material mat)
         {
@@ -148,12 +164,22 @@ namespace Perimetry.Headset
                 _stimMat.SetVector(v.Stimulus.Eye == Eye.OD ? LevelLeftId : LevelRightId, Grey(v.Stimulus.Eye == Eye.OD ? Eye.OS : Eye.OD, v.BackgroundCdm2));
             }
 
-            _fixRenderer.enabled = v.ShowFixation;
-            if (v.ShowFixation)
+            // Fixation target (Phase 5: kind, position in mode B, lock animation scale/luminance, blink marker).
+            var points = v.ShowFixation
+                ? FixationLayout.Points(v.FixationTarget, new FieldPoint(v.FixationX, v.FixationY), v.DiamondHalfSizeDeg)
+                : null;
+            for (int i = 0; i < _fix.Length; i++)
             {
+                bool on = points != null && i < points.Count;
+                _fixRenderer[i].enabled = on;
+                if (!on) continue;
+                double size = v.FixationTarget == FixationTargetKind.Diamond4 ? v.DiamondDotSizeDeg : v.FixationSizeDeg * v.FixationScale;
                 // slightly nearer than the stimulus sphere so it is never hidden by a disc
-                Place(_fix, 0, 0, v.FixationSizeDeg, v.MonocularEye, _distanceM * 0.98);
-                double white = v.FixationLuminanceCdm2 / YellowRelativeLuminance;
+                Place(_fix[i], points[i].X, points[i].Y, size, v.MonocularEye, _distanceM * 0.98);
+            }
+            if (points != null)
+            {
+                double white = v.FixationLuminanceCdm2 * v.FixationLuminanceFactor / YellowRelativeLuminance;
                 foreach (var (id, eye) in new[] { (LevelLeftId, Eye.OS), (LevelRightId, Eye.OD) })
                 {
                     float l = (float)_lum.LevelFor(eye, white);
