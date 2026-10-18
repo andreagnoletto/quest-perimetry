@@ -275,7 +275,30 @@ Interrupção pelo operador grava o olho em andamento com `Aborted = true`, e a 
 | Duração a 72 Hz | 194 ms (14 quadros) até o pedido de 90 Hz ser ligado | **[DECISÃO PENDENTE]** |
 | Idade sem pedido de exame | 50 anos, ajustada pelo operador (afeta o prior do ZEST e a análise) | default |
 
-## 12. Referências
+## 12. Portal e relatório (Fase 3)
+
+- **Análise:** o portal não recalcula nada. Na importação, cada exame passa por `perimetry report` (mesmo `/core`
+  e mesma `config/` do headset). Se o hash da config do exame difere do da análise, o relatório mostra aviso.
+  A análise e o arquivo bruto ficam guardados; o arquivo bruto permite reanálise e reverificação do HMAC.
+- **Layout Single Field Analysis (HFA):** cabeçalho (paciente, programa, olho, data, idade), confiabilidade
+  (perdas de fixação, FP, FN com "xx" quando acima do limite, duração efetiva e pausas, mancha cega), parâmetros
+  (estímulo, fundo, estratégia, correção, calibração, escala), avisos em vermelho (protótipo/ANVISA, NÃO
+  CALIBRADO, normativo PROVISÓRIO, confiabilidade), mapas numérico de limiares, escala de cinza, desvio total e
+  desvio padrão (pattern) numéricos e de probabilidade, GHT, VFI, MD e PSD com p. Campo visto pelo paciente
+  (OS espelhado), x à direita, y para cima.
+- **Limiares:** em dB equivalente HFA (dB do aparelho + `HfaOffsetDb`), a mesma escala do normativo e da escala de
+  cinza. Abaixo do mínimo mensurável do aparelho o valor sai como "<NN". *(Escolha de apresentação; dB do
+  aparelho continua no CSV e no JSON.)*
+- **Escala de cinza:** 10 faixas de `GrayBand` do `/core` (0 = preta … 9 = branca), dither ordenado Bayer 4×4 numa
+  grade global de 0,3°, células de 6° centradas nos pontos.
+- **Probabilidades:** símbolos p < 5%, 2%, 1% (padrões de densidade crescente) e p < 0,5% (quadrado preto);
+  ponto sem significância = ponto pequeno; mancha cega omitida.
+- **Rastreio:** mapa ○ visto, r visto no reteste, ■ não visto.
+- **Tendência:** regressão linear simples de MD e VFI contra o tempo (inclinação/ano, EP, p bicaudal pela t com
+  n − 2 gl), sem exames interrompidos nem rastreios. Descritiva; análise por eventos (GPA) fica para depois.
+- **PDF:** A4, uma página por olho, impresso pelo Chromium a partir da mesma página da tela.
+
+## 13. Referências
 
 1. Heijl A, Lindgren G, Olsson J. A package for the statistical analysis of visual fields. *Doc Ophthalmol Proc Ser* 1987;49:153–168. (MD, PSD)
 2. Åsman P, Heijl A. Glaucoma Hemifield Test: automated visual field evaluation. *Arch Ophthalmol* 1992;110:812–819.
