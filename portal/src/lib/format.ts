@@ -32,7 +32,20 @@ export const strategyName: Record<string, string> = {
 };
 
 export const fixationName: Record<string, string> = {
-  CentralHeijlKrakau: "Mancha cega (Heijl-Krakau)",
-  CentralEyeTracking: "Rastreamento ocular",
+  CentralHeijlKrakau: "Heijl-Krakau (mancha cega)",
+  CentralEyeTracking: "Eye-tracking",
   CentralUnmonitored: "Não monitorada",
+  Oculokinetic: "Oculocinética (modo B)",
 };
+
+/** Fixation modes an exam order may ask for (core FixationMode names), in menu order. */
+export const fixationModes = ["CentralHeijlKrakau", "CentralEyeTracking", "Oculokinetic", "CentralUnmonitored"] as const;
+
+export const responseModeName: Record<string, string> = {
+  YesNo: "Sim/não (botão)",
+  ForcedChoice: "Escolha forçada (experimental)",
+};
+
+export const responseModes = ["YesNo", "ForcedChoice"] as const;
+
+export const gridName: Record<string, string> = { "24-2": "24-2", "30-2": "30-2", "10-2": "10-2", "24-2C": "24-2C" };

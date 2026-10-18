@@ -1,6 +1,8 @@
 import type { Report } from "@/lib/report-types";
-import { dateBr, dateTimeBr, duration, eyeName, fixationName, fmt, pct, pLabel, strategyName } from "@/lib/format";
+import { dateBr, dateTimeBr, duration, eyeName, fmt, pct, pLabel, strategyName } from "@/lib/format";
+import { fixationLine, fixationTargetLine, fovealLine, gazeBar } from "@/lib/report-format";
 import { geometry, GrayscaleMap, NumericMap, ProbabilityLegend, ProbabilityMap, ScreeningMap } from "./FieldMaps";
+import { GazeTraceBar } from "./GazeTraceBar";
 
 // HFA "Single Field Analysis" layout (SPEC §7), one A4 page per eye. Every number comes from the /core
 // report; this component only lays it out. Thresholds are shown in HFA-equivalent dB, the scale of the
@@ -23,6 +25,9 @@ export function SingleFieldReport({ report, patient, integrity, footerNote }: {
   const red = (bad: boolean) => (bad ? "alert" : undefined);
   const started = new Date(e.StartedUtc);
   const program = `Central ${s.GridId} — ${strategyName[s.Strategy] ?? s.Strategy}`;
+  const foveal = fovealLine(report, floor);
+  const gaze = gazeBar(report);
+  const id = e.ExamId.replace(/[^A-Za-z0-9-]/g, "");
 
   return (
     <article className="sfa" data-exam={e.ExamId}>
@@ -44,9 +49,10 @@ export function SingleFieldReport({ report, patient, integrity, footerNote }: {
 
       <section className="sfa-params">
         <dl>
-          <dt>Monitor de fixação</dt><dd>{fixationName[s.FixationMode] ?? s.FixationMode}</dd>
-          <dt>Alvo de fixação</dt><dd>Central</dd>
+          <dt>Monitor de fixação</dt><dd>{fixationLine(report)}</dd>
+          <dt>Alvo de fixação</dt><dd>{fixationTargetLine(report)}</dd>
           <dt>Perdas de fixação</dt><dd className={red(r.FixationLosses.Alert ?? false)}>{catchText(r.FixationLosses)}{r.FixationLosses.Alert ? " xx" : ""}</dd>
+          {gaze && <><dt>Olhar descartado</dt><dd>{gaze.rejected}{gaze.samples ? ` de ${gaze.samples}` : ""}</dd></>}
           <dt>Falsos positivos</dt><dd className={red(r.FalsePositives.Alert ?? false)}>{r.FalsePositives.Trials ? pct(r.FalsePositiveRate) : "—"}{r.FalsePositives.Alert ? " xx" : ""}</dd>
           <dt>Falsos negativos</dt><dd className={red(r.FalseNegatives.Alert ?? false)}>{r.FalseNegatives.Trials ? pct(r.FalseNegativeRate) : "—"}{r.FalseNegatives.Alert ? " xx" : ""}</dd>
           <dt>Duração</dt><dd>{duration(r.EffectiveDurationMs)}{r.PausedMs > 0 ? ` (+${duration(r.PausedMs)} em pausa)` : ""}</dd>
@@ -56,6 +62,7 @@ export function SingleFieldReport({ report, patient, integrity, footerNote }: {
           <dt>Estímulo</dt><dd>{s.StimulusSize}, branco ({fmt(e.StimulusDiameterDeg, 2)}°, {e.StimulusDurationMs} ms)</dd>
           <dt>Fundo</dt><dd>{fmt(e.BackgroundAsb, 1)} asb ({fmt(e.BackgroundCdm2, 0)} cd/m²)</dd>
           <dt>Estratégia</dt><dd>{strategyName[s.Strategy] ?? s.Strategy}</dd>
+          <dt>Limiar foveal</dt><dd className="foveal" data-tested={foveal.tested}>{foveal.value}{foveal.p ? <> <span className="p">{foveal.p}</span></> : null}</dd>
           <dt>Correção</dt><dd>{s.RefractiveCorrection || "não informada"}</dd>
           <dt>Calibração</dt><dd className={red(!e.Calibrated)}>{e.Calibrated ? e.CalibrationRef : "NÃO CALIBRADO"}</dd>
           <dt>Escala</dt><dd>dB equiv. HFA = dB do aparelho + {fmt(e.HfaOffsetDb, 1)}; mínimo mensurável {floor} dB</dd>
@@ -77,6 +84,8 @@ export function SingleFieldReport({ report, patient, integrity, footerNote }: {
       ) : (
         <Maps report={report} floor={floor} />
       )}
+
+      {gaze && <GazeTraceBar g={gaze} id={`${id}-gaze`} />}
 
       <footer className="sfa-foot">
         <span>{e.Disclaimer}</span>
@@ -106,7 +115,7 @@ function Maps({ report, floor }: { report: Report; floor: number }) {
         <NumericMap g={g} id={`${id}-td`} title="Desvio total" value={(p) => (p.IsBlindSpot ? "" : fmt(p.Td))} />
         <NumericMap g={g} id={`${id}-pd`} title="Desvio padrão (pattern)" value={(p) => (p.IsBlindSpot ? "" : fmt(p.Pd))} />
         <div className="sfa-indices">
-          <p className="ght"><b>GHT</b><br />{report.text?.ght}</p>
+          <p className="ght" data-ght={a.Ght}><b>GHT</b><br />{a.GhtApplicable === false ? "Não se aplica" : report.text?.ght}</p>
           <p><b>VFI</b> {fmt(a.Vfi, 1)}%</p>
           <p><b>MD</b> {fmt(a.Md, 2)} dB <span className="p">{pLabel(a.MdP)}</span></p>
           <p><b>PSD</b> {fmt(a.Psd, 2)} dB <span className="p">{pLabel(a.PsdP)}</span></p>

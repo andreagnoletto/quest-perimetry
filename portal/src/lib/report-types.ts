@@ -37,11 +37,39 @@ export interface AnalysisResult {
   Ght: string;
   GhtSectorDifferences: (number | null)[];
   GhtStatus: string;
+  /** False on grids without a GHT (10-2): Ght is "NotApplicable" (Phase 5). */
+  GhtApplicable?: boolean;
   Calibrated: boolean;
   NormativeProvisional: boolean;
   HfaOffsetDb: number;
+  // Phase 5: foveal threshold (HFA-equivalent dB) and its total deviation; absent/false when not tested.
+  FovealTested?: boolean;
+  FovealHfaDb?: number | null;
+  FovealCensoredLow?: boolean;
+  FovealExpectedHfaDb?: number | null;
+  FovealTd?: number | null;
+  FovealTdP?: number | null;
   Warnings: string[];
 }
+
+/** One presentation of the gaze trace (Phase 5): error of the gaze from the fixation target at stimulus onset. */
+export interface GazeSample { Sequence: number; OnsetMs: number; ErrorDeg: number | null; Rejected: boolean }
+
+/** Foveal threshold details (Phase 5); null in the report when the test was off. */
+export interface FovealReport {
+  ThresholdDb: number;
+  ThresholdHfaDb: number;
+  CensoredLow: boolean;
+  CensoredHigh: boolean;
+  StopReason: string;
+  Presentations: number;
+  Strategy: string;
+  ExpectedHfaDb: number | null;
+  Td: number | null;
+  TdP: number | null;
+}
+
+export type ResponseMode = "YesNo" | "ForcedChoice";
 
 export interface ExamSettings {
   GridId: string;
@@ -53,6 +81,9 @@ export interface ExamSettings {
   Seed: number;
   FalsePositiveCatchTrials: boolean;
   FalseNegativeCatchTrials: boolean;
+  /** Phase 5 (optional in older exams). */
+  FovealThreshold?: boolean;
+  ResponseMode?: ResponseMode | string;
   PatientRef: string | null;
   RefractiveCorrection: string | null;
 }
@@ -77,6 +108,10 @@ export interface ReportExam {
   NormativeProvisional: boolean;
   Aborted: boolean;
   Disclaimer: string;
+  // Phase 5 (optional in reports of older exams)
+  GhtApplicable?: boolean;
+  FovealThresholdHfaDb?: number | null;
+  Foveal?: FovealReport | null;
   Reliability: {
     FixationLosses: CatchCount;
     FalsePositives: CatchCount;
@@ -85,6 +120,12 @@ export interface ReportExam {
     FalsePositiveRate: number | null;
     FalseNegativeRate: number | null;
     GazeRejectedPresentations: number;
+    GazeTracked?: boolean;
+    GazeMeanErrorDeg?: number | null;
+    GazeSamples?: number;
+    /** Rejection threshold (config/reliability.json gaze.maxErrorDeg) the exam was analysed with. */
+    GazeMaxErrorDeg?: number;
+    GazeTrace?: GazeSample[] | null;
     AnticipatedResponses: number;
     AbortedPresentations: number;
     BlindSpotFound: boolean;

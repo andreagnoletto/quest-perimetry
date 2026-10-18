@@ -75,6 +75,16 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .map svg { width: 100%; height: auto; display: block; }
 .map .axis { stroke: #000; stroke-width: 0.15; }
 .map .num { fill: #000; }
+/* gaze tracking strip (Phase 5): full report width, fixed height; the SVG stretches horizontally */
+.gaze { margin: 8px 0 0; border-top: 1px solid #000; padding-top: 4px; }
+.gaze svg { width: 100%; height: 48px; display: block; }
+.gaze .axis { stroke: #000; stroke-width: 1; }
+.gaze .grid { stroke: #999; stroke-width: 0.5; }
+.gaze .limit { stroke: #c00; stroke-width: 0.8; }
+.gaze .err { stroke: #000; }
+.gaze .rej { stroke: #c00; }
+.gaze .lbl { font-size: 9px; fill: #333; }
+.gaze figcaption { font-size: 10px; color: #333; margin-top: 2px; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 10px; font-size: 11px; }
 .legend-item { display: inline-flex; align-items: center; gap: 4px; }
 
@@ -98,6 +108,8 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   .sfa-patient, .sfa-params { padding-top: 3px; }
   .map figcaption { font-size: 10.5px; }
   .sfa-warnings p { margin: 0; }
+  .gaze svg { height: 11mm; }
+  .gaze figcaption { font-size: 9px; }
 }
 
 /* ---- live panel ---- */
