@@ -13,6 +13,12 @@ jobs:
       # headset logic (pure C#, same sources Unity compiles) and a compile check of the Unity scripts
       - run: dotnet test headset/LogicTests -c Release --collect:"XPlat Code Coverage"
       - run: dotnet build headset/UnityCompileCheck -c Release
+  traceability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # requirement -> implementation -> test matrix (docs/regulatory); fails on a dangling reference
+      - run: python3 tools/trace/build_matrix.py --check-only
   opi-crosscheck:
     runs-on: ubuntu-latest
     steps:
