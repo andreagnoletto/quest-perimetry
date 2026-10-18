@@ -67,13 +67,17 @@ do Playwright (`npx playwright install chromium`) ou o indicado em `PERIMETRY_CH
 - Headset: token por aparelho (só o hash fica no banco), revogável; só o código pseudônimo trafega para ele. Em rede
   local sem HTTPS o token trafega em claro — use um proxy reverso com TLS quando possível (`PERIMETRY_SECURE_COOKIES`).
 - Chamadas do headset entram no log de acesso como `headset.*`, com o serial do aparelho.
+- Fase 6: senhas de 12+ caracteres, bloqueio da conta após 10 erros (15 min), limite por IP, sessão expira sem uso,
+  troca de senha em "Minha conta"; CSP com nonce e demais cabeçalhos de segurança; exportação dos dados de um paciente
+  (direito de acesso) e **anonimização** em vez de exclusão (exames ficam sob o código); versão do texto de
+  consentimento gravada; log de acesso em CSV; rotação de chave por `scripts/rotate-key.ts`. Guia: [SECURITY.md](SECURITY.md).
 
 ## Testes
 
 ```bash
 npm run typecheck
 npm test                      # unitários (vitest), inclui integração com o CLI do /core
-npm run build && npm run e2e  # Playwright: fluxo do médico (flow.spec) e sincronização/ao vivo (sync.spec)
+npm run build && npm run e2e  # Playwright: fluxo do médico (flow.spec), fase 5 (phase5.spec), segurança/LGPD (security.spec), sincronização/ao vivo (sync.spec)
 ```
 
 O e2e cria um banco novo a cada execução (`E2E_DATABASE_URL` + sufixo de data) com `prisma migrate deploy`; nada

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import type { FormState } from "@/app/(app)/patients/actions";
+import { CONSENT_TEXT, CONSENT_VERSION, RESEARCH_CONSENT_TEXT } from "@/lib/consent-text";
 
 export interface PatientDefaults { internalId?: string; name?: string; birthDate?: string; sex?: string | null; refraction?: string | null; diagnosis?: string | null; researchConsent?: boolean }
 
@@ -30,10 +31,12 @@ export function PatientForm({ action, defaults, isNew }: {
       <div style={{ display: "grid", gap: 8, marginTop: 14 }}>
         {isNew && (
           <>
+            <p className="muted small" style={{ margin: 0 }}>{CONSENT_TEXT} <span className="muted">(texto v{CONSENT_VERSION}, gravado no registro)</span></p>
             <label className="check"><input type="checkbox" name="consent" required /> O paciente consentiu com o exame e com o armazenamento dos dados (LGPD)</label>
             <label>Observação do consentimento (opcional)<input name="consentNote" maxLength={300} placeholder="termo assinado em papel, nº…" /></label>
           </>
         )}
+        <p className="muted small" style={{ margin: 0 }}>{RESEARCH_CONSENT_TEXT}</p>
         <label className="check"><input type="checkbox" name="researchConsent" defaultChecked={d.researchConsent} /> Autoriza uso pseudonimizado dos exames em pesquisa</label>
       </div>
       <div className="actions"><button type="submit" disabled={pending}>{pending ? "Salvando…" : "Salvar"}</button></div>

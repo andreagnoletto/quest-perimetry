@@ -57,7 +57,7 @@ export function SingleFieldReport({ report, patient, device, integrity, footerNo
       <section className="sfa-patient">
         <div><b>Paciente:</b> {patient?.name ?? "não vinculado"}</div>
         <div><b>ID:</b> {patient?.internalId ?? "—"} <span className="muted">({patient?.code ?? s.PatientRef ?? "sem código"})</span></div>
-        <div><b>Nascimento:</b> {patient ? dateBr(patient.birthDate + "T12:00:00Z") : "—"}</div>
+        <div><b>Nascimento:</b> {patient?.birthDate ? dateBr(patient.birthDate + "T12:00:00Z") : "—"}</div>
         <div><b>Idade:</b> {fmt(s.AgeYears, 0)}</div>
         <div><b>Data:</b> {dateTimeBr(started)}</div>
       </section>

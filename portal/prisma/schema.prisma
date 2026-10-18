@@ -31,6 +31,10 @@ model User {
   passwordHash String
   active       Boolean     @default(true)
   createdAt    DateTime    @default(now())
+  /// Phase 6 (security): consecutive failed logins and the lockout they triggered; reset on success.
+  failedLogins      Int       @default(0)
+  lockedUntil       DateTime?
+  passwordChangedAt DateTime?
   sessions     Session[]
   accessLogs   AccessLog[]
 }
@@ -41,6 +45,8 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   expiresAt DateTime
+  /// Phase 6: idle expiry (SESSION_IDLE_MINUTES); touched at most once a minute.
+  lastSeenAt DateTime @default(now())
 
   @@index([userId])
 }
@@ -60,7 +66,14 @@ model Patient {
   consentAt        DateTime?
   consentById      String?
   consentNote      String?
+  /// Version of the consent text (src/lib/consent-text.ts) the patient agreed to.
+  consentVersion   String?
   researchConsent  Boolean     @default(false)
+  researchConsentAt   DateTime?
+  researchConsentById String?
+  /// LGPD erasure request: identifying fields replaced by markers, exams kept under the pseudonymous code.
+  anonymizedAt     DateTime?
+  anonymizedById   String?
   createdAt        DateTime    @default(now())
   createdById      String
   exams            Exam[]
@@ -108,6 +121,8 @@ model DeviceToken {
   createdAt  DateTime  @default(now())
   lastUsedAt DateTime?
   revokedAt  DateTime?
+  /// Optional hard expiry set when pairing (docs/SYNC_API.md); null = until revoked.
+  expiresAt  DateTime?
 
   @@index([deviceId])
 }

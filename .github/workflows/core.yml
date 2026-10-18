@@ -51,6 +51,9 @@ jobs:
       # the portal runs every analysis through the /core CLI
       - run: dotnet build ../core/Perimetry.Cli -c Release
       - run: npm ci
+      # Phase 6 (security): a critical advisory in a production dependency fails the build; the full report is informational (portal/SECURITY.md)
+      - run: npm audit --omit=dev --audit-level=critical
+      - run: npm audit --audit-level=high || true
       - run: npx prisma generate
       - run: npm run typecheck
       - run: npm test
