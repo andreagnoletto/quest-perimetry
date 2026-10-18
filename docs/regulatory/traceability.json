@@ -119,7 +119,7 @@
   "REQ-ANA-006": {"title": "VFI conforme Bengtsson & Heijl 2008 (ponderação por magnificação cortical), mostrado com uma casa decimal", "status": "implemented",
     "impl": ["core/Perimetry.Core/Analysis/GlobalIndices.cs", "portal/src/components/SingleFieldReport.tsx"],
     "tests": ["Vfi_IsHundredWhenNothingSignificant_AndLowerWithDefects"]},
-  "REQ-ANA-007": {"title": "GHT conforme Åsman & Heijl 1992 com as cinco saídas; composição dos setores [DECISÃO PENDENTE] (config/ght.json TO_BE_VALIDATED); 'não se aplica' no 10-2", "status": "implemented",
+  "REQ-ANA-007": {"title": "GHT conforme Åsman & Heijl 1992 com as cinco saídas; composição dos setores validada em 2026-10-18 (config/ght.json); 'não se aplica' no 10-2", "status": "implemented",
     "impl": ["config/ght.json", "core/Perimetry.Core/Analysis/FieldAnalysis.cs", "core/Perimetry.Core/Geometry/TestGrid.cs#GhtApplicable"],
     "tests": ["GhtPointScores", "GhtSectors_ResolveToMirrorImagePoints", "ClassifyGht_AllBranches", "NormalField_IsWithinNormalLimits", "SuperiorArcuate_IsOutsideNormalLimits", "DiffuseDepression_IsGeneralReduction", "Ght_NotApplicableOn10_2", "has no GHT on the 10-2 and keeps it on the 24-2"]},
   "REQ-ANA-008": {"title": "Escala de cinza em 10 faixas de 4 dB sobre o valor equivalente HFA (< 4 dB preto … ≥ 36 dB branco)", "status": "implemented",

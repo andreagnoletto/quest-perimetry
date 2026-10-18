@@ -137,11 +137,10 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
   print page in A4 landscape.
 
 ## Open decisions (waiting for the product owner)
-Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,
-status TO_BE_VALIDATED); headset pause, training, fixation target, 72 Hz duration (§11); phase 5 proposed defaults
+Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: headset pause, training, fixation target, 72 Hz duration (§11); phase 5 proposed defaults
 (foveal diamond target and `fovealExtraDb`, gaze limit 3°, oculokinetic ±10° / 600 ms / 300 ms, forced-choice N and stop
 rule, §4–§6.4). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
 grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening. Approved on 2026-10-18: headset occlusion check before each eye (optional, off by default); blind spot remap after 2 consecutive fixation losses; VFI shown with one decimal; forced choice stays a doctor-selected
 option on the order (for repeating unreliable exams), off by default; patient demo page deferred to phase 6;
 phase 6 cohort rules (age ≥ 18, alert reliability limits, drop first exam per eye, one exam per eye, 100 eyes for MEASURED)
-and plain-HTTP headset traffic on the LAN as an accepted residual risk.
+and plain-HTTP headset traffic on the LAN as an accepted residual risk; GHT sector membership validated (`config/ght.json`).

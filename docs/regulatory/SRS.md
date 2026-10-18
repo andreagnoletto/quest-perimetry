@@ -97,7 +97,7 @@ máxima do display (~100 cd/m²) restringe a faixa mensurável a cerca de 15,5 d
 | REQ-ANA-004 | O MD é a média dos TD ponderada pela variância inversa (Heijl 1987); a ponderação 1/DP é opção. | S§7, C§8.2 | implementado | `analysis.json › mdWeights` |
 | REQ-ANA-005 | O PSD segue Heijl 1987 e é zero para depressão uniforme. | S§7, C§8.2 | implementado | — |
 | REQ-ANA-006 | O VFI segue Bengtsson & Heijl 2008 (ponderação por magnificação cortical) e é mostrado com uma casa decimal (decisão 2026-10-18). | S§7, C§8.2, C§12 | implementado | — |
-| REQ-ANA-007 | O GHT segue Åsman & Heijl 1992 com as cinco saídas; nas grades com `ghtApplicable: false` (10-2) o resultado é "Não se aplica". **[DECISÃO PENDENTE]**: composição dos setores (`config/ght.json`, TO_BE_VALIDATED). | S§7, C§8.2 | implementado | `ght.json`, `grids/*.json › ghtApplicable` |
+| REQ-ANA-007 | O GHT segue Åsman & Heijl 1992 com as cinco saídas; nas grades com `ghtApplicable: false` (10-2) o resultado é "Não se aplica". Composição dos setores validada pelo product owner em 2026-10-18 (`config/ght.json`). | S§7, C§8.2 | implementado | `ght.json`, `grids/*.json › ghtApplicable` |
 | REQ-ANA-008 | A escala de cinza tem 10 faixas de 4 dB sobre o valor equivalente HFA (< 4 dB preto … ≥ 36 dB branco; aprovado 2026-10-17). | S§7, C§8.2 | implementado | `grayscale.json` |
 | REQ-ANA-009 | Os mapas de probabilidade de TD e PD usam os níveis p < 5 %, 2 %, 1 % e 0,5 % com os símbolos do HFA. | S§7, C§8.2, C§12 | implementado | `analysis.json › probabilityLevels` |
 | REQ-ANA-010 | Um exame interrompido (`Aborted`) nunca é analisado como campo completo; arquivos inválidos são recusados com erro. | C§11, C§12 | implementado | — |

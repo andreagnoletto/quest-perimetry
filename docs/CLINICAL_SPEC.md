@@ -284,8 +284,8 @@ dB HFA-eq na convenção OD da grade, mais `fovealHfaDb`). Toda regra e toda est
   probabilidade do PD (p<5% = 2, p<2% = 5, p<1% = 10, p<0,5% = 20); diferença superior − inferior por
   setor comparada aos percentis 97 e 99 dos normais. "Fora dos limites normais" se algum setor excede o
   P99; "Limítrofe" se excede o P97; "Sensibilidade geral reduzida" se GH < P0,5; "Anormalmente alta" se
-  GH > P99,5. **A composição dos setores é uma reconstrução e precisa ser validada contra a figura
-  original [DECISÃO PENDENTE]** (`config/ght.json`, status `TO_BE_VALIDATED`). Em grades com `ghtApplicable: false`
+  GH > P99,5. A composição dos setores é uma reconstrução da figura original, **validada pelo product owner em
+  2026-10-18** (`config/ght.json`, status `VALIDATED_2026-10-18`; figura de conferência enviada no projeto). Em grades com `ghtApplicable: false`
   (10-2) o resultado é "Não se aplica" (`analysis.GhtApplicable`), sem diferenças de setor.
 - **Escala de cinza:** 10 faixas sobre o valor HFA-eq: < 4 dB preto … ≥ 36 dB branco (limites a cada
   4 dB) **[APROVADO 2026-10-17]**.
