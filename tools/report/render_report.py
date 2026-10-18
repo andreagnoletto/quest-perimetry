@@ -111,8 +111,11 @@ def main(analysis_path, out_png, exam_path=None):
     ]
     for i, l in enumerate(lines):
         fig.text(0.05, 0.94 - i * 0.017, l, fontsize=8)
-    for i, w in enumerate(a["Warnings"]):
-        fig.text(0.05, 0.885 - i * 0.015, "⚠ " + w, fontsize=8, color="red", weight="bold")
+    # Warnings go in a small footer note (product owner, 2026-10-18), not across the top of the page.
+    fig.add_artist(plt.Line2D([0.05, 0.95], [0.036, 0.036], color="0.6", linewidth=0.5))
+    notes = ["⚠ " + w for w in a["Warnings"]]
+    for i in range(0, len(notes), 2):
+        fig.text(0.05, 0.024 - (i // 2) * 0.012, "    ".join(notes[i:i + 2]), fontsize=6.5, color="#a00000")
 
     if a["Ght"] == "NotApplicable":
         ax = fig.add_axes([0.1, 0.35, 0.8, 0.45])
@@ -120,25 +123,21 @@ def main(analysis_path, out_png, exam_path=None):
         for x, y, p in setup(ax, "Rastreio (o visto, r visto no reteste, ■ não visto)", pts, eye):
             ax.text(x, y, m.get(p.get("ScreeningOutcome"), "?"), ha="center", va="center", fontsize=9)
     else:
-        # Panels shrink so their titles stay below the last warning line.
-        top, w = 0.58, 0.42
-        h = min(0.24, 0.885 - len(a["Warnings"]) * 0.015 - 0.015 - top)
+        top, h, w = 0.62, 0.24, 0.42
         numeric(fig.add_axes([0.05, top, w, h]), "Limiares (dB dispositivo)", pts, eye, "DeviceDb", censored=True)
         grayscale(fig.add_axes([0.53, top, w, h]), pts, eye)
         numeric(fig.add_axes([0.05, top - 0.25, w, h]), "Desvio total (dB)", pts, eye, "Td")
         numeric(fig.add_axes([0.53, top - 0.25, w, h]), "Desvio padrão / Pattern deviation (dB)", pts, eye, "Pd")
         prob(fig.add_axes([0.05, top - 0.50, w, h]), "Probabilidade — desvio total", pts, eye, "TdP")
         prob(fig.add_axes([0.53, top - 0.50, w, h]), "Probabilidade — desvio padrão", pts, eye, "PdP")
-        legend(fig.add_axes([0.05, 0.005, 0.2, 0.07]))
+        legend(fig.add_axes([0.05, 0.045, 0.2, 0.07]))
         p = lambda v: "" if num(v) >= 1 else "  p < " + f"{100 * num(v):g}".replace(".", ",") + "%"
         idx = [f"GHT: {GHT_PT[a['Ght']]}",
                f"VFI: {num(a['Vfi']):.1f}%".replace(".", ","),
                f"MD: {num(a['Md']):.2f} dB{p(a['MdP'])}".replace(".", ",", 1),
                f"PSD: {num(a['Psd']):.2f} dB{p(a['PsdP'])}".replace(".", ",", 1)]
         for i, t in enumerate(idx):
-            fig.text(0.40, 0.065 - i * 0.017, t, fontsize=9, weight="bold" if i == 0 else None)
-        if a.get("NormativeProvisional"):
-            fig.text(0.40, -0.0 + 0.002, "Índices e probabilidades com normativo PROVISÓRIO", fontsize=7, color="red")
+            fig.text(0.40, 0.105 - i * 0.017, t, fontsize=9, weight="bold" if i == 0 else None)
     fig.savefig(out_png)
     print(f"wrote {out_png}")
 
