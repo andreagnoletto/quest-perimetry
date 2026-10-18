@@ -474,6 +474,36 @@ diagonal), dentro do campo útil configurado (`usableHalfFieldDeg` 50°) e do ca
   - *Pedido de exame*: grade, monitor de fixação, limiar foveal e modo de resposta opcionais, escritos no
     `exam-order.json` só quando diferem do preset (contrato em `docs/SYNC_API.md`).
 
+### 12.1 Normativo próprio no portal e visão geral de progressão (Fase 6, padrão proposto, aguardando confirmação)
+
+- **Voluntários:** no cadastro, a opção "Voluntário normal (normativo)" com observação livre (criptografada) marca os
+  pacientes cujos exames entram na coorte. É independente da autorização de pesquisa: o normativo é uso interno da
+  clínica e a coorte sai pseudonimizada (ID de estudo S-…, o mesmo da exportação para pesquisa), sem nome, nascimento,
+  ID interno ou código do headset. *(Padrão proposto; se o product owner preferir exigir a autorização de pesquisa,
+  basta filtrar por ela.)*
+- **Página "Normativo" (médico/administrador):** por grade (24-2, 30-2, 10-2, 24-2C), o portal monta a coorte com os
+  exames da grade dos voluntários (`sequenceForEye` pela data, idade na data do exame, limiares HFA-eq do relatório com
+  `null` na mancha cega; exame interrompido entra com todos os valores `null`, para o `/core` o recusar como
+  "interrompido") e chama `perimetry normative stats`. Mostra candidatos, olhos elegíveis (OD/OS, sujeitos, fóvea),
+  faixa etária, status que o banco teria (PROVISIONAL/MEASURED) e motivo, avisos, tabela por faixa etária e a tabela
+  dos excluídos com o motivo do `/core` e link ao exame. Nenhuma regra é aplicada no portal.
+- **Construir / ativar / reanalisar:** "Construir normativo" roda `perimetry normative build` e guarda o banco
+  (`perimetry-normative/1`) com o resumo, o hash da coorte e quem construiu; o id é `clinic-<grade>-<data>`. Um banco
+  só passa a valer depois de **ativado** (um ativo por grade; desativar volta ao provisório sintético). Os exames já
+  importados mantêm a análise anterior até "Reanalisar todos os exames desta grade" (ou "Reanalisar" num exame), que
+  reprocessa o arquivo original com `perimetry report --normative`. Toda importação nova usa o ativo da grade. Cada exame
+  guarda qual banco o analisou; o rodapé do laudo diz "normativo próprio <id> (N olhos, a–b anos[, provisório])" ou
+  "normativo provisório sintético", e os avisos do `/core` ("NORMATIVO PRÓPRIO PROVISÓRIO — N olhos (mínimo 100)",
+  "Idade fora da faixa do normativo") saem como notas de rodapé. Ações no log: `normative.view/export/build/activate/
+  deactivate/reanalyze`, `exam.reanalyze`.
+- **Visão geral de progressão (por olho):** os exames de limiar concluídos (sem rastreios nem interrompidos), em ordem
+  cronológica e agrupados por grade (grade mais recente primeiro, porque MD/VFI de grades diferentes não se comparam),
+  cada um com escala de cinza, mapa de probabilidade do desvio total, MD/PSD (com p), VFI, GHT, perdas de fixação, FP e FN
+  ("xx" acima do limite) e a marca de baixa confiabilidade; depois a tendência de MD e VFI (regressão linear simples,
+  inclinação/ano ± EP e p bicaudal a partir de 3 exames, §12 "Tendência"). O rodapé declara que é descritiva e **não é
+  análise por eventos (GPA)**, lista os exames fora da série e o normativo usado em cada análise. PDF em A4 paisagem pela
+  mesma página; acesso registrado como `patient.overview` / `patient.overview.print`.
+
 ## 12a. Sincronização e painel ao vivo (Fase 4)
 
 - O exame no headset continua **independente da rede**: gravação local primeiro (HMAC), envio depois; sem rede o

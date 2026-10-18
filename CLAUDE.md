@@ -39,9 +39,10 @@ Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_
   lands inside the package. `headset/UnityCompileCheck` compiles the Unity scripts against UnityEngine reference DLLs.
 - `portal/` — doctor portal (phase 3): Next.js 15 (App Router, server actions) + PostgreSQL via Prisma.
   `src/lib` (crypto/LGPD, auth, audit, importer, `perimetry.ts` = bridge to the CLI, pdf, `headset-auth.ts` device
-  tokens/pairing, `live.ts` in-process live store), `src/components` (`SingleFieldReport`, SVG `FieldMaps`),
-  `src/app/(app)` pages (`live/` operator panel), `src/app/api/headset/*` (phase 4 sync API, contract in
-  `docs/SYNC_API.md`), `src/app/api/live/*` (SSE), `src/app/print` (bare report the PDF prints).
+  tokens/pairing, `live.ts` in-process live store, `normative.ts` cohort file + clinic normative sets, `overview.ts`
+  progression overview), `src/components` (`SingleFieldReport`, `OverviewReport`, SVG `FieldMaps`),
+  `src/app/(app)` pages (`live/` operator panel, `normative/` cohort tool, `patients/[id]/overview`), `src/app/api/headset/*`
+  (phase 4 sync API, contract in `docs/SYNC_API.md`), `src/app/api/live/*` (SSE), `src/app/print` (bare pages the PDFs print).
   The portal never computes clinical numbers: every exam goes through `perimetry report` on import.
 
 ## Commands
@@ -59,8 +60,8 @@ dotnet run --project core/Perimetry.Cli -c Release -- report out/ex.json --norma
 python3 tools/report/render_report.py out/ex.analysis.json out/ex.png  # needs matplotlib
 bash tools/opi-crosscheck/run.sh                                         # needs R + jsonlite, python3
 python3 tools/trace/build_matrix.py                                      # regenerate + check docs/regulatory/TRACEABILITY.md
-cd portal && npm ci && npm run typecheck && npm test                     # 39 portal unit tests (needs the Release CLI build)
-cd portal && npm run build && npm run e2e                                # 3 Playwright specs; needs PostgreSQL (E2E_DATABASE_URL)
+cd portal && npm ci && npm run typecheck && npm test                     # 43 portal unit tests (needs the Release CLI build)
+cd portal && npm run build && npm run e2e                                # 4 Playwright specs; needs PostgreSQL (E2E_DATABASE_URL)
 ```
 CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThreshold|FourTwo|Screening`,
 `--eye OD|OS`, `--defect Normal|SuperiorArcuate|InferiorArcuate|Hemianopia|CentralScotoma`, `--depth`,
@@ -122,6 +123,13 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
   data) and `GazeTraceBar.tsx`; map geometry (`FieldMaps.geometry`) derives the lattice step per grid (6° / 2°) and a
   per-point cell so the 24-2C macular extras draw small. Exam orders carry optional `grid` / `fixationMode` /
   `fovealThreshold` / `responseMode` (docs/SYNC_API.md), written only when they differ from the preset.
+- Phase 6 in the portal: `Patient.normativeVolunteer` marks healthy volunteers; `lib/normative.ts` builds the pseudonymous
+  cohort file (`perimetry-cohort/1`) and calls `perimetry normative stats|build` through `lib/perimetry.ts` (no rule in the
+  portal); built databases live in `NormativeSet` (one active per grid). Import and re-analysis share
+  `importer.analysisColumns` + `analyzeWithActiveNormative` (`--normative` when a set is active); `Exam.normativeSetId`
+  records which. The report footer line comes from `report-format.normativeLine`. The progression overview
+  (`lib/overview.ts`, `OverviewReport`) groups one eye's threshold exams per grid and reuses `TrendChart`; its PDF is the
+  print page in A4 landscape.
 
 ## Open decisions (waiting for the product owner)
 Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,

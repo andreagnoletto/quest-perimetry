@@ -104,7 +104,7 @@ máxima do display (~100 cd/m²) restringe a faixa mensurável a cerca de 15,5 d
 | REQ-ANA-011 | O limiar foveal é comparado ao esperado foveal para a idade (TD e p) e não entra em MD, PSD, VFI nem GHT. | C§4, C§8.1 | proposto | `normative/provisional-synthetic.json › fovealExtraDb` |
 | REQ-ANA-012 | A tendência é a regressão linear de MD e VFI contra o tempo (inclinação/ano, erro-padrão, p pela t com n−2 gl), excluindo exames interrompidos e rastreios; não há análise por eventos (GPA). | S§7, C§12 | implementado | — |
 | REQ-ANA-013 | As funções estatísticas (CDF e quantil da normal, quantil tipo 7) reproduzem o R. | S§10 | implementado | — |
-| REQ-ANA-014 | O portal oferece ferramenta para coletar o normativo próprio (coorte de voluntários saudáveis, critérios de exclusão, estatística por faixa etária, export) e substituir o provisório pelo medido. | S§7, S§9 | planejado (Fase 6) | — |
+| REQ-ANA-014 | O portal oferece ferramenta para coletar o normativo próprio (coorte de voluntários saudáveis, critérios de exclusão, estatística por faixa etária, export) e substituir o provisório pelo medido: toda regra e estatística no `/core`, um normativo ativo por grade, reanálise registrada no log, relatório com o normativo usado. | S§7, S§9, C§8.1, C§12 | proposto (Fase 6) | `normative/cohort.json` |
 
 ### 3.5 REC — registros, auditoria e exportação
 
@@ -160,7 +160,7 @@ máxima do display (~100 cd/m²) restringe a faixa mensurável a cerca de 15,5 d
 | REQ-PORT-006 | A página de calibração recebe a tabela fotométrica (validada pelo `/core`), data, validade e serial do dispositivo. | S§8 | implementado | — |
 | REQ-PORT-007 | O pedido de exame define padrão, estratégia, modo de fixação, limiar foveal, modo de resposta e olhos, e é enviado ao headset pareado ou baixado como arquivo. | S§8, C§12 | implementado | — |
 | REQ-PORT-008 | O painel ao vivo mostra o mapa preenchendo, a última apresentação, a confiabilidade com alerta e os botões pausar/retomar/encerrar. | S§8, C§12a | implementado | — |
-| REQ-PORT-009 | O histórico por paciente mostra a série de escalas de cinza e a tendência de MD e VFI. | S§7 | implementado | — |
+| REQ-PORT-009 | O histórico por paciente mostra a série de escalas de cinza e a tendência de MD e VFI; a visão geral de progressão por olho (série cronológica de escala de cinza e probabilidade do desvio total com índices e confiabilidade, tendência de MD e VFI) é imprimível em PDF e declara que não é análise por eventos. | S§7, C§12 | implementado | — |
 | REQ-PORT-010 | Os números da interface médica seguem o formato pt-BR (vírgula decimal, sem zero negativo). | S§0.5 | implementado | — |
 | REQ-PORT-011 | Os limiares são exibidos em dB equivalente HFA com "<NN" abaixo do mínimo mensurável; o dB do dispositivo permanece no CSV e no JSON. | C§12 | implementado | — |
 | REQ-PORT-012 | O laudo mostra modelo e número de série do headset que gravou o exame. | pedido do product owner 2026-10-18 | implementado | — |
