@@ -2,6 +2,7 @@ import { z } from "zod";
 import { encrypt } from "@/lib/crypto";
 import { db } from "@/lib/db";
 import { auditDevice, codeHash, newToken, normaliseCode, PAIRING_MAX_ATTEMPTS, readJson, syncError, syncJson } from "@/lib/headset-auth";
+import { hit, PAIRING_IP_LIMIT } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,11 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? req.headers.get("x-real-ip") ?? "local";
+  if (!hit("pair:" + ip, PAIRING_IP_LIMIT.limit, PAIRING_IP_LIMIT.windowMs).allowed) {
+    await auditDevice(null, "headset.pair.ratelimited", undefined, undefined, `ip ${ip.slice(0, 60)}`, req);
+    return syncError("rate_limited", "muitas tentativas de pareamento deste endereço; aguarde 15 min", 429);
+  }
   const body = await readJson(req, 64 * 1024);
   const parsed = schema.safeParse(body);
   if (!parsed.success) return syncError("bad_request", "code, serial e model são obrigatórios", 400);

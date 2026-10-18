@@ -282,7 +282,7 @@
     "tests": ["doctor flow", "headset sync and live panel"]},
   "REQ-SEC-005": {"title": "Senhas com scrypt (N = 2^15) e comprimento mínimo; verificação em tempo constante mesmo para e-mail inexistente", "status": "implemented",
     "impl": ["portal/src/lib/password.ts", "portal/src/lib/auth.ts#login"],
-    "tests": ["hashes with scrypt and verifies", "refuses short passwords"]},
+    "tests": ["hashes with scrypt and verifies", "refuses short or predictable passwords (policy: 12+ characters)"]},
   "REQ-SEC-006": {"title": "Sessão do portal por cookie httpOnly/sameSite com token aleatório guardado só como hash e validade limitada; páginas e rotas exigem usuário ativo", "status": "implemented",
     "impl": ["portal/src/lib/auth.ts", "portal/src/lib/env.ts#sessionTtlHours"],
     "tests": ["doctor flow"]},

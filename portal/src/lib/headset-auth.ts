@@ -43,13 +43,14 @@ export function syncError(error: string, message: string, status: number) {
   return NextResponse.json({ schema: SYNC_SCHEMA, error, message }, { status, headers: { "cache-control": "no-store" } });
 }
 
-/** Device behind the Authorization header, or null. Touches lastUsedAt at most once a minute. */
+/** Device behind the Authorization header, or null (revoked and expired tokens included). Touches lastUsedAt at most once a minute. */
 export async function authenticateDevice(req: Request): Promise<Device | null> {
   const h = req.headers.get("authorization") ?? "";
   const m = /^Bearer\s+([A-Za-z0-9_-]{20,200})$/.exec(h);
   if (!m) return null;
   const t = await db.deviceToken.findUnique({ where: { id: sha256(m[1]) }, include: { device: true } });
   if (!t || t.revokedAt) return null;
+  if (t.expiresAt && t.expiresAt <= new Date()) return null;
   if (!t.lastUsedAt || Date.now() - t.lastUsedAt.getTime() > 60_000) {
     await db.deviceToken.update({ where: { id: t.id }, data: { lastUsedAt: new Date() } }).catch(() => undefined);
   }

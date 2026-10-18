@@ -489,6 +489,30 @@ diagonal), dentro do campo útil configurado (`usableHalfFieldDeg` 50°) e do ca
 - Pedido de exame enviado ao headset: só o código pseudônimo, idade, correção, exame e semente; o operador confirma
   na tela de preparação. O exame importado pela rede traz a integridade **verificada** pela chave enviada no pareamento.
 
+## 12b. Segurança e LGPD (Fase 6)
+
+Sem impacto clínico; guia de operação em `portal/SECURITY.md`. Padrões propostos em 2026-10-18 (todos configuráveis
+ou documentados; nenhum número clínico envolvido):
+
+- **Contas:** senha com mínimo de 12 caracteres e rejeição de senhas triviais; bloqueio da conta por 15 min após
+  10 erros seguidos (gravado no banco, `User.failedLogins/lockedUntil`); teto de 50 tentativas de login por IP a cada
+  15 min; sessão nova a cada login, expira em 12 h ou após 60 min sem uso (`SESSION_IDLE_MINUTES`); troca de senha pelo
+  próprio usuário em "Minha conta", que encerra as outras sessões. Tudo no log (`login.failed/locked/ratelimited`,
+  `user.password`).
+- **Navegador:** Content-Security-Policy com nonce por requisição (`portal/src/middleware.ts`), `X-Frame-Options: DENY`,
+  `nosniff`, `Referrer-Policy`, `Permissions-Policy`; HSTS quando atrás de HTTPS (`PERIMETRY_SECURE_COOKIES=true`).
+- **Headset:** teto de 20 tentativas de pareamento por IP a cada 15 min; token de aparelho com validade opcional
+  (`DeviceToken.expiresAt`, respeitada na autenticação).
+- **Direitos do titular (LGPD art. 18):** exportação de todos os dados de um paciente em JSON
+  (`perimetry-patient-export/1`, log `patient.export`); **anonimização** em vez de exclusão (log `patient.anonymize`):
+  identificadores viram marcadores, autorização de pesquisa cai, pedidos abertos são cancelados, exames e laudos ficam
+  sob o código pseudônimo para auditoria e reanálise; o registro passa a ser só leitura. **Versão do texto de
+  consentimento** gravada por paciente (`consentVersion`, `portal/src/lib/consent-text.ts`), e data/usuário da
+  autorização de pesquisa (`researchConsentAt/ById`).
+- **Log de acesso:** exportável em CSV pelo administrador (`audit.export`).
+- **Chave e backup:** rotação de `PERIMETRY_DATA_KEY` por script em uma transação (`scripts/rotate-key.ts`,
+  simulação por padrão), `pg_dump` + chave guardada à parte; CI falha com aviso crítico em dependência de produção.
+
 ## 13. Referências
 
 1. Heijl A, Lindgren G, Olsson J. A package for the statistical analysis of visual fields. *Doc Ophthalmol Proc Ser* 1987;49:153–168. (MD, PSD)

@@ -6,7 +6,7 @@ import type { Report } from "./report-types.ts";
 // Pseudonymised research export (LGPD art. 13): only patients who authorised research use; no name,
 // internal ID, birth date, headset code, free-text diagnosis or calendar dates. Each patient gets a
 // study ID that cannot be linked back without the server key, and time is expressed as days since that
-// patient's first exam.
+// patient's first exam. Anonymised patients (LGPD erasure) are out: consent withdrawn, age unknown.
 
 const DAY = 86400_000;
 
@@ -14,7 +14,7 @@ export interface ResearchRow { studyId: string; seq: number; eye: string; daysFr
 
 export async function researchRows(): Promise<ResearchRow[]> {
   const patients = await db.patient.findMany({
-    where: { researchConsent: true },
+    where: { researchConsent: true, anonymizedAt: null },
     include: { exams: { where: { aborted: false }, orderBy: { startedUtc: "asc" } } },
   });
   const rows: ResearchRow[] = [];

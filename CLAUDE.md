@@ -59,8 +59,8 @@ dotnet run --project core/Perimetry.Cli -c Release -- report out/ex.json --norma
 python3 tools/report/render_report.py out/ex.analysis.json out/ex.png  # needs matplotlib
 bash tools/opi-crosscheck/run.sh                                         # needs R + jsonlite, python3
 python3 tools/trace/build_matrix.py                                      # regenerate + check docs/regulatory/TRACEABILITY.md
-cd portal && npm ci && npm run typecheck && npm test                     # 39 portal unit tests (needs the Release CLI build)
-cd portal && npm run build && npm run e2e                                # 3 Playwright specs; needs PostgreSQL (E2E_DATABASE_URL)
+cd portal && npm ci && npm run typecheck && npm test                     # 56 portal unit tests (needs the Release CLI build)
+cd portal && npm run build && npm run e2e                                # 4 Playwright specs; needs PostgreSQL (E2E_DATABASE_URL)
 ```
 CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThreshold|FourTwo|Screening`,
 `--eye OD|OS`, `--defect Normal|SuperiorArcuate|InferiorArcuate|Hemianopia|CentralScotoma`, `--depth`,
@@ -122,6 +122,11 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
   data) and `GazeTraceBar.tsx`; map geometry (`FieldMaps.geometry`) derives the lattice step per grid (6° / 2°) and a
   per-point cell so the 24-2C macular extras draw small. Exam orders carry optional `grid` / `fixationMode` /
   `fovealThreshold` / `responseMode` (docs/SYNC_API.md), written only when they differ from the preset.
+- Phase 6 security/LGPD (runbook `portal/SECURITY.md`): policy constants in `src/lib/security-policy.ts` (lockout 10/15 min,
+  12-char passwords, idle expiry) and `src/lib/rate-limit.ts` (per-IP, in-process); CSP nonce in `src/middleware.ts` +
+  `src/lib/csp.ts`, static headers in `next.config.ts`. LGPD erasure = anonymisation (`src/lib/lgpd.ts`): never delete a
+  patient row; identifiers become markers, exams stay under the code. Consent text is versioned (`src/lib/consent-text.ts`,
+  bump `CONSENT_VERSION` on any wording change). Key rotation only via `scripts/rotate-key.ts`.
 
 ## Open decisions (waiting for the product owner)
 Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,

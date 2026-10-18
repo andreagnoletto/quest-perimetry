@@ -7,6 +7,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
   const sp = await searchParams;
   const where = { ...(sp.entity ? { entityType: sp.entity } : {}), ...(sp.id ? { entityId: sp.id } : {}) };
   const rows = await db.accessLog.findMany({ where, orderBy: { at: "desc" }, take: 500, include: { user: { select: { name: true, email: true } } } });
+  const exportQs = new URLSearchParams({ ...(sp.entity ? { entity: sp.entity } : {}), ...(sp.id ? { id: sp.id } : {}) }).toString();
   return (
     <>
       <h1>Log de acesso</h1>
@@ -14,13 +15,14 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
         <label>Tipo
           <select name="entity" defaultValue={sp.entity ?? ""}>
             <option value="">todos</option>
-            {["patient", "exam", "examOrder", "device", "calibration", "research", "user"].map((t) => <option key={t} value={t}>{t}</option>)}
+            {["patient", "exam", "examOrder", "device", "calibration", "research", "user", "audit"].map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </label>
         <label>ID do registro<input name="id" defaultValue={sp.id ?? ""} /></label>
         <button type="submit">Filtrar</button>
+        <a className="button secondary" href={`/audit/export${exportQs ? "?" + exportQs : ""}`} download>Baixar CSV</a>
       </form>
-      <p className="muted small">Últimos {rows.length} registros. O log é só de inclusão; nada aqui altera dados.</p>
+      <p className="muted small">Últimos {rows.length} registros (o CSV leva até 50 000 com o mesmo filtro). O log é só de inclusão; nada aqui altera dados. Tentativas de login falhas, bloqueios e limites de tentativas aparecem como <code>login.failed</code>, <code>login.locked</code>, <code>login.ratelimited</code>.</p>
       <div className="table-wrap">
         <table>
           <thead><tr><th>Quando</th><th>Usuário</th><th>Ação</th><th>Registro</th><th>Detalhe</th><th>IP</th></tr></thead>

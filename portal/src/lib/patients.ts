@@ -16,9 +16,19 @@ export interface PatientView {
   consentNote: string | null;
   researchConsent: boolean;
   createdAt: Date;
+  /** LGPD anonymisation (Phase 6): identifying fields are markers, the clinical record stays. */
+  anonymizedAt: Date | null;
 }
 
+export const ANONYMIZED_NAME = "Paciente anonimizado";
+
 export function view(p: Patient): PatientView {
+  if (p.anonymizedAt) {
+    return {
+      id: p.id, code: p.code, internalId: "—", name: ANONYMIZED_NAME, birthDate: "", sex: null, refraction: null, diagnosis: null,
+      consentAt: p.consentAt, consentNote: null, researchConsent: false, createdAt: p.createdAt, anonymizedAt: p.anonymizedAt,
+    };
+  }
   return {
     id: p.id,
     code: p.code,
@@ -32,6 +42,7 @@ export function view(p: Patient): PatientView {
     consentNote: p.consentNote,
     researchConsent: p.researchConsent,
     createdAt: p.createdAt,
+    anonymizedAt: null,
   };
 }
 
@@ -44,6 +55,8 @@ export interface PatientInput {
   diagnosis?: string | null;
   consent: boolean;
   consentNote?: string | null;
+  /** Version of the consent text agreed to (src/lib/consent-text.ts). */
+  consentVersion?: string | null;
   researchConsent: boolean;
 }
 
@@ -64,7 +77,10 @@ export async function createPatient(input: PatientInput, userId: string): Promis
           consentAt: input.consent ? new Date() : null,
           consentById: input.consent ? userId : null,
           consentNote: input.consentNote || null,
+          consentVersion: input.consent ? input.consentVersion ?? null : null,
           researchConsent: input.researchConsent,
+          researchConsentAt: input.researchConsent ? new Date() : null,
+          researchConsentById: input.researchConsent ? userId : null,
           createdById: userId,
         },
       });
@@ -94,7 +110,8 @@ export async function updatePatient(id: string, input: Omit<PatientInput, "conse
   });
 }
 
-/** Exact search by internal ID or full name (blind indexes), or by pseudonymous code. */
+/** Exact search by internal ID or full name (blind indexes), or by pseudonymous code. Anonymised patients only
+ *  match by code: their blind indexes are markers (src/lib/lgpd.ts). */
 export async function findPatients(query: string): Promise<Patient[]> {
   const q = query.trim();
   if (!q) return db.patient.findMany({ orderBy: { createdAt: "desc" }, take: 200 });
@@ -110,8 +127,9 @@ export async function findPatients(query: string): Promise<Patient[]> {
   });
 }
 
-/** Age in decimal years at a date (birth date as YYYY-MM-DD). */
+/** Age in decimal years at a date (birth date as YYYY-MM-DD); NaN for an anonymised patient. */
 export function ageAt(birthDate: string, at: Date): number {
+  if (!birthDate) return NaN;
   const b = new Date(birthDate + "T00:00:00Z");
   return (at.getTime() - b.getTime()) / (365.2425 * 24 * 3600 * 1000);
 }

@@ -25,54 +25,67 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
   });
   if (!row) notFound();
   const p = view(row);
+  const anonymized = p.anonymizedAt !== null;
   await audit(user.id, "patient.view", "patient", id);
   const ps = presets();
-  const devices = await pairedDevices();
+  const devices = anonymized ? [] : await pairedDevices();
   const presetLabel = (pid: string) => ps.find((x) => x.id === pid)?.label ?? pid;
   const orderOptions = (o: { gridId: string | null; fixationMode: string | null; fovealThreshold: boolean | null; responseMode: string | null }) =>
     [o.gridId, o.fixationMode && (fixationName[o.fixationMode] ?? o.fixationMode), o.fovealThreshold && "limiar foveal", o.responseMode && (responseModeName[o.responseMode] ?? o.responseMode)].filter(Boolean).join(" · ");
+  const canErase = user.role === "admin" || user.role === "doctor";
 
   return (
     <>
       <h1>{p.name}</h1>
+      {anonymized && (
+        <div className="notice">Registro anonimizado em {dateTimeBr(p.anonymizedAt!)} (LGPD, art. 18 VI): nome, ID interno, nascimento, sexo, refração e diagnóstico foram apagados; os exames continuam sob o código {p.code} para auditoria e reanálise. Não é mais possível editar nem pedir exames.</div>
+      )}
       <div className="card">
         <div className="form-grid">
           <div><span className="muted">ID interno</span><br />{p.internalId}</div>
           <div><span className="muted">Código pseudônimo (headset)</span><br /><b>{p.code}</b></div>
-          <div><span className="muted">Nascimento</span><br />{dateBr(p.birthDate + "T12:00:00Z")} ({fmt(ageAt(p.birthDate, new Date()), 0)} anos)</div>
+          <div><span className="muted">Nascimento</span><br />{p.birthDate ? <>{dateBr(p.birthDate + "T12:00:00Z")} ({fmt(ageAt(p.birthDate, new Date()), 0)} anos)</> : "—"}</div>
           <div><span className="muted">Sexo</span><br />{p.sex ? sexName[p.sex] ?? p.sex : "—"}</div>
           <div><span className="muted">Refração</span><br />{p.refraction ?? "—"}</div>
           <div><span className="muted">Diagnóstico / observações</span><br />{p.diagnosis ?? "—"}</div>
-          <div><span className="muted">Consentimento</span><br />{p.consentAt ? `registrado em ${dateTimeBr(p.consentAt)}` : <span className="alert">não registrado</span>}{p.consentNote ? ` (${p.consentNote})` : ""}</div>
-          <div><span className="muted">Pesquisa</span><br />{p.researchConsent ? "autorizada (pseudonimizada)" : "não autorizada"}</div>
+          <div><span className="muted">Consentimento</span><br />{p.consentAt ? `registrado em ${dateTimeBr(p.consentAt)}` : <span className="alert">não registrado</span>}{row.consentVersion ? <span className="muted"> · texto v{row.consentVersion}</span> : null}{p.consentNote ? ` (${p.consentNote})` : ""}</div>
+          <div><span className="muted">Pesquisa</span><br />{p.researchConsent ? `autorizada (pseudonimizada)${row.researchConsentAt ? ` em ${dateBr(row.researchConsentAt)}` : ""}` : "não autorizada"}</div>
         </div>
-        <div className="actions"><Link className="button secondary" href={`/patients/${id}/edit`}>Editar</Link></div>
+        <div className="actions" style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+          {!anonymized && <Link className="button secondary" href={`/patients/${id}/edit`}>Editar</Link>}
+          <a className="button secondary" href={`/patients/${id}/export`} download>Exportar dados do paciente (LGPD)</a>
+          {!anonymized && canErase && <Link className="muted small" href={`/patients/${id}/anonymize`}>Anonimizar registro…</Link>}
+        </div>
       </div>
 
-      <h2>Pedido de exame para o headset</h2>
-      <div className="card">
-        <OrderForm action={createOrderAction.bind(null, id)} presets={ps.map((x) => ({ id: x.id, label: x.label, gridId: x.gridId, fixationMode: x.fixationMode }))} grids={gridIds()} refraction={p.refraction} devices={devices} />
-        <p className="muted small">Enviado ao headset pareado, o pedido aparece na tela do operador; sem headset pareado, copie o arquivo baixado para a pasta do app com o nome <code>exam-order.json</code>. Em ambos os casos vai só o código {p.code}, a idade, a correção e o exame, nunca o nome.</p>
-        {row.orders.length > 0 && (
-          <div className="table-wrap">
-            <table>
-              <thead><tr><th>Criado</th><th>Exame</th><th className="num">Idade</th><th>Headset</th><th>Situação</th><th></th></tr></thead>
-              <tbody>
-                {row.orders.map((o) => (
-                  <tr key={o.id}>
-                    <td>{dateTimeBr(o.createdAt)}</td>
-                    <td>{presetLabel(o.presetId)}{orderOptions(o) ? <span className="muted"> · {orderOptions(o)}</span> : null}</td>
-                    <td className="num">{fmt(o.ageYears, 1)}</td>
-                    <td>{o.device ? o.device.label ?? o.device.model ?? o.device.serial : "—"}</td>
-                    <td>{o.fulfilledAt ? `realizado (importado ${dateBr(o.fulfilledAt)})` : o.cancelledAt ? "cancelado" : o.deviceId ? "enviado ao headset, aguardando" : "aguardando"}</td>
-                    <td><a href={`/patients/${id}/orders/${o.id}`} download="exam-order.json">Baixar exam-order.json</a>{!o.fulfilledAt && !o.cancelledAt && <form action={cancelOrderAction.bind(null, id, o.id)} style={{ display: "inline" }}> · <button className="link" type="submit">cancelar</button></form>}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {!anonymized && (
+        <>
+          <h2>Pedido de exame para o headset</h2>
+          <div className="card">
+            <OrderForm action={createOrderAction.bind(null, id)} presets={ps.map((x) => ({ id: x.id, label: x.label, gridId: x.gridId, fixationMode: x.fixationMode }))} grids={gridIds()} refraction={p.refraction} devices={devices} />
+            <p className="muted small">Enviado ao headset pareado, o pedido aparece na tela do operador; sem headset pareado, copie o arquivo baixado para a pasta do app com o nome <code>exam-order.json</code>. Em ambos os casos vai só o código {p.code}, a idade, a correção e o exame, nunca o nome.</p>
+            {row.orders.length > 0 && (
+              <div className="table-wrap">
+                <table>
+                  <thead><tr><th>Criado</th><th>Exame</th><th className="num">Idade</th><th>Headset</th><th>Situação</th><th></th></tr></thead>
+                  <tbody>
+                    {row.orders.map((o) => (
+                      <tr key={o.id}>
+                        <td>{dateTimeBr(o.createdAt)}</td>
+                        <td>{presetLabel(o.presetId)}{orderOptions(o) ? <span className="muted"> · {orderOptions(o)}</span> : null}</td>
+                        <td className="num">{fmt(o.ageYears, 1)}</td>
+                        <td>{o.device ? o.device.label ?? o.device.model ?? o.device.serial : "—"}</td>
+                        <td>{o.fulfilledAt ? `realizado (importado ${dateBr(o.fulfilledAt)})` : o.cancelledAt ? "cancelado" : o.deviceId ? "enviado ao headset, aguardando" : "aguardando"}</td>
+                        <td><a href={`/patients/${id}/orders/${o.id}`} download="exam-order.json">Baixar exam-order.json</a>{!o.fulfilledAt && !o.cancelledAt && <form action={cancelOrderAction.bind(null, id, o.id)} style={{ display: "inline" }}> · <button className="link" type="submit">cancelar</button></form>}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
 
       {(["OD", "OS"] as const).map((eye) => {
         const exams = row.exams.filter((e) => e.eye === eye);
@@ -122,7 +135,7 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
           </section>
         );
       })}
-      {row.exams.length === 0 && <p className="muted">Nenhum exame ainda. Crie um pedido acima ou importe os arquivos do headset.</p>}
+      {row.exams.length === 0 && <p className="muted">Nenhum exame ainda.{!anonymized && " Crie um pedido acima ou importe os arquivos do headset."}</p>}
     </>
   );
 }
