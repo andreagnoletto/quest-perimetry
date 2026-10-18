@@ -12,6 +12,15 @@ namespace Perimetry.Core.Analysis
         string Id { get; }
         string GridId { get; }
         bool IsProvisional { get; }
+        /// <summary>"MEASURED" (clinic cohort with enough eyes) or "PROVISIONAL" (synthetic model, or a cohort below the minimum). Phase 6.</summary>
+        string Status { get; }
+        /// <summary>"synthetic" or "cohort". Phase 6.</summary>
+        string Source { get; }
+        /// <summary>Number of eyes (synthetic subjects or cohort exams) the database was built from.</summary>
+        int PopulationEyes { get; }
+        /// <summary>Age range of the population (years); outside it the regression is extrapolated and the analysis warns.</summary>
+        double AgeMin { get; }
+        double AgeMax { get; }
         int LocationCount { get; }
         /// <summary>Age-expected sensitivity (HFA-equivalent dB) at a location.</summary>
         double ExpectedHfa(int locationIndex, double ageYears);

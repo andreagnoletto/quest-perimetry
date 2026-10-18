@@ -12,5 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../Perimetry.Core/Perimetry.Core.csproj" />
+    <!-- Phase 6: the normative CLI commands are tested end to end through Program.Main. -->
+    <ProjectReference Include="../Perimetry.Cli/Perimetry.Cli.csproj" />
   </ItemGroup>
 </Project>

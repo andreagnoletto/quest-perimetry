@@ -32,13 +32,24 @@ namespace Perimetry.Cli
 
         private static readonly JsonSerializerSettings In = new JsonSerializerSettings { FloatParseHandling = FloatParseHandling.Double };
 
-        public static int Run(ClinicalConfig cfg, string path, string outPath)
+        /// <param name="normativePath">Phase 6: a normative database file (perimetry-normative/1) to analyse with instead of the provisional synthetic one.</param>
+        public static int Run(ClinicalConfig cfg, string path, string outPath, string normativePath = null)
         {
             object doc;
-            try { doc = Build(cfg, File.ReadAllText(path)); }
+            try
+            {
+                INormativeDatabase norm = null;
+                if (normativePath != null)
+                {
+                    try { norm = NormativeDatabase.FromJson(File.ReadAllText(normativePath)); }
+                    catch (Exception e) when (e is JsonException || e is FormatException || e is IOException)
+                    { throw new FormatException("invalid normative file: " + e.Message); }
+                }
+                doc = Build(cfg, File.ReadAllText(path), norm);
+            }
             catch (Exception e) when (e is JsonException || e is FormatException || e is KeyNotFoundException || e is ArgumentException)
             {
-                doc = new { schema = Schema, error = "invalid exam file: " + e.Message };
+                doc = new { schema = Schema, error = e is FormatException && e.Message.StartsWith("invalid normative") ? e.Message : "invalid exam file: " + e.Message };
                 Write(doc, outPath);
                 return 3;
             }
@@ -53,11 +64,14 @@ namespace Perimetry.Cli
             else File.WriteAllText(outPath, json);
         }
 
-        public static object Build(ClinicalConfig cfg, string examJson)
+        public static object Build(ClinicalConfig cfg, string examJson, INormativeDatabase normative = null)
         {
             var exam = JsonConvert.DeserializeObject<ExamRecord>(examJson, In) ?? throw new FormatException("empty exam");
             if (exam.Settings == null || exam.Locations == null || exam.Reliability == null) throw new FormatException("not an exam record");
             var grid = GridLibrary.Get(cfg, exam.Settings.GridId);
+            if (normative != null && !string.Equals(normative.GridId, grid.Id, StringComparison.OrdinalIgnoreCase))
+                throw new FormatException($"invalid normative file: grade {normative.GridId} não corresponde à grade do exame ({grid.Id})");
+            var norm = normative ?? ProvisionalNormative.For(cfg, grid);
             var warnings = new List<string>();
             AnalysisResult analysis = null;
             if (exam.Aborted)
@@ -67,7 +81,7 @@ namespace Perimetry.Cli
             }
             else
             {
-                analysis = FieldAnalysis.Analyze(exam, cfg, ProvisionalNormative.For(cfg, grid));
+                analysis = FieldAnalysis.Analyze(exam, cfg, norm);
                 warnings.AddRange(analysis.Warnings);
             }
             if (!string.IsNullOrEmpty(exam.ConfigHash) && exam.ConfigHash != cfg.Hash)
@@ -77,7 +91,12 @@ namespace Perimetry.Cli
             return new
             {
                 schema = Schema,
-                analyzedWith = new { software = "perimetry-cli/" + ExamSession.Version, configHash = cfg.Hash },
+                analyzedWith = new
+                {
+                    software = "perimetry-cli/" + ExamSession.Version, configHash = cfg.Hash,
+                    // Phase 6: the normative database used for the analysis (null for an aborted exam).
+                    normative = analysis == null ? null : new { id = norm.Id, status = norm.Status, source = norm.Source, populationEyes = norm.PopulationEyes, ageMin = norm.AgeMin, ageMax = norm.AgeMax },
+                },
                 exam = new
                 {
                     exam.ExamId,

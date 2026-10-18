@@ -21,11 +21,12 @@ namespace Perimetry.Cli
     ///   perimetry simulate  [--grid 24-2] [--strategy Zest] [--eye OD] [--defect Normal] [--depth 15] [--age 50] [--seed 1] [--out exam.json]
     ///                       [--fixation CentralHeijlKrakau|CentralEyeTracking|CentralUnmonitored|Oculokinetic] [--foveal true]
     ///                       [--response YesNo|ForcedChoice] [--gaze <tracker noise sd deg, 0 = none>] [--fixloss 0.1]
-    ///   perimetry analyze   exam.json [--out analysis.json]
+    ///   perimetry analyze   exam.json [--out analysis.json] [--normative db.json]
     ///   perimetry benchmark [--grid 24-2] [--strategy Zest] [--defect Normal] [--runs 50]
     ///   perimetry crosscheck scenarios.json out.json
-    ///   perimetry report exam.json [--out report.json]    (portal: strict JSON, see Report.cs)
+    ///   perimetry report exam.json [--out report.json] [--normative db.json]    (portal: strict JSON, see Report.cs)
     ///   perimetry check-calibration calibration.json
+    ///   perimetry normative build|stats|inspect ...        (phase 6: clinic normative database, see Normative.cs)
     /// </summary>
     public static class Program
     {
@@ -39,7 +40,7 @@ namespace Perimetry.Cli
         {
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-            if (args.Length == 0) { Console.Error.WriteLine("usage: perimetry simulate|analyze|benchmark|crosscheck|report|check-calibration ..."); return 2; }
+            if (args.Length == 0) { Console.Error.WriteLine("usage: perimetry simulate|analyze|benchmark|crosscheck|report|check-calibration|normative ..."); return 2; }
             var opt = ParseOptions(args.Skip(1).ToArray(), out var positional);
             var cfg = ClinicalConfig.LoadFromDirectory(opt.TryGetValue("config", out var c) ? c : ClinicalConfig.FindConfigDirectory(Directory.GetCurrentDirectory()));
             switch (args[0])
@@ -48,8 +49,9 @@ namespace Perimetry.Cli
                 case "analyze": return Analyze(cfg, positional[0], opt);
                 case "benchmark": return Benchmark(cfg, opt);
                 case "crosscheck": return CrossCheck.Run(positional[0], positional[1]);
-                case "report": return Report.Run(cfg, positional[0], Get(opt, "out", null));
+                case "report": return Report.Run(cfg, positional[0], Get(opt, "out", null), Get(opt, "normative", null));
                 case "check-calibration": return Report.CheckCalibration(positional[0]);
+                case "normative": return Normative.Run(cfg, positional, opt);
                 default: Console.Error.WriteLine("unknown command " + args[0]); return 2;
             }
         }
@@ -129,7 +131,14 @@ namespace Perimetry.Cli
         {
             var exam = JsonConvert.DeserializeObject<ExamRecord>(File.ReadAllText(path), Json);
             var grid = GridLibrary.Get(cfg, exam.Settings.GridId);
-            var a = FieldAnalysis.Analyze(exam, cfg, ProvisionalNormative.For(cfg, grid));
+            INormativeDatabase norm = ProvisionalNormative.For(cfg, grid);
+            if (o.TryGetValue("normative", out var normPath))
+            {
+                norm = NormativeDatabase.FromJson(File.ReadAllText(normPath));
+                if (!string.Equals(norm.GridId, grid.Id, StringComparison.OrdinalIgnoreCase))
+                { Console.Error.WriteLine($"normative grid {norm.GridId} does not match exam grid {grid.Id}"); return 3; }
+            }
+            var a = FieldAnalysis.Analyze(exam, cfg, norm);
             PrintReport(exam, a, null);
             string outPath = Get(o, "out", null);
             if (outPath != null) File.WriteAllText(outPath, JsonConvert.SerializeObject(new { analysis = a }, Json));

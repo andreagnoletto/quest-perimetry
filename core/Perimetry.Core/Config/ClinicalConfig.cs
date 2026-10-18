@@ -23,6 +23,8 @@ namespace Perimetry.Core.Config
         public AnalysisConfig Analysis { get; private set; }
         public GhtConfig Ght { get; private set; }
         public SyntheticNormativeConfig ProvisionalNormative { get; private set; }
+        /// <summary>Phase 6 cohort rules (normative/cohort.json); defaults when the file is absent, e.g. on older headset builds.</summary>
+        public NormativeCohortConfig NormativeCohort { get; private set; }
         public IReadOnlyDictionary<string, GridConfig> Grids { get; private set; }
         public string Hash { get; private set; }
 
@@ -64,6 +66,7 @@ namespace Perimetry.Core.Config
                 Analysis = Load<AnalysisConfig>("analysis.json"),
                 Ght = Load<GhtConfig>("ght.json"),
                 ProvisionalNormative = Load<SyntheticNormativeConfig>("normative/provisional-synthetic.json"),
+                NormativeCohort = files.ContainsKey("normative/cohort.json") ? Load<NormativeCohortConfig>("normative/cohort.json") : new NormativeCohortConfig(),
                 Grids = grids,
                 Hash = ComputeHash(files),
                 Files = files,
