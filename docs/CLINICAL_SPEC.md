@@ -1,7 +1,7 @@
 # Especificação clínica e psicofísica implementada
 
 > **Protótipo para pesquisa/uso sob supervisão médica — não registrado na ANVISA.**
-> Documento-base para a futura documentação regulatória. Descreve o que está implementado
+> Documento-base para a futura documentação regulatória (requisitos, riscos e rastreabilidade em `docs/regulatory/`). Descreve o que está implementado
 > em `/core` (Fase 1). Toda constante citada vive em `config/*.json`; o hash SHA-256 desse
 > diretório é gravado em cada exame (`ExamRecord.ConfigHash`).
 
