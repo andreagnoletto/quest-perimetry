@@ -83,4 +83,4 @@ CLI options: `--grid 24-2|30-2|10-2|24-2C`, `--strategy Zest|ZestFast|FullThresh
 ## Open decisions (waiting for the product owner)
 Tracked in `docs/CLINICAL_SPEC.md` as **[DECISÃO PENDENTE]**: GHT sector membership (`config/ght.json`,
 status TO_BE_VALIDATED); headset pause, training, fixation target, 72 Hz duration (§11). Approved on 2026-10-17: ZEST stop SD 1.5 dB as default with ZestFast as an option,
-grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening. Approved on 2026-10-18: headset occlusion check before each eye (on).
+grayscale edges, catch-trial frequencies, anticipated-response handling, no FN in screening. Approved on 2026-10-18: headset occlusion check before each eye (optional, off by default); blind spot remap after 2 consecutive fixation losses; VFI shown with one decimal.
