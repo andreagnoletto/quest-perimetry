@@ -2,6 +2,7 @@
 
 Source of truth: **`SPEC.md`** (clinical product owner's specification, pt-BR). Read it before any work.
 Implemented psychophysics: **`docs/CLINICAL_SPEC.md`**. Licences: **`docs/THIRD_PARTY.md`**.
+Current state, pending decisions and how to resume: **`docs/STATUS.md`** (update it at the end of every session).
 
 ## Working rules (from SPEC §0)
 - Work in phases (SPEC §9). At the end of each phase: build + tests, short summary, **wait for the
