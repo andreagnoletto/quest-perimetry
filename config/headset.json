@@ -238,12 +238,12 @@
   "defaultAgeYears": 50,
   "_ageDoc": "Used only when no exam order file provides the age; the operator adjusts it on the setup screen. Age drives the ZEST prior and the normative comparison.",
   "presentation": {
-    "_doc": "Rendering details outside the psychophysics. fallbackIpdMm is used only when the runtime gives no eye positions (desktop preview); it is logged. Text is dark grey on the background, below the fixation target: its top edge messageOffsetDeg below the target, each line messageLineHeightDeg high as seen by the patient, sentences word-wrapped so no line is wider than messageMaxWidthDeg (lens sharpness falls off-centre). Product owner 2026-10-20: larger text, closer to the target.",
+    "_doc": "Rendering details outside the psychophysics. fallbackIpdMm is used only when the runtime gives no eye positions (desktop preview); it is logged. Text is dark grey on the background, below the fixation target: its top edge messageOffsetDeg below the target, each line messageLineHeightDeg high as seen by the patient, sentences word-wrapped so no line is wider than messageMaxWidthDeg (lens sharpness falls off-centre). Product owner 2026-10-20: larger text (about 1.5x) closer to the target; the top edge stays below the 1.5 deg reach of the foveal Diamond4 dots.",
     "fallbackIpdMm": 63.0,
     "textLuminanceCdm2": 2.0,
     "messageDistanceM": 1.5,
-    "messageOffsetDeg": -3.5,
-    "messageLineHeightDeg": 1.8,
+    "messageOffsetDeg": -3.0,
+    "messageLineHeightDeg": 1.6,
     "messageMaxWidthDeg": 48.0,
     "backgroundShellRadiusM": 10.0
   },

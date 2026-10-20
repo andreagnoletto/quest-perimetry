@@ -38,15 +38,15 @@ namespace Perimetry.Headset.Logic.Tests
         public void EveryPatientMessage_FitsTheConfiguredWidth()
         {
             var h = Env.Headset;
-            Assert.That(h.Presentation.MessageLineHeightDeg, Is.EqualTo(1.8));
-            Assert.That(h.Presentation.MessageOffsetDeg, Is.EqualTo(-3.5));
+            Assert.That(h.Presentation.MessageLineHeightDeg, Is.EqualTo(1.6));
+            Assert.That(h.Presentation.MessageOffsetDeg, Is.EqualTo(-3.0));
             Assert.That(h.Presentation.MessageMaxWidthDeg, Is.EqualTo(48.0));
             int max = MessageLayout.MaxCharsPerLine(h.Presentation.MessageLineHeightDeg, h.Presentation.MessageMaxWidthDeg);
             foreach (string text in PatientMessages.Keys("pt-BR").Select(k => PatientMessages.Get(k, "pt-BR")).Concat(PatientMessages.Keys("en-US").Select(k => PatientMessages.Get(k, "en-US"))))
             {
                 string[] lines = MessageLayout.Lines(MessageLayout.Wrap(text, max)).ToArray();
                 Assert.That(lines.Where(l => l.Length > max && l.Contains(' ')), Is.Empty, text);
-                // 14 lines x 1.8 deg x 1.1 spacing = 28 deg: the longest instruction screen ends about 31 deg below the target, inside the Quest 3 field of view.
+                // 14 lines x 1.6 deg x 1.1 spacing = 25 deg: the longest instruction screen ends about 28 deg below the target, inside the Quest 3 field of view.
                 Assert.That(lines.Length, Is.LessThanOrEqualTo(14), "whole message stays inside the field of view: " + text);
             }
         }

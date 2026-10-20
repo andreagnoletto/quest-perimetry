@@ -11,7 +11,7 @@ Atualizado em 2026-10-20. Leia junto com `CLAUDE.md`, `SPEC.md` e `docs/CLINICAL
 
 ## Headset do produto owner (Quest 3)
 - APK instalado por cabo a partir de `262c1c4` (fase 5; a `main` contém esse commit). Pendente: gerar APK da `main` com o
-  texto maior das mensagens (2026-10-20: `MessageLayout`, `headset.json › presentation.messageOffsetDeg/-LineHeightDeg/-MaxWidthDeg`).
+  texto maior das mensagens e quebra de linha (2026-10-20; o Quest tem a versão sem quebra, `f8dfa71`: `MessageLayout`, `headset.json › presentation.messageOffsetDeg/-LineHeightDeg/-MaxWidthDeg`).
 - Abrir o app: atalho **"Abrir Quest Perimetry"** na área de trabalho do PC (cabo ligado) ou Biblioteca →
   seletor "Todos" → **"Fontes desconhecidas"**. A Biblioteca do Horizon OS às vezes não indexa apps instalados por cabo;
   reiniciar o headset resolve. Caminho definitivo: canal de teste privado na Meta Horizon Store (release channel),

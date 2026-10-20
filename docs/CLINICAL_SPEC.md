@@ -339,7 +339,7 @@ olhos e telas do operador aparecem nos dois olhos.
 erro da luminância média renderizada ≤ 0,43 dB em 0–30 dB do dispositivo (`DitheredLuminance_TracksDbScale_0To30`).
 Exige espaço de cor Linear, HDR e pós-processamento desligados (feito por *Perimetry > Configure Project*).
 O alvo de fixação é um losango amarelo de 0,8°, 30 cd/m². Texto em cinza-escuro (2 cd/m²) abaixo do centro.
-O texto começa 3,5° abaixo do alvo, com linhas de 1,8° de altura (vista do paciente) e quebra automática de linha para
+O texto começa 3° abaixo do alvo (os pontos do alvo foveal chegam a 1,5°), com linhas de 1,6° de altura (vista do paciente) e quebra automática de linha para
 não passar de 48° de largura (`headset.json › presentation`; ajustado a pedido do product owner em 2026-10-20: letras maiores
 e mais perto do alvo).
 
