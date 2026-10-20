@@ -98,7 +98,12 @@ namespace Perimetry.Headset.Logic
         public double FallbackIpdMm { get; set; } = 63;
         public double TextLuminanceCdm2 { get; set; } = 2;
         public double MessageDistanceM { get; set; } = 1.5;
-        public double MessageOffsetDeg { get; set; } = -6;
+        /// <summary>Angle of the top of the message below (negative) the fixation target.</summary>
+        public double MessageOffsetDeg { get; set; } = -3.5;
+        /// <summary>Height of one text line as seen by the patient (degrees); see <see cref="MessageLayout"/>.</summary>
+        public double MessageLineHeightDeg { get; set; } = 1.8;
+        /// <summary>Longest text line (degrees); longer sentences are word-wrapped. 0 = no wrapping.</summary>
+        public double MessageMaxWidthDeg { get; set; } = 48;
         public double BackgroundShellRadiusM { get; set; } = 10;
     }
 

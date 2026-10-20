@@ -35,6 +35,8 @@ namespace Perimetry.Headset
         private readonly Material _bgMat, _stimMat, _fixMat, _textMat;
         private readonly Transform _stim;
         private readonly TextMesh _text;
+        private readonly int _maxCharsPerLine;
+        private string _lastMessage;
         private readonly Renderer _stimRenderer, _textRenderer;
         // Fixation target: one diamond in mode A, four dots for the foveal Diamond4 target (Phase 5).
         private readonly Transform[] _fix = new Transform[4];
@@ -79,7 +81,9 @@ namespace Perimetry.Headset
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _text.font = font;
             _text.fontSize = 64;
-            _text.characterSize = 0.0045f;
+            _text.characterSize = (float)MessageLayout.CharacterSize(
+                headset.Presentation.MessageLineHeightDeg, headset.Presentation.MessageDistanceM, _text.fontSize);
+            _maxCharsPerLine = MessageLayout.MaxCharsPerLine(headset.Presentation.MessageLineHeightDeg, headset.Presentation.MessageMaxWidthDeg);
             _text.anchor = TextAnchor.UpperCenter;
             _text.alignment = TextAlignment.Center;
             _text.lineSpacing = 1.1f;
@@ -190,7 +194,11 @@ namespace Perimetry.Headset
             _textRenderer.enabled = !string.IsNullOrEmpty(v.Message);
             if (_textRenderer.enabled)
             {
-                _text.text = v.Message;
+                if (v.Message != _lastMessage)
+                {
+                    _lastMessage = v.Message;
+                    _text.text = MessageLayout.Wrap(v.Message, _maxCharsPerLine);
+                }
                 SetGrey(_textMat, _h.Presentation.TextLuminanceCdm2);
             }
         }

@@ -1,17 +1,17 @@
 # Estado do projeto e retomada
 
-Atualizado em 2026-10-19 (fim da sessão). Leia junto com `CLAUDE.md`, `SPEC.md` e `docs/CLINICAL_SPEC.md`.
+Atualizado em 2026-10-20. Leia junto com `CLAUDE.md`, `SPEC.md` e `docs/CLINICAL_SPEC.md`.
 
 ## Onde estamos
 - As **fases 1 a 6** do SPEC §9 estão na `main` (merge do PR #5 em `ed24199`). PRs #1–#5 mergeados; os ramos
   `phase-2-headset` … `phase-6-normative` ficaram só como histórico.
 - Versão do núcleo gravada nos exames: `ExamSession.Version = "0.3.0-phase5"`. Hash de config no último APK: `b2501b6f`.
-- Testes: 140 (`core/Perimetry.Core.Tests`), 53 (`headset/LogicTests`), 60 unitários + 5 specs Playwright (`portal`),
+- Testes: 140 (`core/Perimetry.Core.Tests`), 57 (`headset/LogicTests`), 60 unitários + 5 specs Playwright (`portal`),
   cross-check OPI 140/140, matriz de rastreabilidade sem erros (`python3 tools/trace/build_matrix.py`).
 
 ## Headset do produto owner (Quest 3)
-- APK instalado por cabo a partir de `262c1c4` (fase 5; a `main` contém esse commit). Não há APK da `main` pós-fase 6,
-  mas a fase 6 não alterou o headset.
+- APK instalado por cabo a partir de `262c1c4` (fase 5; a `main` contém esse commit). Pendente: gerar APK da `main` com o
+  texto maior das mensagens (2026-10-20: `MessageLayout`, `headset.json › presentation.messageOffsetDeg/-LineHeightDeg/-MaxWidthDeg`).
 - Abrir o app: atalho **"Abrir Quest Perimetry"** na área de trabalho do PC (cabo ligado) ou Biblioteca →
   seletor "Todos" → **"Fontes desconhecidas"**. A Biblioteca do Horizon OS às vezes não indexa apps instalados por cabo;
   reiniciar o headset resolve. Caminho definitivo: canal de teste privado na Meta Horizon Store (release channel),

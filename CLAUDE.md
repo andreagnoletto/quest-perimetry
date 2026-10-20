@@ -50,7 +50,7 @@ Current state, pending decisions and how to resume: **`docs/STATUS.md`** (update
 ```bash
 dotnet build Perimetry.sln
 dotnet test core/Perimetry.Core.Tests                                   # 140 tests, ~5 s
-dotnet test headset/LogicTests                                           # 53 tests: headset flow, timing, geometry, dithering, portal sync, phase 5 modes
+dotnet test headset/LogicTests                                           # 57 tests: headset flow, timing, geometry, dithering, portal sync, phase 5 modes, message text
 dotnet build headset/UnityCompileCheck                                   # Unity scripts vs UnityEngine API (no Unity needed)
 dotnet test core/Perimetry.Core.Tests --collect:"XPlat Code Coverage"   # coverage (cobertura xml)
 dotnet run --project core/Perimetry.Cli -c Release -- simulate --strategy ZestFast --defect SuperiorArcuate --seed 4 --out out/ex.json
