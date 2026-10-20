@@ -238,11 +238,12 @@
   "defaultAgeYears": 50,
   "_ageDoc": "Used only when no exam order file provides the age; the operator adjusts it on the setup screen. Age drives the ZEST prior and the normative comparison.",
   "presentation": {
-    "_doc": "Rendering details outside the psychophysics. fallbackIpdMm is used only when the runtime gives no eye positions (desktop preview); it is logged. Text is dark grey on the background, below the fixation target.",
+    "_doc": "Rendering details outside the psychophysics. fallbackIpdMm is used only when the runtime gives no eye positions (desktop preview); it is logged. Text is dark grey on the background, below the fixation target: messageOffsetDeg is where its top edge sits (degrees below fixation), messageScale multiplies the base glyph size (1.0 = about 1.1 deg per line at 1.5 m). Product owner 2026-10-20: larger and closer to fixation (1.5, -3 deg).",
     "fallbackIpdMm": 63.0,
     "textLuminanceCdm2": 2.0,
     "messageDistanceM": 1.5,
-    "messageOffsetDeg": -6.0,
+    "messageOffsetDeg": -3.0,
+    "messageScale": 1.5,
     "backgroundShellRadiusM": 10.0
   },
   "sync": {

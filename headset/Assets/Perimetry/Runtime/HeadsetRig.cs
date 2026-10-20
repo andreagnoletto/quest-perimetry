@@ -79,7 +79,7 @@ namespace Perimetry.Headset
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _text.font = font;
             _text.fontSize = 64;
-            _text.characterSize = 0.0045f;
+            _text.characterSize = 0.0045f * (float)headset.Presentation.MessageScale;
             _text.anchor = TextAnchor.UpperCenter;
             _text.alignment = TextAlignment.Center;
             _text.lineSpacing = 1.1f;

@@ -98,7 +98,9 @@ namespace Perimetry.Headset.Logic
         public double FallbackIpdMm { get; set; } = 63;
         public double TextLuminanceCdm2 { get; set; } = 2;
         public double MessageDistanceM { get; set; } = 1.5;
-        public double MessageOffsetDeg { get; set; } = -6;
+        public double MessageOffsetDeg { get; set; } = -3;
+        /// <summary>Multiplies the base glyph size of patient messages (1.0 = about 1.1 deg per line at 1.5 m).</summary>
+        public double MessageScale { get; set; } = 1.5;
         public double BackgroundShellRadiusM { get; set; } = 10;
     }
 
