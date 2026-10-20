@@ -36,6 +36,8 @@ namespace Perimetry.Headset
         private readonly Transform _stim;
         private readonly TextMesh _text;
         private readonly int _maxCharsPerLine;
+        private readonly double _textOffsetRad, _textDistanceM;
+        private readonly Transform _textGo;
         private string _lastMessage;
         private readonly Renderer _stimRenderer, _textRenderer;
         // Fixation target: one diamond in mode A, four dots for the foveal Diamond4 target (Phase 5).
@@ -90,8 +92,10 @@ namespace Perimetry.Headset
             _textRenderer = textGo.GetComponent<MeshRenderer>();
             _textMat = new Material(textShader) { name = "Message", mainTexture = font.material.mainTexture };
             _textRenderer.sharedMaterial = _textMat;
-            double a = headset.Presentation.MessageOffsetDeg * System.Math.PI / 180, dm = headset.Presentation.MessageDistanceM;
-            textGo.transform.localPosition = new Vector3(0, (float)(System.Math.Sin(a) * dm), (float)(System.Math.Cos(a) * dm));
+            _textOffsetRad = headset.Presentation.MessageOffsetDeg * System.Math.PI / 180;
+            _textDistanceM = headset.Presentation.MessageDistanceM;
+            _textGo = textGo.transform;
+            PlaceText(null);
 
             Shader.SetGlobalFloat(MaxCodeId, (1 << lum.Display.PanelBitsPerChannel) - 1);
             Shader.SetGlobalFloat(DitherId, (int)lum.DitherMode);
@@ -150,6 +154,17 @@ namespace Perimetry.Headset
             t.localScale = new Vector3((float)p.RadiusM, (float)p.RadiusM, 1);
         }
 
+        /// <summary>
+        /// The message sits straight ahead of the tested eye (the centre eye on binocular screens), messageOffsetDeg
+        /// below the line of sight, so its centre lines up with the fixation target, which is also placed from the
+        /// tested eye; placed from the head it would sit half an IPD (about 1.2 deg at 1.5 m) to the side of the target.
+        /// </summary>
+        private void PlaceText(Eye? eye)
+        {
+            var e = EyeLocal(eye);
+            _textGo.localPosition = new Vector3(e.x, e.y + (float)(System.Math.Sin(_textOffsetRad) * _textDistanceM), e.z + (float)(System.Math.Cos(_textOffsetRad) * _textDistanceM));
+        }
+
         public void Render(FlowView v)
         {
             _head.UpdateEyes();
@@ -199,6 +214,7 @@ namespace Perimetry.Headset
                     _lastMessage = v.Message;
                     _text.text = MessageLayout.Wrap(v.Message, _maxCharsPerLine);
                 }
+                PlaceText(v.MonocularEye);
                 SetGrey(_textMat, _h.Presentation.TextLuminanceCdm2);
             }
         }
